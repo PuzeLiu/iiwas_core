@@ -1,0 +1,51 @@
+iiwa_front:
+  fri_ip: 192.170.10.2
+  fri_port: 30202
+
+  conf_ip: 172.31.1.148
+  conf_port: 30402
+
+  control_freq: 1000 # in Hz
+  joints:
+    - F_SFE
+    - F_SAA
+    - F_HR
+    - F_EB
+    - F_WR
+    - F_WFE
+    - F_WAA
+
+  init_position:
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    
+  stiffness:
+    [50.0, 150.0, 50.0, 100.0, 37.5, 37.5, 12.5]
+
+  damping:
+    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
+
+iiwa_back:
+  fri_app_ip: 192.170.10.1
+  fri_app_port: 30201
+
+  fri_conf_ip: 172.31.1.147
+  fri_conf_port: 30401
+
+  control_freq: 1000 # in Hz
+  joints:
+    - B_SFE
+    - B_SAA
+    - B_HR
+    - B_EB
+    - B_WR
+    - B_WFE
+    - B_WAA
+
+  init_position:
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    
+  stiffness:
+    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 50.0]
+
+  damping:
+    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]

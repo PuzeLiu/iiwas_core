@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_front_iiwa" default="true" />
+    <arg name="use_back_iiwa" default="false" />
+
+    <rosparam file="$(find iiwas_driver)/config/config.yaml" command="load"/>
+
+    <node name="iiwas_driver" pkg="iiwas_driver" type="iiwas_driver"
+          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)"/>
+</launch>
