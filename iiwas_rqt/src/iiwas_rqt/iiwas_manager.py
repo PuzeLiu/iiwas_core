@@ -12,36 +12,26 @@ class IiwasManager(Plugin):
     def __init__(self, context):
         super().__init__(context)
         # Give QObjects reasonable names
-        self.setObjectName('Iiiwas Manager')
+        self.setObjectName('Iiwas Manager')
 
         # Process standalone plugin command-line arguments
         from argparse import ArgumentParser
         parser = ArgumentParser()
         # Add argument(s) to the parser.
-        parser.add_argument("-q", "--quiet", action="store_true",
-                            dest="quiet",
-                            help="Put plugin in silent mode")
+        parser.add_argument("-v", "--verbose", action="store_true",
+                            dest="verbose",
+                            help="Put plugin in verbose mode")
         args, unknowns = parser.parse_known_args(context.argv())
-        if not args.quiet:
+        if args.verbose:
             print('arguments: ', args)
             print('unknowns: ', unknowns)
 
-        # Create QWidget
         self._widget = QWidget()
-        # Get path to UI file which should be in the "resource" folder of this package
         ui_file = os.path.join(rospkg.RosPack().get_path('iiwas_rqt'), 'resource', 'IiwasManager.ui')
-        # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
-        # Give QObjects reasonable names
-        self._widget.setObjectName('MyPluginUi')
-        # Show _widget.windowTitle on left-top of each plugin (when
-        # it's set in _widget). This is useful when you open multiple
-        # plugins at once. Also if you open multiple instances of your
-        # plugin at once, these lines add number to make it easy to
-        # tell from pane to pane.
+        self._widget.setObjectName('IiwasManagerUI')
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
-        # Add widget to the user interface
         context.add_widget(self._widget)
 
     def shutdown_plugin(self):
