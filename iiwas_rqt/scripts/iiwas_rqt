@@ -2,7 +2,7 @@
 
 import sys
 
-from iiwas_rqt.iiwas import IiwasManager
+from iiwas_rqt.iiwas_manager import IiwasManager
 from rqt_gui.main import Main
 
 plugin = 'iiwas_rqt'
