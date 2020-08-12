@@ -14,7 +14,8 @@ const int timeout = 200;
 ConfigurationClient::ConfigurationClient(std::string ip, int port) :  socket(io_service){
     this->ip = ip;
     this->port = port;
-    started = false;
+    connected = false;
+    motionActive = false;
 }
 
 ConfigurationClient::~ConfigurationClient() {
@@ -24,16 +25,20 @@ ConfigurationClient::~ConfigurationClient() {
 bool ConfigurationClient::connectToServer() {
     auto address = boost::asio::ip::address::from_string(ip);
     auto endpoint = boost::asio::ip::tcp::endpoint(address, port);
-    try{
-        socket.connect(endpoint);
+    for (int i=0; i<10; i++) {
+        try {
+            socket.connect(endpoint);
 
-        ::setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof timeout);//SO_SNDTIMEO for send op
-        started = true;
-        return true;
-    }
-    catch (boost::system::system_error e){
-        std::cerr << e.what() << std::endl;
-        return false;
+            ::setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, (const char *) &timeout,
+                         sizeof timeout);//SO_SNDTIMEO for send op
+            connected = true;
+            return true;
+        }
+        catch (boost::system::system_error e) {
+            connected = false;
+            std::cerr << e.what() << std::endl;
+        }
+        sleep(1);
     }
 }
 
@@ -58,6 +63,7 @@ bool ConfigurationClient::write(std::string msg){
     boost::asio::write(socket, boost::asio::buffer(msg + "\n"), error);
     if(error) {
         std::cerr << "Sending " << msg << " failed. Error: " << error.message() << std::endl;
+        connected = false;
         return false;
     }
     return true;
@@ -81,7 +87,7 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
     if(reply.find("OK " + cmd) == 0) {
         return true;
     }else{
-        std::cerr << cmd << " failed: " << reply << std::endl;
+        std::cout << cmd << " failed: " << reply << std::endl;
         return false;
     }
 }
@@ -110,7 +116,12 @@ bool ConfigurationClient::startFRI() {
 
 bool ConfigurationClient::cancelMotion() {
     std::string cmd = "CANCEL_MOTION";
-    return communicate(cmd);
+
+    if (!communicate(cmd))
+        return false;
+
+    motionActive = false;
+    return true;
 }
 
 bool ConfigurationClient::attachSake() {
@@ -217,7 +228,12 @@ bool ConfigurationClient::setESMState(int state){
 
 bool ConfigurationClient::startHandguiding() {
     std::string cmd = "HANDGUIDING";
-    return communicate(cmd);
+
+    if( !communicate(cmd))
+        return false;
+
+    motionActive = true;
+    return true;
 }
 
 bool ConfigurationClient::setBlueLight(bool enabled) {
@@ -227,12 +243,17 @@ bool ConfigurationClient::setBlueLight(bool enabled) {
 }
 
 bool ConfigurationClient::startPositionControl(){
-    // Never wait for response, the connection will die!!
     std::string cmd = "POSITION_CONTROL";
-    return write(cmd);
+
+    if(!communicate(cmd))
+        return false;
+
+    motionActive = true;
+    return true;
 }
 
 bool ConfigurationClient::closeConnection(){
     std::string cmd = "CLOSE_CONNECTION";
+    connected = false;
     return write(cmd);
 }

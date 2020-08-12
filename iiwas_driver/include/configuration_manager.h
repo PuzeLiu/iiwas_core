@@ -6,7 +6,15 @@
 #define PROJECT_CONFIGURATION_MANAGER_H
 
 #include <ros/ros.h>
+#include <string>
+
 #include "configuration_client.h"
+
+#include "iiwas_srv/CancelMotion.h"
+#include "iiwas_srv/StartHandguiding.h"
+#include "iiwas_srv/StartPositionControl.h"
+#include "iiwas_srv/PTP.h"
+#include "iiwas_srv/SetBlueLight.h"
 
 class ConfigurationManager{
 public:
@@ -19,6 +27,12 @@ public:
     bool startPositionControl();
     bool startFrontPositionControl();
     bool startBackPositionControl();
+
+    bool cancelMotionSrv(iiwas_srv::CancelMotion::Request &req, iiwas_srv::CancelMotion::Response &res);
+    bool startHandguidingSrv(iiwas_srv::StartHandguiding::Request &req, iiwas_srv::StartHandguiding::Response &res);
+    bool startPositionControlSrv(iiwas_srv::StartPositionControl::Request &req, iiwas_srv::StartPositionControl::Response &res);
+    bool ptpSrv(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res);
+    bool setBlueLightSrv(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res);
 
 private:
 

@@ -23,7 +23,8 @@ class ConfigurationClient {
     bool write(std::string msg);
     bool communicate(std::string cmd, std::string params="", std::string* response=nullptr);
 
-    bool started;
+    bool connected;
+    bool motionActive;
 
 
   public:
@@ -49,7 +50,8 @@ class ConfigurationClient {
     bool setESMState(int state);
     bool setBlueLight(bool enabled);
     bool startHandguiding();
-    inline bool isStarted(){ return started;}
+    inline bool isConnected(){ return connected;}
+    inline bool isMotionActive() { return motionActive;}
 };
 
 

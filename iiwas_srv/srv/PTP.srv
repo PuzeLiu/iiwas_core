@@ -1,0 +1,7 @@
+# string for which iiwa to execute.
+# Option: 1: front_iiwa | 2: back_iiwa
+int16 which_iiwa
+float64[] goal
+---
+bool success
+string msg

@@ -62,6 +62,22 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
+    ros::ServiceServer cancelMotionSrv = nh.advertiseService("cancel_motion",
+                                                                &ConfigurationManager::cancelMotionSrv,
+                                                                &configurationManager);
+    ros::ServiceServer startHandguidingSrv = nh.advertiseService("start_hand_guiding",
+                                                                &ConfigurationManager::startHandguidingSrv,
+                                                                &configurationManager);
+    ros::ServiceServer startPositionControlSrv = nh.advertiseService("start_position_control",
+                                                                  &ConfigurationManager::startPositionControlSrv,
+                                                                  &configurationManager);
+    ros::ServiceServer setBlueLightSrv = nh.advertiseService("set_blue_light",
+                                                             &ConfigurationManager::setBlueLightSrv,
+                                                             &configurationManager);
+    ros::ServiceServer ptpSrv = nh.advertiseService("ptp", &ConfigurationManager::ptpSrv, &configurationManager);
+
+
+
     ros::Rate rate(100);
     while(ros::ok()){
         ros::spinOnce();
