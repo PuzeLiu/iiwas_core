@@ -6,5 +6,5 @@
     <rosparam file="$(find iiwas_driver)/config/config.yaml" command="load"/>
 
     <node name="iiwas_driver" pkg="iiwas_driver" type="iiwas_driver"
-          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)"/>
+          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true"/>
 </launch>

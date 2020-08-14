@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_front_iiwa" default="true" />
+    <arg name="use_back_iiwa" default="false" />
+
+    <include file="$(find iiwas_description)/launch/iiwas_rviz.launch"/>
+
+    <include file="$(find iiwas_control)/launch/iiwas_control.launch">
+	    <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
+	    <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
+    </include>
+
+    <group>
+	    <machine name="lovelace" user="puze" address="192.168.2.4"
+	             env-loader="~/catkin_ws/src/iiwas_core/iiwas_bringup/env.sh" timeout="10.0" default="true"/>
+        <include file="$(find iiwas_driver)/launch/iiwas_driver.launch" >
+            <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
+            <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
+        </include>
+    </group>
+
+
+
+</launch>

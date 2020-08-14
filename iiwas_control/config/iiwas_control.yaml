@@ -1,4 +1,4 @@
-iiwa_front:
+front_iiwa:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz
@@ -6,54 +6,54 @@ iiwa_front:
   joint_position_controller:
     type: position_controllers/JointGroupPositionController
     joints:
-      - F_SFE
-      - F_SAA
-      - F_HR
-      - F_EB
-      - F_WR
-      - F_WFE
-      - F_WAA
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
 
   joint_impedance_controller:
     type: effort_controller/JointGroupPositionController
     joints:
-      - F_SFE
-      - F_SAA
-      - F_HR
-      - F_EB
-      - F_WR
-      - F_WFE
-      - F_WAA
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
 
-    F_SFE:
+    F_joint_1:
       pid: {p: 800.0, i: 100, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_SAA:
+    F_joint_2:
       pid: {p: 800.0, i: 1000, d: 100.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_HR:
+    F_joint_3:
       pid: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_EB:
+    F_joint_4:
       pid: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_WR:
+    F_joint_5:
       pid: {p: 300.0, i: 5, d: 10.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_WFE:
+    F_joint_6:
       pid: {p: 50.0, i: 1, d: 1.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    F_WAA:
+    F_joint_7:
       pid: {p: 10.0, i: 0.1, d: 1.0, i_clamp_min: -10000, i_clamp_max: 10000}
 
 
   joint_trajectory_controller:
     type: position_controllers/JointTrajectoryController
     joints:
-      - F_SFE
-      - F_SAA
-      - F_HR
-      - F_EB
-      - F_WR
-      - F_WFE
-      - F_WAA
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
 
 
-iiwa_back:
+back_iiwa:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz
@@ -61,48 +61,48 @@ iiwa_back:
   joint_position_controller:
     type: position_controllers/JointGroupPositionController
     joints:
-      - B_SFE
-      - B_SAA
-      - B_HR
-      - B_EB
-      - B_WR
-      - B_WFE
-      - B_WAA
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
 
   joint_impedance_controller:
     type: effort_controller/JointGroupPositionController
     joints:
-      - B_SFE
-      - B_SAA
-      - B_HR
-      - B_EB
-      - B_WR
-      - B_WFE
-      - B_WAA
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
 
-    B_SFE:
+    B_joint_1:
       pid: {p: 800.0, i: 100, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_SAA:
+    B_joint_2:
       pid: {p: 800.0, i: 1000, d: 100.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_HR:
+    B_joint_3:
       pid: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_EB:
+    B_joint_4:
       pid: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_WR:
+    B_joint_5:
       pid: {p: 300.0, i: 5, d: 10.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_WFE:
+    B_joint_6:
       pid: {p: 50.0, i: 1, d: 1.0, i_clamp_min: -10000, i_clamp_max: 10000}
-    B_WAA:
+    B_joint_7:
       pid: {p: 10.0, i: 0.1, d: 1.0, i_clamp_min: -10000, i_clamp_max: 10000}
 
 
   joint_trajectory_controller:
     type: position_controllers/JointTrajectoryController
     joints:
-      - B_SFE
-      - B_SAA
-      - B_HR
-      - B_EB
-      - B_WR
-      - B_WFE
-      - B_WAA
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7

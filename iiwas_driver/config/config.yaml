@@ -7,19 +7,19 @@ iiwa_front:
 
   control_freq: 1000 # in Hz
   joints:
-    - F_SFE
-    - F_SAA
-    - F_HR
-    - F_EB
-    - F_WR
-    - F_WFE
-    - F_WAA
+    - F_joint_1
+    - F_joint_2
+    - F_joint_3
+    - F_joint_4
+    - F_joint_5
+    - F_joint_6
+    - F_joint_7
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
   stiffness:
-    [50.0, 150.0, 50.0, 100.0, 37.5, 37.5, 12.5]
+    [200.0, 600.0, 20.0, 400.0, 150, 150, 50]
 
   damping:
     [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
@@ -33,13 +33,13 @@ iiwa_back:
 
   control_freq: 1000 # in Hz
   joints:
-    - B_SFE
-    - B_SAA
-    - B_HR
-    - B_EB
-    - B_WR
-    - B_WFE
-    - B_WAA
+    - B_joint_1
+    - B_joint_2
+    - B_joint_3
+    - B_joint_4
+    - B_joint_5
+    - B_joint_6
+    - B_joint_7
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
