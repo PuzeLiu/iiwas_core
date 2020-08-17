@@ -65,7 +65,7 @@ int main(int argc, char* argv[]){
     ros::ServiceServer cancelMotionSrv = nh.advertiseService("cancel_motion",
                                                                 &ConfigurationManager::cancelMotionSrv,
                                                                 &configurationManager);
-    ros::ServiceServer startHandguidingSrv = nh.advertiseService("start_hand_guiding",
+    ros::ServiceServer startHandguidingSrv = nh.advertiseService("start_handguiding",
                                                                 &ConfigurationManager::startHandguidingSrv,
                                                                 &configurationManager);
     ros::ServiceServer startPositionControlSrv = nh.advertiseService("start_position_control",
