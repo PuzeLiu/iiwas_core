@@ -12,7 +12,7 @@ from iiwas_srv.srv import *
 class IiwasManager(Plugin):
 
     def __init__(self, context):
-        super().__init__(context)
+        super(IiwasManager, self).__init__(context)
         # Give QObjects reasonable names
         self.setObjectName('Iiwas Manager')
 
@@ -80,22 +80,22 @@ class IiwasManager(Plugin):
                                                         persistent=True)
 
     def _cancel_f_cb(self):
-        res = self._cancel_srv.call(CancelMotionRequest(which_iiwa=0))
+        res = self._cancel_srv.call(CancelMotionRequest(which_iiwa=1))
 
     def _cancel_b_cb(self):
-       res = self._cancel_srv.call(CancelMotionRequest(which_iiwa=1))
+       res = self._cancel_srv.call(CancelMotionRequest(which_iiwa=2))
 
     def _handguiding_f_cb(self):
-        res = self._handguiding_srv.call(StartHandguidingRequest(which_iiwa=0))
-
-    def _handguiding_b_cb(self):
         res = self._handguiding_srv.call(StartHandguidingRequest(which_iiwa=1))
 
+    def _handguiding_b_cb(self):
+        res = self._handguiding_srv.call(StartHandguidingRequest(which_iiwa=2))
+
     def _position_f_cb(self):
-        res = self._position_control_srv.call(StartPositionControlRequest(which_iiwa=0))
+        res = self._position_control_srv.call(StartPositionControlRequest(which_iiwa=1))
 
     def _position_b_cb(self):
-        res = self._position_control_srv.call(StartPositionControlRequest(which_iiwa=1))
+        res = self._position_control_srv.call(StartPositionControlRequest(which_iiwa=2))
 
     def _connect_services_to_buttons(self):
         self._widget.cancel_f.clicked[bool].connect(self._cancel_f_cb)

@@ -123,7 +123,7 @@ void FRIClient::onStateChange(ESessionState oldState, ESessionState newState)
          break;
    }
 
-    //std::cout << "state changed from " << nameOld << " to " << nameNew << std::endl;
+    std::cout << "state changed from " << nameOld << " to " << nameNew << std::endl;
 }
 //******************************************************************************
 void FRIClient::monitor() {

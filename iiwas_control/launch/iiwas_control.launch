@@ -3,26 +3,30 @@
     <arg name="use_front_iiwa" default="false"/>
     <arg name="use_back_iiwa" default="false"/>
 
-
-	<!-- Select the front iiwa controller -->
-    <arg name="front_controllers" default="front_iiwa/joint_state_controller
-                                           front_iiwa/joint_position_controller"
-         if="$(arg use_front_iiwa)"/>
-    <arg name="front_controllers" default="" unless="$(arg use_front_iiwa)"/>
-
-    <!-- Select the back iiwa controller -->
-    <arg name="back_controllers" default="back_iiwa/joint_state_controller
-                                          back_iiwa/joint_position_controller"
-         if="$(arg use_back_iiwa)"/>
-    <arg name="back_controllers" default="" unless="$(arg use_back_iiwa)"/>
-
-
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find iiwas_control)/config/iiwas_control.yaml" command="load"/>
 
-    <!-- load the controllers -->
-    <node name="iiwas_controller" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args="$(arg front_controllers) $(arg back_controllers)"/>
+    <group if="$(arg use_front_iiwa)">
+        <!-- Select the front iiwa controller -->
+        <arg name="front_controllers" default="front_iiwa/joint_state_controller
+                                               front_iiwa/joint_position_controller"/>
+        <!-- load the controllers -->
+        <node name="iiwas_controller" pkg="controller_manager" type="spawner" respawn="false"
+              output="screen" args="$(arg front_controllers)"/>
+    </group>
+
+    <group if="$(arg use_back_iiwa)">
+        <!-- Select the back iiwa controller -->
+        <arg name="back_controllers" default="back_iiwa/joint_state_controller
+                                              back_iiwa/joint_position_controller"/>
+        <!-- load the controllers -->
+        <node name="iiwas_controller" pkg="controller_manager" type="spawner" respawn="false"
+              output="screen" args="$(arg back_controllers)"/>
+    </group>
+
+
+
+
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" >
         <param name="publish_frequency" type="double" value="50.0" />

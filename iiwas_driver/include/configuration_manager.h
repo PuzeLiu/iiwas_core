@@ -15,6 +15,7 @@
 #include "iiwas_srv/StartPositionControl.h"
 #include "iiwas_srv/PTP.h"
 #include "iiwas_srv/SetBlueLight.h"
+#include "iiwas_srv/SetESMState.h"
 
 class ConfigurationManager{
 public:
@@ -28,13 +29,19 @@ public:
     bool startFrontPositionControl();
     bool startBackPositionControl();
 
-    bool cancelMotionSrv(iiwas_srv::CancelMotion::Request &req, iiwas_srv::CancelMotion::Response &res);
-    bool startHandguidingSrv(iiwas_srv::StartHandguiding::Request &req, iiwas_srv::StartHandguiding::Response &res);
-    bool startPositionControlSrv(iiwas_srv::StartPositionControl::Request &req, iiwas_srv::StartPositionControl::Response &res);
-    bool ptpSrv(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res);
-    bool setBlueLightSrv(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res);
+    bool cancelMotion(iiwas_srv::CancelMotion::Request &req, iiwas_srv::CancelMotion::Response &res);
+    bool startHandguiding(iiwas_srv::StartHandguiding::Request &req, iiwas_srv::StartHandguiding::Response &res);
+    bool startPositionCtrl(iiwas_srv::StartPositionControl::Request &req,
+                              iiwas_srv::StartPositionControl::Response &res);
+    bool ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res);
+    bool setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res);
+    bool setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res);
 
 private:
+
+    void initCommand();
+
+    void jointStateCallback();
 
     struct ConfigurationData{
         ConfigurationData(std::string ns);
@@ -47,7 +54,7 @@ private:
 
     bool init(ConfigurationClient* confClient, ConfigurationData* confData);
 
-    ros::NodeHandle n_p;
+    ros::NodeHandle nh;
 
     ConfigurationClient* frontClient;
     ConfigurationClient* backClient;
@@ -55,6 +62,12 @@ private:
     ConfigurationData* frontData;
     ConfigurationData* backData;
 
+    ros::ServiceServer cancelMotionSrv;
+    ros::ServiceServer startHandguidingSrv;
+    ros::ServiceServer startPositionControlSrv;
+    ros::ServiceServer setBlueLightSrv;
+    ros::ServiceServer ptpSrv;
+    ros::ServiceServer setESMStateSrv;
 
 };
 

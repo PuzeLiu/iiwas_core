@@ -9,6 +9,7 @@
 #include <string>
 #include <boost/asio.hpp>
 
+
 #include "iiwa_ros.h"
 
 
@@ -22,6 +23,8 @@ class ConfigurationClient {
     bool read(std::string& reply);
     bool write(std::string msg);
     bool communicate(std::string cmd, std::string params="", std::string* response=nullptr);
+    void connectHandle(const boost::system::error_code& error);
+    void timerHandle(const boost::system::error_code& error, bool &timeout);
 
     bool connected;
     bool motionActive;

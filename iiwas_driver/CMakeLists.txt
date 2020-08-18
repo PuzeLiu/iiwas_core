@@ -114,7 +114,8 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-set(HEADERS include/configuration_manager.h)
+set(HEADERS include/configuration_manager.h
+			include/iiwa_hw_interface.h)
 set(SOURCES src/configuration_client.cpp
             src/fri_client.cpp
             src/iiwas_driver_node.cpp

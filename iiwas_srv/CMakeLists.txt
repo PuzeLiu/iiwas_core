@@ -12,6 +12,7 @@ add_service_files(
    StartPositionControl.srv
    PTP.srv
    SetBlueLight.srv
+   SetESMState.srv
 )
 
 generate_messages(

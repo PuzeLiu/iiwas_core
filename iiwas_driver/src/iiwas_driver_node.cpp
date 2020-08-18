@@ -8,7 +8,7 @@
 
 
 int main(int argc, char* argv[]){
-    ros::init(argc, argv, "iiwa_hw_interface");
+    ros::init(argc, argv, "iiwas_drive", ros::init_options::AnonymousName);
     ros::NodeHandle nh;
 
     bool useFrontIiwa, useBackIiwa;
@@ -36,6 +36,8 @@ int main(int argc, char* argv[]){
 
     ConfigurationManager configurationManager(useFrontIiwa, useBackIiwa);
 
+    ROS_INFO_STREAM("Initializing Configuration Server");
+
     if (!configurationManager.init()) {
         ROS_ERROR_STREAM("Initialization failed");
         ros::shutdown();
@@ -61,20 +63,6 @@ int main(int argc, char* argv[]){
 
         return -1;
     }
-
-    ros::ServiceServer cancelMotionSrv = nh.advertiseService("cancel_motion",
-                                                                &ConfigurationManager::cancelMotionSrv,
-                                                                &configurationManager);
-    ros::ServiceServer startHandguidingSrv = nh.advertiseService("start_handguiding",
-                                                                &ConfigurationManager::startHandguidingSrv,
-                                                                &configurationManager);
-    ros::ServiceServer startPositionControlSrv = nh.advertiseService("start_position_control",
-                                                                  &ConfigurationManager::startPositionControlSrv,
-                                                                  &configurationManager);
-    ros::ServiceServer setBlueLightSrv = nh.advertiseService("set_blue_light",
-                                                             &ConfigurationManager::setBlueLightSrv,
-                                                             &configurationManager);
-    ros::ServiceServer ptpSrv = nh.advertiseService("ptp", &ConfigurationManager::ptpSrv, &configurationManager);
 
 
 

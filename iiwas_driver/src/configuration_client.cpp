@@ -5,6 +5,8 @@
 
 #include "configuration_client.h"
 #include <iostream>
+#include <boost/timer.hpp>
+#include <boost/bind.hpp>
 
 using namespace boost::asio;
 using ip::udp;
@@ -25,21 +27,35 @@ ConfigurationClient::~ConfigurationClient() {
 bool ConfigurationClient::connectToServer() {
     auto address = boost::asio::ip::address::from_string(ip);
     auto endpoint = boost::asio::ip::tcp::endpoint(address, port);
-    for (int i=0; i<10; i++) {
-        try {
-            socket.connect(endpoint);
+    boost::asio::deadline_timer deadline(io_service);
 
-            ::setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, (const char *) &timeout,
-                         sizeof timeout);//SO_SNDTIMEO for send op
-            connected = true;
-            return true;
-        }
-        catch (boost::system::system_error e) {
-            connected = false;
-            std::cerr << e.what() << std::endl;
-        }
-        sleep(1);
+    deadline.expires_from_now(boost::posix_time::seconds(5));
+    socket.async_connect(endpoint,
+                         boost::bind(&ConfigurationClient::connectHandle, this,
+                                     boost::asio::placeholders::error));
+
+    bool timeout = false;
+    deadline.async_wait(boost::bind(&ConfigurationClient::timerHandle, this,
+                                    boost::asio::placeholders::error, boost::ref(timeout)));
+
+    do {
+        io_service.run_one();
+    } while (socket.is_open() && !timeout && !connected);
+
+    return connected;
+}
+
+void ConfigurationClient::connectHandle(const boost::system::error_code &ec) {
+    if(!ec)
+        connected = true;
+    return;
+}
+
+void ConfigurationClient::timerHandle(const boost::system::error_code &ec, bool &timeout) {
+    if(!ec){
+        timeout = true;
     }
+    return;
 }
 
 bool ConfigurationClient::read(std::string& reply){
@@ -87,7 +103,7 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
     if(reply.find("OK " + cmd) == 0) {
         return true;
     }else{
-        std::cout << cmd << " failed: " << reply << std::endl;
+        std::cout << cmd << " failed: " << reply;
         return false;
     }
 }

@@ -11,14 +11,18 @@ namespace iiwa_hw{
         oldTime = ros::Time::now();
 
         thread = nullptr;
+        running = false;
     }
 
     void ControlLoop::start() {
-        if(init())
+        if(init()) {
+            running = true;
             thread = new boost::thread(boost::bind(&iiwa_hw::ControlLoop::controlThread, this), coreId);
+        }
     }
 
     void ControlLoop::stop() {
+        running = false;
         if(thread)
             thread->join();
         hardwareInterface.stop();
@@ -29,7 +33,7 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::run(){
-        while (ros::ok() && hardwareInterface.isIiwaReady()){
+        while (running  && hardwareInterface.isIiwaReady()){
             auto new_t = ros::Time::now();
             elapsedTime = new_t - oldTime;
             oldTime = new_t;

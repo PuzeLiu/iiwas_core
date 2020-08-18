@@ -6,7 +6,7 @@
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa) {
+ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa){
     frontClient = nullptr;
     backClient = nullptr;
 
@@ -19,6 +19,17 @@ ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa) 
         backData = new ConfigurationData("iiwa_back");
         backClient = constructConfClient(backData->ns);
     }
+
+    cancelMotionSrv = nh.advertiseService("cancel_motion", &ConfigurationManager::cancelMotion,
+                                          this);
+    startHandguidingSrv = nh.advertiseService("start_handguiding", &ConfigurationManager::startHandguiding,
+                                              this);
+    startPositionControlSrv = nh.advertiseService("start_position_control", &ConfigurationManager::startPositionCtrl,
+                                                 this);
+    setBlueLightSrv = nh.advertiseService("set_blue_light", &ConfigurationManager::setBlueLight,
+                                          this);
+    ptpSrv = nh.advertiseService("ptp", &ConfigurationManager::ptp, this);
+    setESMStateSrv = nh.advertiseService("set_esm_state", &ConfigurationManager::setESMState, this);
 }
 
 ConfigurationManager::~ConfigurationManager() {
@@ -80,10 +91,10 @@ ConfigurationClient* ConfigurationManager::constructConfClient(std::string ns){
     std::string confServerIP;
     int confServerPort;
 
-    if (!n_p.param<std::string>(ns + "/conf_ip", confServerIP, "172.31.1.148"))
+    if (!nh.param<std::string>(ns + "/conf_ip", confServerIP, "172.31.1.148"))
         ROS_WARN_STREAM_ONCE(ns + ": Unable to load configuration server ip from Parameter Server, use Default: "
                                      << confServerIP);
-    if (!n_p.param(ns + "/conf_port", confServerPort, 30402))
+    if (!nh.param(ns + "/conf_port", confServerPort, 30402))
         ROS_WARN_STREAM_ONCE(ns + ": Unbale to load configuration server port from Parameter Server, use Default: "
                                      << confServerPort);
     return new ConfigurationClient(confServerIP, confServerPort);
@@ -194,8 +205,8 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
     return true;
 }
 
-bool ConfigurationManager::cancelMotionSrv(iiwas_srv::CancelMotion::Request &req,
-                                           iiwas_srv::CancelMotion::Response &res) {
+bool ConfigurationManager::cancelMotion(iiwas_srv::CancelMotion::Request &req,
+                                        iiwas_srv::CancelMotion::Response &res) {
     res.success = false;
 
     if (req.which_iiwa==1 && frontClient){
@@ -208,11 +219,11 @@ bool ConfigurationManager::cancelMotionSrv(iiwas_srv::CancelMotion::Request &req
     std::stringstream ss;
     ss << "Service: CancelMotion | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
 }
 
-bool ConfigurationManager::startHandguidingSrv(iiwas_srv::StartHandguiding::Request &req,
-                                               iiwas_srv::StartHandguiding::Response &res){
+bool ConfigurationManager::startHandguiding(iiwas_srv::StartHandguiding::Request &req,
+                                            iiwas_srv::StartHandguiding::Response &res){
     res.success = false;
 
     if (req.which_iiwa==1 && frontClient){
@@ -226,10 +237,11 @@ bool ConfigurationManager::startHandguidingSrv(iiwas_srv::StartHandguiding::Requ
     std::stringstream ss;
     ss << "Service: StartHandguiding | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
 }
 
-bool ConfigurationManager::startPositionControlSrv(iiwas_srv::StartPositionControl::Request &req, iiwas_srv::StartPositionControl::Response &res){
+bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Request &req,
+                                                iiwas_srv::StartPositionControl::Response &res){
     res.success = false;
 
     if (req.which_iiwa==1 && frontClient){
@@ -243,10 +255,10 @@ bool ConfigurationManager::startPositionControlSrv(iiwas_srv::StartPositionContr
     std::stringstream ss;
     ss << "Service: StartPositionControl | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
 }
 
-bool ConfigurationManager::ptpSrv(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res){
+bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res){
     res.success = false;
 
     std::vector<double> goalVec;
@@ -273,7 +285,7 @@ bool ConfigurationManager::ptpSrv(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::
     return res.success;
 }
 
-bool ConfigurationManager::setBlueLightSrv(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res){
+bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res){
     res.success = false;
 
     if (req.which_iiwa==1 && frontClient){
@@ -287,5 +299,22 @@ bool ConfigurationManager::setBlueLightSrv(iiwas_srv::SetBlueLight::Request &req
     std::stringstream ss;
     ss << "Service: SetBlueLight | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
+}
+
+bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res){
+    res.success = false;
+
+    if (req.which_iiwa==1 && frontClient){
+        res.success = frontClient->setESMState(req.state);
+    }
+
+    if (req.which_iiwa==2 && backClient){
+        res.success = backClient->setESMState(req.state);
+    }
+
+    std::stringstream ss;
+    ss << "Service: SetESMState | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    res.msg = ss.str();
+    return true;
 }

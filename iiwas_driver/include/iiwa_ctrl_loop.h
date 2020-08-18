@@ -8,6 +8,7 @@
 
 #include <iiwa_hw_interface.h>
 #include <boost/thread.hpp>
+#include <boost/bind.hpp>
 
 namespace iiwa_hw {
     static const double BILLION = 1000000000.0;
@@ -42,6 +43,7 @@ namespace iiwa_hw {
         ros::Time oldTime;
 
         boost::thread* thread;
+        bool running;
 
     };
 
