@@ -57,7 +57,6 @@
     </link>
 
     <!-- joint between link_0 and link_1 -->
-    <!--<joint name="${robot_name}_SFE" type="revolute">-->
     <joint name="${robot_name}_joint_1" type="revolute">
       <parent link="${robot_name}_link_0"/>
       <child link="${robot_name}_link_1"/>
@@ -100,7 +99,6 @@
     </link>
 
     <!-- joint between link_1 and link_2 -->
-    <!--<joint name="${robot_name}_SAA" type="revolute">-->
     <joint name="${robot_name}_joint_2" type="revolute">
       <parent link="${robot_name}_link_1"/>
       <child link="${robot_name}_link_2"/>
@@ -142,7 +140,6 @@
     </link>
 
     <!-- joint between link_2 and link_3 -->
-    <!--<joint name="${robot_name}_HR" type="revolute">-->
     <joint name="${robot_name}_joint_3" type="revolute">
       <parent link="${robot_name}_link_2"/>
       <child link="${robot_name}_link_3"/>
@@ -185,7 +182,6 @@
     </link>
 
     <!-- joint between link_3 and link_4 -->
-    <!--<joint name="${robot_name}_EB" type="revolute">-->
     <joint name="${robot_name}_joint_4" type="revolute">
       <parent link="${robot_name}_link_3"/>
       <child link="${robot_name}_link_4"/>
@@ -228,7 +224,6 @@
     </link>
 
     <!-- joint between link_4 and link_5 -->
-    <!--<joint name="${robot_name}_WR" type="revolute">-->
     <joint name="${robot_name}_joint_5" type="revolute">
       <parent link="${robot_name}_link_4"/>
       <child link="${robot_name}_link_5"/>
@@ -271,7 +266,6 @@
     </link>
 
     <!-- joint between link_5 and link_6 -->
-    <!--<joint name="${robot_name}_WFE" type="revolute">-->
     <joint name="${robot_name}_joint_6" type="revolute">
       <parent link="${robot_name}_link_5"/>
       <child link="${robot_name}_link_6"/>
@@ -314,7 +308,6 @@
     </link>
 
     <!-- joint between link_6 and link_7 -->
-    <!--<joint name="${robot_name}_WAA" type="revolute">-->
     <joint name="${robot_name}_joint_7" type="revolute">
       <parent link="${robot_name}_link_6"/>
       <child link="${robot_name}_link_7"/>
