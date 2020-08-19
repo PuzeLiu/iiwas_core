@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
+from python_qt_binding.QtGui import QTextCursor, QTextCharFormat, QBrush, QColor
 from python_qt_binding.QtWidgets import QWidget, QDialogButtonBox
 from urdf_parser_py.urdf import URDF
 
@@ -43,23 +44,13 @@ class IiwasManager(Plugin):
         self._get_joint_limits()
 
     def shutdown_plugin(self):
-        # TODO unregister all publishers here
         pass
 
     def save_settings(self, plugin_settings, instance_settings):
-        # TODO save intrinsic configuration, usually using:
-        # instance_settings.set_value(k, v)
         pass
 
     def restore_settings(self, plugin_settings, instance_settings):
-        # TODO restore intrinsic configuration, usually using:
-        # v = instance_settings.value(k)
         pass
-
-    #def trigger_configuration(self):
-        # Comment in to signal that the plugin has a way to configure
-        # This will enable a setting button (gear icon) in each dock widget title bar
-        # Usually used to open a modal configuration dialog
 
     def _set_iw_services(self):
         cancel_srv_name = 'cancel_motion'
@@ -91,9 +82,32 @@ class IiwasManager(Plugin):
     def _execute_service(self, service, request):
         try:
             res = service.call(request)
-            self._widget.textBrowser.insertPlainText(res.msg + '\n')
+
+            c = self._widget.textBrowser.textCursor()
+
+            if not res.success:
+                format = QTextCharFormat()
+                format.setForeground(QBrush(QColor("red")))
+                c.setCharFormat(format)
+            else:
+                format = QTextCharFormat()
+                format.setForeground(QBrush(QColor("black")))
+                c.setCharFormat(format)
+
+            c.insertText(res.msg + '\n')
+            c.movePosition(QTextCursor.End)
+
+            self._widget.textBrowser.setTextCursor(c)
         except:
-            self._widget.textBrowser.insertPlainText('Service Error')
+            c = self._widget.textBrowser.textCursor()
+            format = QTextCharFormat()
+            format.setForeground(QBrush(QColor("red")))
+            c.setCharFormat(format)
+            c.insertText('Service Error\n')
+            c.movePosition(QTextCursor.End)
+
+            self._widget.textBrowser.setTextCursor(c)
+
 
     def _cancel_f_cb(self):
         request = CancelMotionRequest(which_iiwa=1)
@@ -151,6 +165,20 @@ class IiwasManager(Plugin):
     def _ptp_apply_f_cb(self):
         self._ptp_accept_cb('F')
 
+    def _set_led_F_cb(self):
+        request = SetBlueLightRequest()
+        request.on = self._widget.checkBox_F.isChecked()
+        request.which_iiwa = 1
+
+        self._execute_service(self._light_srv, request)
+
+    def _set_led_B_cb(self):
+        request = SetBlueLightRequest()
+        request.on = self._widget.checkBox_B.isChecked()
+        request.which_iiwa = 2
+
+        self._execute_service(self._light_srv, request)
+
     def _connect_services_to_buttons(self):
         self._widget.cancel_f.clicked[bool].connect(self._cancel_f_cb)
         self._widget.cancel_b.clicked[bool].connect(self._cancel_b_cb)
@@ -166,6 +194,9 @@ class IiwasManager(Plugin):
 
         self._widget.buttonBox_F.button(QDialogButtonBox.Apply).clicked.connect(self._ptp_apply_f_cb)
         self._widget.buttonBox_B.button(QDialogButtonBox.Apply).clicked.connect(self._ptp_apply_b_cb)
+
+        self._widget.set_led_F.clicked[bool].connect(self._set_led_F_cb)
+        self._widget.set_led_B.clicked[bool].connect(self._set_led_B_cb)
 
 
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>799</width>
-    <height>447</height>
+    <height>449</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -219,11 +219,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="toggle_led_f">
-         <property name="text">
-          <string>Toggle Led</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="set_led_F">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Set Led</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_F">
+           <property name="text">
+            <string>on</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -412,11 +429,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="toggle_led_b">
-         <property name="text">
-          <string>Toggle Led</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="set_led_B">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Set Led</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_B">
+           <property name="text">
+            <string>on</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
