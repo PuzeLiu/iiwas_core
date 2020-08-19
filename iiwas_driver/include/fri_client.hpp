@@ -42,8 +42,8 @@ or otherwise, without the prior written consent of KUKA Roboter GmbH.
 #ifndef _KUKA_FRI_LBR_TORQUE_SINE_OVERLAY_CLIENT_H
 #define _KUKA_FRI_LBR_TORQUE_SINE_OVERLAY_CLIENT_H
 
-#include "friLBRClient.h"
-#include "friLBRState.h"
+#include <iiwa_fri_client/friLBRClient.h>
+#include <iiwa_fri_client/friLBRState.h>
 
 
 

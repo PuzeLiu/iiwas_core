@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+from iiwas_srv.srv import *
+import rospy
+
+
+def handle_ptp(req):
+    print('recieved:', req.goal, 'for iiwas', req.which_iiwa)
+
+    return PTPResponse(msg='OK PTP ' + str(req.goal), success=True)
+
+
+if __name__ == "__main__":
+    rospy.init_node('fake_service')
+    s_ptp = rospy.Service('ptp', PTP, handle_ptp)
+
+    rospy.spin()

@@ -1,8 +1,9 @@
 //
 // Created by puze on 10.08.20.
 //
-#include "FRI/friLBRState.h"
 #include "configuration_manager.h"
+
+#include <iiwa_fri_client/friLBRState.h>
 
 using namespace KUKA::FRI;
 
@@ -57,8 +58,8 @@ ConfigurationManager::~ConfigurationManager() {
 }
 
 ConfigurationManager::ConfigurationData::ConfigurationData(std::string ns) : ns("/" + ns) {
-    jointStiffness.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    jointDamping.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    jointStiffness.resize(LBRState::NUMBER_OF_JOINTS);
+    jointDamping.resize(LBRState::NUMBER_OF_JOINTS);
 }
 
 bool ConfigurationManager::startPositionControl() {
@@ -262,12 +263,12 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
     res.success = false;
 
     std::vector<double> goalVec;
-    if(!req.goal.size() == KUKA::FRI::LBRState::NUMBER_OF_JOINTS){
+    if(!req.goal.size() == LBRState::NUMBER_OF_JOINTS){
         res.success = false;
         return res.success;
     } else{
-        goalVec.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-        for (int i=0; i<KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++)
+        goalVec.resize(LBRState::NUMBER_OF_JOINTS);
+        for (int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
             goalVec[i] = req.goal[i];
     }
 

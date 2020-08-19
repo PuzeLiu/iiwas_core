@@ -17,5 +17,7 @@
   <depend>controller_manager</depend>
   <depend>controller_interface</depend>
   <depend>urdf</depend>
+  <depend>iiwa_fri_client</depend>
+  <depend>iiwas_srv</depend>
 
 </package>
