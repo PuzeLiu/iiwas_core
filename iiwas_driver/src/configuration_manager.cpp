@@ -283,7 +283,7 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
     std::stringstream ss;
     ss << "Service: PTP | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
 }
 
 bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res){
