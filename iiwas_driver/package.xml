@@ -17,5 +17,6 @@
   <depend>controller_manager</depend>
   <depend>controller_interface</depend>
   <depend>urdf</depend>
+  <depend>sensor_msgs</depend>
 
 </package>

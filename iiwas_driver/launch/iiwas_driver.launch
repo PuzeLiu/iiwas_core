@@ -7,4 +7,7 @@
 
     <node name="iiwas_driver" pkg="iiwas_driver" type="iiwas_driver"
           output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true"/>
+
+    <node name="fake_iiwas_mask" pkg="iiwas_driver" type="fake_iiwas_mask"
+          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true"/>
 </launch>

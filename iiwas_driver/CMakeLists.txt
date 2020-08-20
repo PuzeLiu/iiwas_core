@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
              hardware_interface
              urdf
              iiwas_srv
+             sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -115,7 +116,8 @@ catkin_package(
 ## Build ##
 ###########
 set(HEADERS include/configuration_manager.h
-			include/iiwa_hw_interface.h)
+			include/iiwa_hw_interface.h
+		    include/iiwa_ctrl_loop.h)
 set(SOURCES src/configuration_client.cpp
             src/fri_client.cpp
             src/iiwas_driver_node.cpp
@@ -145,6 +147,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(fake_iiwas_mask src/iiwas_mask.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,11 +158,13 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(${PROJECT_NAME} iiwas_srv_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+add_dependencies(fake_iiwas_mask ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES} ${PROJECT_SOURCE_DIR}/lib/libFRIClient.a rt
 )
+target_link_libraries(fake_iiwas_mask ${catkin_LIBRARIES})
 
 #############
 ## Install ##
