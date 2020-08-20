@@ -22,6 +22,7 @@
   <exec_depend>rqt_gui</exec_depend>
   <exec_depend>rqt_gui_py</exec_depend>
   <exec_depend>iiwas_srv</exec_depend>
+  <exec_depend>urdfdom-py</exec_depend>
 
 
   <export>
