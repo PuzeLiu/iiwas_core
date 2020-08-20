@@ -210,15 +210,19 @@ bool ConfigurationManager::cancelMotion(iiwas_srv::CancelMotion::Request &req,
                                         iiwas_srv::CancelMotion::Response &res) {
     res.success = false;
 
+    std::stringstream ss;
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->cancelMotion();
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
+        res.success = backClient->cancelMotion();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    if (req.which_iiwa==2 && backClient){
-        res.success = backClient->cancelMotion();
-    }
-    std::stringstream ss;
-    ss << "Service: CancelMotion | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -227,16 +231,19 @@ bool ConfigurationManager::startHandguiding(iiwas_srv::StartHandguiding::Request
                                             iiwas_srv::StartHandguiding::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->startHandguiding();
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->startHandguiding();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: StartHandguiding | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -245,22 +252,27 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
                                                 iiwas_srv::StartPositionControl::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->startPositionControl();
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->startPositionControl();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: StartPositionControl | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
 
 bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res){
     res.success = false;
+
+    std::stringstream ss;
 
     std::vector<double> goalVec;
     if(!req.goal.size() == LBRState::NUMBER_OF_JOINTS){
@@ -274,14 +286,15 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->ptp(req.goal);
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->ptp(req.goal);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: PTP | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -289,16 +302,19 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
 bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setBlueLight(req.on);
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->setBlueLight(req.on);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: SetBlueLight | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -306,16 +322,19 @@ bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, i
 bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setESMState(req.state);
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->setESMState(req.state);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: SetESMState | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
