@@ -19,10 +19,12 @@ class ConfigurationClient {
     int port;
     boost::asio::io_service io_service;
     boost::asio::ip::tcp::socket socket;
+    std::string last_response;
+
 
     bool read(std::string& reply);
     bool write(std::string msg);
-    bool communicate(std::string cmd, std::string params="", std::string* response=nullptr);
+    bool communicate(std::string cmd, std::string params="");
     void connectHandle(const boost::system::error_code& error);
     void timerHandle(const boost::system::error_code& error, bool &timeout);
 
@@ -55,6 +57,7 @@ class ConfigurationClient {
     bool startHandguiding();
     inline bool isConnected(){ return connected;}
     inline bool isMotionActive() { return motionActive;}
+    inline std::string getLastResponse() { return last_response; }
 };
 
 

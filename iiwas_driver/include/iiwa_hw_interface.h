@@ -23,8 +23,8 @@
 
 #include <fri_client.hpp>
 #include <configuration_client.h>
-#include <FRI/friUdpConnection.h>
-#include <FRI/friClientApplication.h>
+#include <iiwa_fri_client/friUdpConnection.h>
+#include <iiwa_fri_client/friClientApplication.h>
 
 
 const int DEFAULT_CONTROL_FREQUENCY = 1000;  // Hz

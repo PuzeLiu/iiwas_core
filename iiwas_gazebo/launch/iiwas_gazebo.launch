@@ -11,10 +11,11 @@
     
     <arg name="hardware_interface" default="PositionJointInterface"/>
     
-    <arg name="controllers" default="iiwa_front/joint_state_controller
-                                     iiwa_front/joint_trajectory_controller
-                                     iiwa_back/joint_state_controller
-                                     iiwa_back/joint_trajectory_controller"/>
+    <arg name="front_controllers" default="front_iiwa/joint_state_controller
+                                           front_iiwa/joint_trajectory_controller" />
+    
+    <arg name="back_controllers" default="back_iiwa/joint_state_controller
+                                          back_iiwa/joint_trajectory_controller"/>
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_rviz.launch">
@@ -38,7 +39,10 @@
 
     <!-- Controllers -->
     <include file="$(find iiwas_control)/launch/iiwas_control.launch">
-        <arg name="controllers" value="$(arg controllers)"/>
+        <arg name="use_front_iiwa" value="true" />
+        <arg name="use_back_iiwa" value="true" />
+        <arg name="front_controllers" value="$(arg front_controllers)"/>
+        <arg name="back_controllers" value="$(arg back_controllers)"/>
     </include>
     
 </launch>

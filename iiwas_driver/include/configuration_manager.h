@@ -8,14 +8,14 @@
 #include <ros/ros.h>
 #include <string>
 
-#include "configuration_client.h"
+#include <iiwas_srv/CancelMotion.h>
+#include <iiwas_srv/StartHandguiding.h>
+#include <iiwas_srv/StartPositionControl.h>
+#include <iiwas_srv/PTP.h>
+#include <iiwas_srv/SetBlueLight.h>
+#include <iiwas_srv/SetESMState.h>
 
-#include "iiwas_srv/CancelMotion.h"
-#include "iiwas_srv/StartHandguiding.h"
-#include "iiwas_srv/StartPositionControl.h"
-#include "iiwas_srv/PTP.h"
-#include "iiwas_srv/SetBlueLight.h"
-#include "iiwas_srv/SetESMState.h"
+#include "configuration_client.h"
 
 class ConfigurationManager{
 public:

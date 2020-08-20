@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>999</width>
-    <height>571</height>
+    <width>499</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -123,148 +123,50 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_1">
-           <item>
-            <widget class="QSlider" name="slider_f_1">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_1"/>
-           </item>
-          </layout>
-         </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_joint_f_2">
+          <widget class="QLabel" name="label_joint_F_2">
            <property name="text">
             <string>Joint 2</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_2">
-           <item>
-            <widget class="QSlider" name="slider_f_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_2"/>
-           </item>
-          </layout>
-         </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="label_joint_f_3">
+          <widget class="QLabel" name="label_joint_F_3">
            <property name="text">
             <string>Joint 3</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_3">
-           <item>
-            <widget class="QSlider" name="slider_f_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_3"/>
-           </item>
-          </layout>
-         </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_joint_f_4">
+          <widget class="QLabel" name="label_joint_F_4">
            <property name="text">
             <string>Joint 4</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_4">
-           <item>
-            <widget class="QSlider" name="slider_f_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_4"/>
-           </item>
-          </layout>
-         </item>
          <item row="4" column="0">
-          <widget class="QLabel" name="label_joint_f_5">
+          <widget class="QLabel" name="label_joint_F_5">
            <property name="text">
             <string>Joint 5</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_5">
-           <item>
-            <widget class="QSlider" name="slider_f_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_5"/>
-           </item>
-          </layout>
-         </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="label_joint_f_6">
+          <widget class="QLabel" name="label_joint_F_6">
            <property name="text">
             <string>Joint 6</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_6">
-           <item>
-            <widget class="QSlider" name="slider_f_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_6"/>
-           </item>
-          </layout>
-         </item>
          <item row="6" column="0">
-          <widget class="QLabel" name="label_joint_f_7">
+          <widget class="QLabel" name="label_joint_F_7">
            <property name="text">
             <string>Joint 7</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_f_7">
-           <item>
-            <widget class="QSlider" name="slider_f_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_f_7"/>
-           </item>
-          </layout>
-         </item>
          <item row="7" column="1">
-          <widget class="QDialogButtonBox" name="buttonBox_f">
+          <widget class="QDialogButtonBox" name="buttonBox_F">
            <property name="standardButtons">
             <set>QDialogButtonBox::Apply|QDialogButtonBox::Reset</set>
            </property>
@@ -286,6 +188,76 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="JointController" name="controller_F_1" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="JointController" name="controller_F_2" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="JointController" name="controller_F_3" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="JointController" name="controller_F_4" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="JointController" name="controller_F_5" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="JointController" name="controller_F_6" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="JointController" name="controller_F_7" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -296,11 +268,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="toggle_led_f">
-         <property name="text">
-          <string>Toggle Led</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="set_led_F">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Set Led</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_F">
+           <property name="text">
+            <string>on</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -386,164 +375,56 @@
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_joint_b_1">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_joint_B_1">
            <property name="text">
             <string>Joint 1</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_1">
-           <item>
-            <widget class="QSlider" name="slider_b_1">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_1"/>
-           </item>
-          </layout>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_joint_b_2">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_joint_B_2">
            <property name="text">
             <string>Joint 2</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_2">
-           <item>
-            <widget class="QSlider" name="slider_b_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_2"/>
-           </item>
-          </layout>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_joint_b_3">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_joint_B_3">
            <property name="text">
             <string>Joint 3</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_3">
-           <item>
-            <widget class="QSlider" name="slider_b_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_3"/>
-           </item>
-          </layout>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_joint_b_4">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_joint_B_4">
            <property name="text">
             <string>Joint 4</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_4">
-           <item>
-            <widget class="QSlider" name="slider_b_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_4"/>
-           </item>
-          </layout>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_joint_b_5">
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_joint_B_5">
            <property name="text">
             <string>Joint 5</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_7">
-           <item>
-            <widget class="QSlider" name="slider_b_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_7"/>
-           </item>
-          </layout>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_joint_b_6">
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_joint_B_6">
            <property name="text">
             <string>Joint 6</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_5">
-           <item>
-            <widget class="QSlider" name="slider_b_5">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_5"/>
-           </item>
-          </layout>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_joint_b_7">
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_joint_B_7">
            <property name="text">
             <string>Joint 7</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
-          <layout class="QHBoxLayout" name="layout_joint_b_6">
-           <item>
-            <widget class="QSlider" name="slider_b_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="spin_b_6"/>
-           </item>
-          </layout>
-         </item>
-         <item row="8" column="1">
-          <widget class="QDialogButtonBox" name="buttonBox_b">
-           <property name="standardButtons">
-            <set>QDialogButtonBox::Apply|QDialogButtonBox::Reset</set>
-           </property>
-           <property name="centerButtons">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="ptp_b">
            <property name="font">
             <font>
@@ -553,6 +434,86 @@
            </property>
            <property name="text">
             <string>Send PTP</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QDialogButtonBox" name="buttonBox_B">
+           <property name="standardButtons">
+            <set>QDialogButtonBox::Apply|QDialogButtonBox::Reset</set>
+           </property>
+           <property name="centerButtons">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="JointController" name="controller_B_1" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="JointController" name="controller_B_2" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="JointController" name="controller_B_3" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="JointController" name="controller_B_4" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="JointController" name="controller_B_5" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="JointController" name="controller_B_6" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="JointController" name="controller_B_7" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
           </widget>
          </item>
@@ -566,27 +527,35 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="toggle_led_b">
-         <property name="text">
-          <string>Toggle Led</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="set_led_B">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Set Led</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_B">
+           <property name="text">
+            <string>on</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QTextBrowser" name="textBrowser">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
+      <widget class="Line" name="line_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
@@ -599,8 +568,32 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>JointController</class>
+   <extends>QWidget</extends>
+   <header>iiwas_rqt.joint_controller</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

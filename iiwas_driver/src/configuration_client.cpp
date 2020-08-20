@@ -85,7 +85,7 @@ bool ConfigurationClient::write(std::string msg){
     return true;
 }
 
-bool ConfigurationClient::communicate(std::string cmd, std::string params, std::string* response){
+bool ConfigurationClient::communicate(std::string cmd, std::string params){
     std::string reply;
 
     if(!write(cmd + params)) {
@@ -96,9 +96,7 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
         return false;
     }
 
-    if(response != nullptr){
-        *response = reply;
-    }
+    last_response = reply;
 
     if(reply.find("OK " + cmd) == 0) {
         return true;
@@ -110,11 +108,10 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
 
 int ConfigurationClient::checkReferencing() {
     std::string cmd = "CHECK_REF";
-    std::string response;
 
-    if(communicate(cmd, "", &response)) {
-        if (response.find("OK CHECK_REF 1") == 0) return 1;
-        else if (response.find("OK CHECK_REF 0") == 0) return 0;
+    if(communicate(cmd)) {
+        if (last_response.find("OK CHECK_REF 1") == 0) return 1;
+        else if (last_response.find("OK CHECK_REF 0") == 0) return 0;
     }
 
     return -1;
@@ -147,11 +144,10 @@ bool ConfigurationClient::attachSake() {
 
 bool ConfigurationClient::checkConnectionQuality() {
     std::string cmd = "CHECK_CONNECTION_QUALITY";
-    std::string response;
 
-    if(communicate(cmd, "", &response))
+    if(communicate(cmd))
     {
-        if (response.find("EXCELLENT") != std::string::npos)
+        if (last_response.find("EXCELLENT") != std::string::npos)
             return true;
     }
 
@@ -160,10 +156,9 @@ bool ConfigurationClient::checkConnectionQuality() {
 
 bool ConfigurationClient::getStiffness(double* stiffness){
     std::string cmd = "GET_JOINT_STIFFNESS";
-    std::string response;
 
-    if(communicate(cmd, "", &response)){
-        std::cout << response;
+    if(communicate(cmd)){
+        std::cout << last_response;
         return true;
     } else{
         return false;
@@ -172,10 +167,9 @@ bool ConfigurationClient::getStiffness(double* stiffness){
 
 bool ConfigurationClient::getDamping(double* damping){
     std::string cmd = "GET_JOINT_DAMPING";
-    std::string response;
 
-    if(communicate(cmd, "", &response)){
-        std::cout << response;
+    if(communicate(cmd)){
+        std::cout << last_response;
         return true;
     } else{
         return false;
