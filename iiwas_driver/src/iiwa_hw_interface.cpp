@@ -97,6 +97,11 @@ namespace iiwa_hw{
         n_p.param(ns + "/use_ROS_Param_Joint_Limits_", useROSParamJointLimits ,false);
         n_p.param(ns + "/use_ROS_Param_Soft_Limits_If_Available", useSoftLimitsIfAvailable ,true);
 
+	std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
+	n_p.getParam(ns + "/init_position", init_pos);
+
+	for(int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
+		jointCommand[i].th = init_pos[i];
 
         if (!n_p.param<std::string>(ns + "/fri_ip", friServerIP, "192.170.10.2"))
             ROS_WARN_STREAM_ONCE(ns + ": Unable to load application server ip from Parameter Server, use Default: "
