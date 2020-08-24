@@ -114,6 +114,7 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params){
     }
 
     reply.pop_back();
+    reply.pop_back();
     last_response = reply;
 
     if(reply.find("OK " + cmd) == 0) {

@@ -231,6 +231,7 @@ bool ConfigurationManager::cancelMotion(iiwas_srv::CancelMotion::Request &req,
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->cancelMotion();
@@ -242,7 +243,6 @@ bool ConfigurationManager::cancelMotion(iiwas_srv::CancelMotion::Request &req,
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -252,6 +252,7 @@ bool ConfigurationManager::startHandguiding(iiwas_srv::StartHandguiding::Request
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->startHandguiding();
@@ -263,7 +264,6 @@ bool ConfigurationManager::startHandguiding(iiwas_srv::StartHandguiding::Request
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -273,6 +273,7 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->startPositionControl();
@@ -284,7 +285,6 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -293,6 +293,7 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     std::vector<double> goalVec;
     if(!req.goal.size() == LBRState::NUMBER_OF_JOINTS){
@@ -314,7 +315,6 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -323,6 +323,7 @@ bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, i
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setBlueLight(req.on);
@@ -334,7 +335,6 @@ bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, i
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
@@ -343,6 +343,7 @@ bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiw
     res.success = false;
 
     std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setESMState(req.state);
@@ -354,7 +355,6 @@ bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiw
         return false;
     }
 
-    ss << " | Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back");
     res.msg = ss.str();
     return true;
 }
