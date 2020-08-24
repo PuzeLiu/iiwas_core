@@ -1,11 +1,14 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="world_iiwas_f_x" default="0.0"/>
-    <arg name="world_iiwas_f_y" default="0.0"/>
-    <arg name="world_iiwas_f_z" default="0.0"/>
-    <arg name="world_iiwas_f_roll" default="0.0"/>
+    <arg name="world_iiwas_f_x" default="-1.61538391e-02"/>
+    <arg name="world_iiwas_f_y" default="8.18335731e-01"/>
+    <arg name="world_iiwas_f_z" default="-3.05871465e-02"/>
+<!--     <arg name="world_iiwas_f_roll" default="0.0"/>
     <arg name="world_iiwas_f_pitch" default="0.0"/>
-    <arg name="world_iiwas_f_yaw" default="0.0"/>
+    <arg name="world_iiwas_f_yaw" default="0.0"/> -->
+    <arg name="world_iiwas_f_roll" default="0.00084844"/>
+    <arg name="world_iiwas_f_pitch" default="-0.00264906"/>
+    <arg name="world_iiwas_f_yaw" default="0.01872297"/>
     <arg name="hardware_interface" default="PositionJointInterface"/>
 
     <param name="robot_description"
