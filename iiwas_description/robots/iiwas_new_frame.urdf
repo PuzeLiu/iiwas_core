@@ -283,7 +283,6 @@
     </self_collision_checking>
   </link>
   <!-- joint between link_0 and link_1 -->
-  <!--<joint name="${robot_name}_SFE" type="revolute">-->
   <joint name="F_joint_1" type="revolute">
     <parent link="F_link_0"/>
     <child link="F_link_1"/>
@@ -318,7 +317,6 @@
     </collision>
   </link>
   <!-- joint between link_1 and link_2 -->
-  <!--<joint name="${robot_name}_SAA" type="revolute">-->
   <joint name="F_joint_2" type="revolute">
     <parent link="F_link_1"/>
     <child link="F_link_2"/>
@@ -353,7 +351,6 @@
     </collision>
   </link>
   <!-- joint between link_2 and link_3 -->
-  <!--<joint name="${robot_name}_HR" type="revolute">-->
   <joint name="F_joint_3" type="revolute">
     <parent link="F_link_2"/>
     <child link="F_link_3"/>
@@ -388,7 +385,6 @@
     </collision>
   </link>
   <!-- joint between link_3 and link_4 -->
-  <!--<joint name="${robot_name}_EB" type="revolute">-->
   <joint name="F_joint_4" type="revolute">
     <parent link="F_link_3"/>
     <child link="F_link_4"/>
@@ -423,7 +419,6 @@
     </collision>
   </link>
   <!-- joint between link_4 and link_5 -->
-  <!--<joint name="${robot_name}_WR" type="revolute">-->
   <joint name="F_joint_5" type="revolute">
     <parent link="F_link_4"/>
     <child link="F_link_5"/>
@@ -458,7 +453,6 @@
     </collision>
   </link>
   <!-- joint between link_5 and link_6 -->
-  <!--<joint name="${robot_name}_WFE" type="revolute">-->
   <joint name="F_joint_6" type="revolute">
     <parent link="F_link_5"/>
     <child link="F_link_6"/>
@@ -493,7 +487,6 @@
     </collision>
   </link>
   <!-- joint between link_6 and link_7 -->
-  <!--<joint name="${robot_name}_WAA" type="revolute">-->
   <joint name="F_joint_7" type="revolute">
     <parent link="F_link_6"/>
     <child link="F_link_7"/>
@@ -598,7 +591,7 @@
   <transmission name="F_tran_1">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_SFE">
+    <joint name="F_joint_1">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_1">
@@ -609,7 +602,7 @@
   <transmission name="F_tran_2">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_SAA">
+    <joint name="F_joint_2">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_2">
@@ -620,7 +613,7 @@
   <transmission name="F_tran_3">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_HR">
+    <joint name="F_joint_3">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_3">
@@ -631,7 +624,7 @@
   <transmission name="F_tran_4">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_EB">
+    <joint name="F_joint_4">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_4">
@@ -642,7 +635,7 @@
   <transmission name="F_tran_5">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_WR">
+    <joint name="F_joint_5">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_5">
@@ -653,7 +646,7 @@
   <transmission name="F_tran_6">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_WFE">
+    <joint name="F_joint_6">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_6">
@@ -664,7 +657,7 @@
   <transmission name="F_tran_7">
     <robotNamespace>/F</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="F_WAA">
+    <joint name="F_joint_7">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="F_motor_7">
@@ -706,7 +699,6 @@
     </self_collision_checking>
   </link>
   <!-- joint between link_0 and link_1 -->
-  <!--<joint name="${robot_name}_SFE" type="revolute">-->
   <joint name="B_joint_1" type="revolute">
     <parent link="B_link_0"/>
     <child link="B_link_1"/>
@@ -741,7 +733,6 @@
     </collision>
   </link>
   <!-- joint between link_1 and link_2 -->
-  <!--<joint name="${robot_name}_SAA" type="revolute">-->
   <joint name="B_joint_2" type="revolute">
     <parent link="B_link_1"/>
     <child link="B_link_2"/>
@@ -776,7 +767,6 @@
     </collision>
   </link>
   <!-- joint between link_2 and link_3 -->
-  <!--<joint name="${robot_name}_HR" type="revolute">-->
   <joint name="B_joint_3" type="revolute">
     <parent link="B_link_2"/>
     <child link="B_link_3"/>
@@ -811,7 +801,6 @@
     </collision>
   </link>
   <!-- joint between link_3 and link_4 -->
-  <!--<joint name="${robot_name}_EB" type="revolute">-->
   <joint name="B_joint_4" type="revolute">
     <parent link="B_link_3"/>
     <child link="B_link_4"/>
@@ -846,7 +835,6 @@
     </collision>
   </link>
   <!-- joint between link_4 and link_5 -->
-  <!--<joint name="${robot_name}_WR" type="revolute">-->
   <joint name="B_joint_5" type="revolute">
     <parent link="B_link_4"/>
     <child link="B_link_5"/>
@@ -881,7 +869,6 @@
     </collision>
   </link>
   <!-- joint between link_5 and link_6 -->
-  <!--<joint name="${robot_name}_WFE" type="revolute">-->
   <joint name="B_joint_6" type="revolute">
     <parent link="B_link_5"/>
     <child link="B_link_6"/>
@@ -916,7 +903,6 @@
     </collision>
   </link>
   <!-- joint between link_6 and link_7 -->
-  <!--<joint name="${robot_name}_WAA" type="revolute">-->
   <joint name="B_joint_7" type="revolute">
     <parent link="B_link_6"/>
     <child link="B_link_7"/>
@@ -1021,7 +1007,7 @@
   <transmission name="B_tran_1">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_SFE">
+    <joint name="B_joint_1">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_1">
@@ -1032,7 +1018,7 @@
   <transmission name="B_tran_2">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_SAA">
+    <joint name="B_joint_2">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_2">
@@ -1043,7 +1029,7 @@
   <transmission name="B_tran_3">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_HR">
+    <joint name="B_joint_3">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_3">
@@ -1054,7 +1040,7 @@
   <transmission name="B_tran_4">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_EB">
+    <joint name="B_joint_4">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_4">
@@ -1065,7 +1051,7 @@
   <transmission name="B_tran_5">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_WR">
+    <joint name="B_joint_5">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_5">
@@ -1076,7 +1062,7 @@
   <transmission name="B_tran_6">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_WFE">
+    <joint name="B_joint_6">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_6">
@@ -1087,7 +1073,7 @@
   <transmission name="B_tran_7">
     <robotNamespace>/B</robotNamespace>
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="B_WAA">
+    <joint name="B_joint_7">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="B_motor_7">
