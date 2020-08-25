@@ -27,16 +27,17 @@
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa){
+ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop) :
+        frontLoop(frontLoop), backLoop(backLoop){
     frontClient = nullptr;
     backClient = nullptr;
 
-    if(useFrontIiwa) {
+    if(frontLoop) {
         frontData = new ConfigurationData("iiwa_front");
         frontClient = constructConfClient(frontData->ns);
     }
 
-    if(useBackIiwa){
+    if(backLoop){
         backData = new ConfigurationData("iiwa_back");
         backClient = constructConfClient(backData->ns);
     }
@@ -276,9 +277,13 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
     ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     if (req.which_iiwa==1 && frontClient){
+        frontLoop->resetControllers();
+        sleep(1.0);
         res.success = frontClient->startPositionControl();
         ss << frontClient->getLastResponse();
     } else if (req.which_iiwa==2 && backClient){
+        backLoop->resetControllers();
+        sleep(1.0);
         res.success = backClient->startPositionControl();
         ss << backClient->getLastResponse();
     } else {

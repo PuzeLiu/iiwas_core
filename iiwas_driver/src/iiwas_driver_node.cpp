@@ -54,7 +54,7 @@ int main(int argc, char* argv[]){
         backControlLoop->start();
     }
 
-    ConfigurationManager configurationManager(useFrontIiwa, useBackIiwa);
+    ConfigurationManager configurationManager(frontControlLoop, backControlLoop);
 
     ROS_INFO_STREAM("Initializing Configuration Server");
 

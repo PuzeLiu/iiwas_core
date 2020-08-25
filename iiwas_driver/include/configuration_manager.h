@@ -35,10 +35,11 @@
 #include <iiwas_srv/SetESMState.h>
 
 #include "configuration_client.h"
+#include "iiwa_ctrl_loop.h"
 
 class ConfigurationManager{
 public:
-    ConfigurationManager(bool useFrontIiwa, bool useBackIiwa);
+    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop);
 
     ~ConfigurationManager();
 
@@ -77,6 +78,9 @@ private:
 
     ConfigurationClient* frontClient;
     ConfigurationClient* backClient;
+
+    iiwa_hw::ControlLoop* frontLoop;
+    iiwa_hw::ControlLoop* backLoop;
 
     ConfigurationData* frontData;
     ConfigurationData* backData;

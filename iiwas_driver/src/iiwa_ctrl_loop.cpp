@@ -31,6 +31,7 @@ namespace iiwa_hw{
 
         thread = nullptr;
         running = false;
+        reset = false;
     }
 
     void ControlLoop::start() {
@@ -60,7 +61,8 @@ namespace iiwa_hw{
             hardwareInterface.read(oldTime, elapsedTime);
 
             // Control
-            controllerManager->update(oldTime, elapsedTime);
+            controllerManager->update(oldTime, elapsedTime, reset);
+            reset = false;
 
             // Output
             hardwareInterface.write(oldTime, elapsedTime);

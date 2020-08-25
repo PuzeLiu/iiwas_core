@@ -40,6 +40,8 @@ namespace iiwa_hw {
         void start();
         void stop();
 
+        inline void resetControllers() { reset = true; /*hardwareInterface.resetCommand();*/ }
+
 
     protected:
         bool init();
@@ -63,6 +65,7 @@ namespace iiwa_hw {
 
         boost::thread* thread;
         bool running;
+        bool reset;
 
     };
 
