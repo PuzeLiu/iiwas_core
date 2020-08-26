@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <launch>
     <!-- Arguments -->
-    <arg name="world_name" default="$(find gazebo_ros)/worlds/empty.world"/>
+    <arg name="world_name" default="$(find iiwas_gazebo)/worlds/iiwas_world.world"/>
     <arg name="gui" default="true"/>
     <arg name="paused" default="true"/>
-    
-    <arg name="world_iiwas_f_x" default="0.0"/>
-    <arg name="world_iiwas_f_y" default="0.0"/>
-    <arg name="world_iiwas_f_z" default="0.195"/>
     
     <arg name="hardware_interface" default="PositionJointInterface"/>
     
@@ -19,9 +15,6 @@
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_rviz.launch">
-        <arg name="world_iiwas_f_x" value="$(arg world_iiwas_f_x)"/>
-        <arg name="world_iiwas_f_y" value="$(arg world_iiwas_f_y)"/>
-        <arg name="world_iiwas_f_z" value="$(arg world_iiwas_f_z)"/>
         <arg name="hardware_interface" value="PositionJointInterface"/>
     </include>
     
