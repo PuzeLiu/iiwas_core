@@ -92,6 +92,8 @@ int main(int argc, char* argv[]){
         rate.sleep();
     }
 
+    configurationManager.stopMotion();
+
     if (useFrontIiwa)
         frontControlLoop->stop();
 

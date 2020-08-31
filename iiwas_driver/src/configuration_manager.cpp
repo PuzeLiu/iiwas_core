@@ -95,18 +95,12 @@ bool ConfigurationManager::startPositionControl() {
     return status;
 }
 
-bool ConfigurationManager::startFrontPositionControl() {
+void ConfigurationManager::stopMotion(){
     if (frontClient)
-        return frontClient->startPositionControl();
+        frontClient->cancelMotion();
 
-    return false;
-}
-
-bool ConfigurationManager::startBackPositionControl(){
     if (backClient)
-        return backClient->startPositionControl();
-
-    return false;
+        backClient->cancelMotion();
 }
 
 ConfigurationClient* ConfigurationManager::constructConfClient(std::string ns){
@@ -196,10 +190,15 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
                        << init_pos[5] << ", "
                        << init_pos[6]);
 
-    if (!confClient->ptp(init_pos)) return false;
+    if (!confClient->ptp(init_pos))
+        return false;
+
+    if (!confClient->waitMotionEnd())
+        return false;
 
     ROS_INFO_STREAM(confData->ns + ": Start FRI");
-    if (!confClient->startFRI()) return false;
+    if (!confClient->startFRI())
+        return false;
 
     ros::Duration(2).sleep();
 
@@ -209,18 +208,23 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
     }
 
 
-    if (!confClient->startJointImpedanceCtrlMode()) {
-        ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
-        return false;
-    }
+//    if (!confClient->startJointImpedanceCtrlMode()) {
+//        ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
+//        return false;
+//    }
+//
+//    if (!confClient->setStiffness(&confData->jointStiffness[0])) {
+//        ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
+//        return false;
+//    }
+//
+//    if (!confClient->setDamping(&confData->jointDamping[0])) {
+//        ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
+//        return false;
+//    }
 
-    if (!confClient->setStiffness(&confData->jointStiffness[0])) {
-        ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
-        return false;
-    }
-
-    if (!confClient->setDamping(&confData->jointDamping[0])) {
-        ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
+    if (!confClient->startJointPositionCtrlMode()) {
+        ROS_ERROR_STREAM(confData->ns + ": Starting position control mode failed");
         return false;
     }
 

@@ -94,8 +94,8 @@ namespace iiwa_hw{
     void HardwareInterface::loadParam(){
         ros::NodeHandle n_p("~");
 
-        n_p.param(ns + "/use_ROS_Param_Joint_Limits_", useROSParamJointLimits ,false);
-        n_p.param(ns + "/use_ROS_Param_Soft_Limits_If_Available", useSoftLimitsIfAvailable ,true);
+        n_p.param(ns + "/use_urdf_joint_limits", useURDFJointLimits, true);
+        n_p.param(ns + "/use_soft_limits", useSoftLimits, false);
 
 	std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
 	n_p.getParam(ns + "/init_position", init_pos);
@@ -257,7 +257,7 @@ namespace iiwa_hw{
         }
 
         // Get limits from ROS param
-        if (useROSParamJointLimits)
+        if (!useURDFJointLimits)
         {
             if (joint_limits_interface::getJointLimits(jointNames[joint_id], nh, jointLimits))
             {
@@ -272,7 +272,7 @@ namespace iiwa_hw{
         }
 
         // Get soft limits from URDF
-        if (useSoftLimitsIfAvailable)
+        if (useSoftLimits)
         {
             if (joint_limits_interface::getSoftJointLimits(urdf_joint, softLimits))
             {

@@ -149,10 +149,15 @@ void FRIClient::command()
     LBRClient::command();
 
     // Check for correct ClientCommandMode.
-    if (robotState().getClientCommandMode() == TORQUE)
-    { 
-       // Set superposed joint torques.
-       robotCommand().setTorque(joint_torques_des);
-       robotCommand().setJointPosition(joint_pos_des);
+    switch (robotState().getClientCommandMode()) {
+        case POSITION:
+            robotCommand().setJointPosition(joint_pos_des);
+            break;
+        case TORQUE:
+            robotCommand().setTorque(joint_torques_des);
+            robotCommand().setJointPosition(joint_pos_des);
+            break;
+        default:
+            break;
     }
 }

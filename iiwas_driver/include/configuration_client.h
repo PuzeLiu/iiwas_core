@@ -63,6 +63,7 @@ class ConfigurationClient {
     bool startJointPositionCtrlMode();
     bool startPositionControl();
     bool cancelMotion();
+    bool waitMotionEnd();
     bool getStiffness(double *stiffness);
     bool setStiffness(double *stiffness);
     bool getDamping(double *damping);

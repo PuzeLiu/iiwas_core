@@ -286,3 +286,8 @@ bool ConfigurationClient::closeConnection(){
     connected = false;
     return write(cmd);
 }
+
+bool ConfigurationClient::waitMotionEnd() {
+    std::string cmd = "WAIT_MOTION";
+    return communicate(cmd);
+}

@@ -103,8 +103,8 @@ namespace iiwa_hw {
         std::vector<JState> jointState, jointStateLast;
         std::vector<DJState> jointCommand;
 
-        bool useROSParamJointLimits;
-        bool useSoftLimitsIfAvailable;
+        bool useURDFJointLimits;
+        bool useSoftLimits;
 
         std::vector<std::string> jointNames;
 

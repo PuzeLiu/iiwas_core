@@ -46,8 +46,7 @@ public:
     bool init();
 
     bool startPositionControl();
-    bool startFrontPositionControl();
-    bool startBackPositionControl();
+    void stopMotion();
 
     bool cancelMotion(iiwas_srv::CancelMotion::Request &req, iiwas_srv::CancelMotion::Response &res);
     bool startHandguiding(iiwas_srv::StartHandguiding::Request &req, iiwas_srv::StartHandguiding::Response &res);
@@ -58,10 +57,6 @@ public:
     bool setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res);
 
 private:
-
-    void initCommand();
-
-    void jointStateCallback();
 
     struct ConfigurationData{
         ConfigurationData(std::string ns);
