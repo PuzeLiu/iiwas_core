@@ -13,6 +13,7 @@ add_service_files(
    PTP.srv
    SetBlueLight.srv
    SetESMState.srv
+   SetImpedanceParam.srv
 )
 
 generate_messages(

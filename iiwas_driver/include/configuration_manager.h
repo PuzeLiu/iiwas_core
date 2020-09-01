@@ -27,12 +27,13 @@
 #include <ros/ros.h>
 #include <string>
 
-#include <iiwas_srv/CancelMotion.h>
-#include <iiwas_srv/StartHandguiding.h>
-#include <iiwas_srv/StartPositionControl.h>
-#include <iiwas_srv/PTP.h>
-#include <iiwas_srv/SetBlueLight.h>
-#include <iiwas_srv/SetESMState.h>
+#include "iiwas_srv/CancelMotion.h"
+#include "iiwas_srv/StartHandguiding.h"
+#include "iiwas_srv/StartPositionControl.h"
+#include "iiwas_srv/PTP.h"
+#include "iiwas_srv/SetBlueLight.h"
+#include "iiwas_srv/SetESMState.h"
+#include "iiwas_srv/SetImpedanceParam.h"
 
 #include "configuration_client.h"
 #include "iiwa_ctrl_loop.h"
@@ -56,6 +57,7 @@ public:
     bool ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res);
     bool setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res);
     bool setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res);
+    bool setImpedanceParam(iiwas_srv::SetImpedanceParam::Request &req, iiwas_srv::SetImpedanceParam::Response &res);
 
 private:
 
@@ -89,6 +91,7 @@ private:
     ros::ServiceServer setBlueLightSrv;
     ros::ServiceServer ptpSrv;
     ros::ServiceServer setESMStateSrv;
+    ros::ServiceServer setImpedanceParamSrv;
 
 };
 

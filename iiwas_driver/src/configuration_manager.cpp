@@ -52,6 +52,7 @@ ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa
                                           this);
     ptpSrv = nh.advertiseService("ptp", &ConfigurationManager::ptp, this);
     setESMStateSrv = nh.advertiseService("set_esm_state", &ConfigurationManager::setESMState, this);
+    setImpedanceParamSrv = nh.advertiseService("set_impedance_parameter", &ConfigurationManager::setImpedanceParam, this);
 }
 
 ConfigurationManager::~ConfigurationManager() {
@@ -387,6 +388,32 @@ bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiw
     } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->setESMState(req.state);
         ss << backClient->getLastResponse();
+    } else {
+        return false;
+    }
+
+    res.msg = ss.str();
+    return true;
+}
+
+bool ConfigurationManager::setImpedanceParam(iiwas_srv::SetImpedanceParam::Request &req,
+                                             iiwas_srv::SetImpedanceParam::Response &res) {
+    res.success = false;
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
+    if (req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        || req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS){
+        ROS_WARN_STREAM(KUKA::FRI::LBRState::NUMBER_OF_JOINTS << " joints of stiffness and damping is needed");
+        return false;
+    }
+
+    if (req.which_iiwa==1 && frontClient){
+        frontData->jointStiffness = req.stiffness;
+        frontData->jointDamping = req.damping;
+    } else if (req.which_iiwa==2 && backClient){
+        backData->jointStiffness = req.stiffness;
+        backData->jointDamping = req.damping;
     } else {
         return false;
     }
