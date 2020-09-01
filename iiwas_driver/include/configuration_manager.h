@@ -36,10 +36,11 @@
 
 #include "configuration_client.h"
 #include "iiwa_ctrl_loop.h"
+#include "iiwa_fri_client/friClientIf.h"
 
 class ConfigurationManager{
 public:
-    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop);
+    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop, int controlMode);
 
     ~ConfigurationManager();
 
@@ -70,6 +71,8 @@ private:
     bool init(ConfigurationClient* confClient, ConfigurationData* confData);
 
     ros::NodeHandle nh;
+
+    int controlMode;
 
     ConfigurationClient* frontClient;
     ConfigurationClient* backClient;

@@ -25,6 +25,7 @@
 
 #include "iiwa_ctrl_loop.h"
 #include "configuration_manager.h"
+#include "iiwa_fri_client/friClientIf.h"
 
 
 int main(int argc, char* argv[]){
@@ -32,14 +33,25 @@ int main(int argc, char* argv[]){
     ros::NodeHandle nh;
 
     bool useFrontIiwa, useBackIiwa;
+    int controlMode;
 
-    if(argc != 3) {
+    if(argc != 4) {
         ROS_ERROR_STREAM("Missing command line parameters, " << argc - 1 << " provided, need 2");
         return -1;
     }
 
     useFrontIiwa = std::string("true") == argv[1];
     useBackIiwa = std::string("true") == argv[2];
+
+    if(std::string("JointImpedanceControl") == argv[3]){
+        controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
+    } else if(std::string("JointPositionControl") == argv[3]){
+        controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
+    } else{
+        ROS_ERROR_STREAM("Control Mode is not defined, please specify the controller mode: "
+                                 "JointImpedanceControl | Joint Position Control");
+        return -1;
+    }
 
     iiwa_hw::ControlLoop* frontControlLoop =  nullptr;
     iiwa_hw::ControlLoop* backControlLoop = nullptr;
@@ -54,7 +66,7 @@ int main(int argc, char* argv[]){
         backControlLoop->start();
     }
 
-    ConfigurationManager configurationManager(frontControlLoop, backControlLoop);
+    ConfigurationManager configurationManager(frontControlLoop, backControlLoop, controlMode);
 
     ROS_INFO_STREAM("Initializing Configuration Server");
 

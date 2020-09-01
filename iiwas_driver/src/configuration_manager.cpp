@@ -27,8 +27,8 @@
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop) :
-        frontLoop(frontLoop), backLoop(backLoop){
+ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop, int controlMode) :
+        frontLoop(frontLoop), backLoop(backLoop), controlMode(controlMode){
     frontClient = nullptr;
     backClient = nullptr;
 
@@ -207,25 +207,26 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
         return false;
     }
 
-
-//    if (!confClient->startJointImpedanceCtrlMode()) {
-//        ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
-//        return false;
-//    }
-//
-//    if (!confClient->setStiffness(&confData->jointStiffness[0])) {
-//        ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
-//        return false;
-//    }
-//
-//    if (!confClient->setDamping(&confData->jointDamping[0])) {
-//        ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
-//        return false;
-//    }
-
-    if (!confClient->startJointPositionCtrlMode()) {
-        ROS_ERROR_STREAM(confData->ns + ": Starting position control mode failed");
+    if (controlMode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+        if (!confClient->startJointImpedanceCtrlMode()) {
+        ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
         return false;
+        }
+
+        if (!confClient->setStiffness(&confData->jointStiffness[0])) {
+            ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
+            return false;
+        }
+
+        if (!confClient->setDamping(&confData->jointDamping[0])) {
+            ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
+            return false;
+        }
+    } else if (controlMode == KUKA::FRI::POSITION_CONTROL_MODE){
+        if (!confClient->startJointPositionCtrlMode()) {
+            ROS_ERROR_STREAM(confData->ns + ": Starting position control mode failed");
+            return false;
+        }
     }
 
     return true;
@@ -283,11 +284,37 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
     if (req.which_iiwa==1 && frontClient){
         frontLoop->resetControllers();
         sleep(1.0);
-        res.success = frontClient->startPositionControl();
+
+        if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            res.success = frontClient->startJointImpedanceCtrlMode();
+            res.success = res.success && frontClient->setStiffness(&frontData->jointStiffness[0]);
+            res.success = res.success && frontClient->setDamping(&frontData->jointDamping[0]);
+        } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            res.success = frontClient->startJointPositionCtrlMode();
+        }
+        else{
+            ROS_WARN("Control Mode is not implemented, 0: PositionControlMode | 2: JointImpedanceControlMode");
+            return false;
+        }
+
+        res.success = res.success && frontClient->startPositionControl();
         ss << frontClient->getLastResponse();
     } else if (req.which_iiwa==2 && backClient){
         backLoop->resetControllers();
         sleep(1.0);
+
+        if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            res.success = backClient->startJointImpedanceCtrlMode();
+            res.success = res.success && backClient->setStiffness(&frontData->jointStiffness[0]);
+            res.success = res.success && backClient->setDamping(&frontData->jointDamping[0]);
+        } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            res.success = backClient->startJointPositionCtrlMode();
+        }
+        else{
+            ROS_WARN("Control Mode is not implemented, 0: PositionControlMode | 2: JointImpedanceControlMode");
+            return false;
+        }
+
         res.success = backClient->startPositionControl();
         ss << backClient->getLastResponse();
     } else {
