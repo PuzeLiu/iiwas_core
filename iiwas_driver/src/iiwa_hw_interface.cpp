@@ -74,17 +74,19 @@ namespace iiwa_hw{
 
     void HardwareInterface::write(const ros::Time &time, const ros::Duration &period) {
         if (friClient->isInitialized()) {
-            positionJointSoftLimitsInterface.enforceLimits(period);
-            positionJointSatLimitsInterface.enforceLimits(period);
-            effortJointSoftLimitsInterface.enforceLimits(period);
-            effortJointSatLimitsInterface.enforceLimits(period);
-            velocityJointSoftLimitsInterface.enforceLimits(period);
-            velocityJointSatLimitsInterface.enforceLimits(period);
+            if (hasSoftLimits) {
+                positionJointSoftLimitsInterface.enforceLimits(period);
+                effortJointSoftLimitsInterface.enforceLimits(period);
+                velocityJointSoftLimitsInterface.enforceLimits(period);
+            } else{
+                positionJointSatLimitsInterface.enforceLimits(period);
+                effortJointSatLimitsInterface.enforceLimits(period);
+                velocityJointSatLimitsInterface.enforceLimits(period);
+            }
 
             for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
                 friClient->joint_pos_des[i] = jointCommand[i].th;
                 friClient->joint_torques_des[i] = jointCommand[i].uff;
-
             }
         }
 
@@ -217,8 +219,8 @@ namespace iiwa_hw{
         // Limits datastructures
         joint_limits_interface::JointLimits jointLimits;     // Position
         joint_limits_interface::SoftJointLimits softLimits;  // Soft Position
-        bool hasJointLimits = false;
-        bool hasSoftLimits = false;
+        hasJointLimits = false;
+        hasSoftLimits = false;
 
         // Get limits from URDF
         if (urdfModel == nullptr)
@@ -228,7 +230,6 @@ namespace iiwa_hw{
         }
 
         urdf::JointConstSharedPtr urdf_joint = urdfModel->getJoint(jointNames[joint_id]);
-        
 
         // Get main joint limits
         if (urdf_joint == nullptr)
@@ -236,7 +237,6 @@ namespace iiwa_hw{
             ROS_ERROR_STREAM(ns + " URDF joint not found " << jointNames[joint_id]);
             return;
         }
-
 
         // Get limits from URDF
         if (joint_limits_interface::getJointLimits(urdf_joint, jointLimits))

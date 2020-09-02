@@ -41,7 +41,7 @@
 
 class ConfigurationManager{
 public:
-    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop, int controlMode);
+    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop);
 
     ~ConfigurationManager();
 
@@ -64,6 +64,7 @@ private:
     struct ConfigurationData{
         ConfigurationData(std::string ns);
         std::string ns;
+        int controlMode;
         std::vector<double> jointStiffness;
         std::vector<double> jointDamping;
     };

@@ -27,8 +27,8 @@
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop, int controlMode) :
-        frontLoop(frontLoop), backLoop(backLoop), controlMode(controlMode){
+ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop) :
+        frontLoop(frontLoop), backLoop(backLoop){
     frontClient = nullptr;
     backClient = nullptr;
 
@@ -150,8 +150,14 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
         ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the stiffness of the arm");
         return false;
     }
+
     if(!n_p.getParam(confData->ns + "/damping", confData->jointDamping)){
         ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the damping of the arm");
+        return false;
+    }
+
+    if(!n_p.getParam(confData->ns + "/control_mode", confData->controlMode)){
+        ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the control mode of the arm");
         return false;
     }
 
@@ -208,7 +214,7 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
         return false;
     }
 
-    if (controlMode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+    if (confData->controlMode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
         if (!confClient->startJointImpedanceCtrlMode()) {
         ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
         return false;
@@ -223,7 +229,7 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
             ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
             return false;
         }
-    } else if (controlMode == KUKA::FRI::POSITION_CONTROL_MODE){
+    } else if (confData->controlMode == KUKA::FRI::POSITION_CONTROL_MODE){
         if (!confClient->startJointPositionCtrlMode()) {
             ROS_ERROR_STREAM(confData->ns + ": Starting position control mode failed");
             return false;
@@ -287,10 +293,12 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
         sleep(1.0);
 
         if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            frontData->controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
             res.success = frontClient->startJointImpedanceCtrlMode();
             res.success = res.success && frontClient->setStiffness(&frontData->jointStiffness[0]);
             res.success = res.success && frontClient->setDamping(&frontData->jointDamping[0]);
         } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            frontData->controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
             res.success = frontClient->startJointPositionCtrlMode();
         }
         else{
@@ -305,10 +313,12 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
         sleep(1.0);
 
         if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            backData->controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
             res.success = backClient->startJointImpedanceCtrlMode();
             res.success = res.success && backClient->setStiffness(&frontData->jointStiffness[0]);
             res.success = res.success && backClient->setDamping(&frontData->jointDamping[0]);
         } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            backData->controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
             res.success = backClient->startJointPositionCtrlMode();
         }
         else{
@@ -398,9 +408,7 @@ bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiw
 
 bool ConfigurationManager::setImpedanceParam(iiwas_srv::SetImpedanceParam::Request &req,
                                              iiwas_srv::SetImpedanceParam::Response &res) {
-    res.success = false;
-    std::stringstream ss;
-    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+    res.success = true;
 
     if (req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS
         || req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS){
@@ -418,6 +426,9 @@ bool ConfigurationManager::setImpedanceParam(iiwas_srv::SetImpedanceParam::Reque
         return false;
     }
 
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | Joint impedance stored";
     res.msg = ss.str();
+
     return true;
 }

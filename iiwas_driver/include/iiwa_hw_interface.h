@@ -105,6 +105,8 @@ namespace iiwa_hw {
 
         bool useURDFJointLimits;
         bool useSoftLimits;
+        bool hasSoftLimits;
+        bool hasJointLimits;
 
         std::vector<std::string> jointNames;
 
