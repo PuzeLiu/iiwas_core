@@ -126,11 +126,13 @@ class IiwasManager(Plugin):
         self._execute_service(self._handguiding_srv, request)
 
     def _position_f_cb(self):
-        request = StartPositionControlRequest(which_iiwa=1, mode=2)
+        mode = 2 if self._widget.impedance_f.isChecked() else 0
+        request = StartPositionControlRequest(which_iiwa=1, mode=mode)
         self._execute_service(self._position_control_srv, request)
 
     def _position_b_cb(self):
-        request = StartPositionControlRequest(which_iiwa=2, mode=2)
+        mode = 2 if self._widget.impedance_b.isChecked() else 0
+        request = StartPositionControlRequest(which_iiwa=2, mode=mode)
         self._execute_service(self._position_control_srv, request)
 
     def _ptp_reset_cb(self, robot_prefix):

@@ -39,7 +39,7 @@ def handle_light(req):
 
 def handle_position(req):
     global motion_started
-    print('POSITION_CONTROL for iiwas', req.which_iiwa)
+    print('POSITION_CONTROL for iiwas', req.which_iiwa, req.mode)
 
     res = StartPositionControlResponse(msg='OK POSITION_CONTROL', success=not motion_started)
     motion_started = True
