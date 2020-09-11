@@ -15,7 +15,7 @@
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_rviz.launch">
-        <arg name="hardware_interface" value="PositionJointInterface"/>
+        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
     </include>
     
     <!-- Simulation -->
