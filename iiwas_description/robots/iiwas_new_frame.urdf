@@ -37,7 +37,7 @@
   <!-- the mass values and inertia may not be completly correct as the moment so this model should just be used as a kinematic one now-->
   <link name="world"/>
   <joint name="front_base_joint" type="fixed">
-    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.015"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.24 -0.61 -0.015"/>
     <parent link="world"/>
     <child link="front_base"/>
   </joint>
@@ -62,9 +62,35 @@
     </collision>
     <selfCollide>0</selfCollide>
   </link>
-  <joint name="back_base_joint" type="fixed">
-    <origin rpy="0.0 0.0 0.0" xyz="3.02 0.0 0.0"/>
+  <joint name="front_in" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.61 -0.0975"/>
     <parent link="front_base"/>
+    <child link="h_bar_front_in"/>
+  </joint>
+  <link name="h_bar_front_in">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="5"/>
+      <inertia ixx="0.0175" ixy="0.0" ixz="0.0" iyy="1.025" iyz="0.0" izz="1.02"/>
+    </inertial>
+    <visual>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.12 1.56 0.165"/>
+      </geometry>
+      <material name="LightGrey"/>
+    </visual>
+    <collision>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.12 1.56 0.165"/>
+      </geometry>
+    </collision>
+    <selfCollide>0</selfCollide>
+  </link>
+  <joint name="back_base_joint" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="3.26 0.61 -0.015"/>
+    <parent link="world"/>
     <child link="back_base"/>
   </joint>
   <link name="back_base">
@@ -88,60 +114,8 @@
     </collision>
     <selfCollide>0</selfCollide>
   </link>
-  <joint name="front_in" type="fixed">
-    <origin rpy="0.0 0.0 1.5707963267948966" xyz="0.0 0.61 -0.0975"/>
-    <parent link="front_base"/>
-    <child link="h_bar_front_in"/>
-  </joint>
-  <link name="h_bar_front_in">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="5"/>
-      <inertia ixx="0.0175" ixy="0.0" ixz="0.0" iyy="1.025" iyz="0.0" izz="1.02"/>
-    </inertial>
-    <visual>
-      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-      <geometry>
-        <box size="1.56 0.12 0.165"/>
-      </geometry>
-      <material name="LightGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-      <geometry>
-        <box size="1.56 0.12 0.165"/>
-      </geometry>
-    </collision>
-    <selfCollide>0</selfCollide>
-  </link>
-  <joint name="front_out" type="fixed">
-    <origin rpy="0.0 0.0 1.5707963267948966" xyz="-0.20 0.0 0.0"/>
-    <parent link="h_bar_front_in"/>
-    <child link="h_bar_front_out"/>
-  </joint>
-  <link name="h_bar_front_out">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="5"/>
-      <inertia ixx="0.014" ixy="0.0" ixz="0.0" iyy="1.025" iyz="0.0" izz="1.02"/>
-    </inertial>
-    <visual>
-      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-      <geometry>
-        <box size="1.56 0.08 0.165"/>
-      </geometry>
-      <material name="LightGrey"/>
-    </visual>
-    <collision>
-      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-      <geometry>
-        <box size="1.56 0.08 0.165"/>
-      </geometry>
-    </collision>
-    <selfCollide>0</selfCollide>
-  </link>
   <joint name="back_in" type="fixed">
-    <origin rpy="0.0 0.0 1.5707963267948966" xyz="0.0 0.0 -0.0975"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 -0.61 -0.0975"/>
     <parent link="back_base"/>
     <child link="h_bar_back_in"/>
   </joint>
@@ -154,24 +128,24 @@
     <visual>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
       <geometry>
-        <box size="1.56 0.12 0.165"/>
+        <box size="0.12 1.56 0.165"/>
       </geometry>
       <material name="LightGrey"/>
     </visual>
     <collision>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
       <geometry>
-        <box size="1.56 0.12 0.165"/>
+        <box size="0.12 1.56 0.165"/>
       </geometry>
     </collision>
     <selfCollide>0</selfCollide>
   </link>
-  <joint name="back_out" type="fixed">
-    <origin rpy="0.0 0.0 1.5707963267948966" xyz="0.24 0.0 0.0"/>
-    <parent link="back_bar_in"/>
-    <child link="h_bar_back_out"/>
+  <joint name="front_out" type="fixed">
+    <origin rpy="0.0 0.0 0" xyz="0.0 0.0 -0.1125"/>
+    <parent link="world"/>
+    <child link="h_bar_front_out"/>
   </joint>
-  <link name="h_bar_back_out">
+  <link name="h_bar_front_out">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <mass value="5"/>
@@ -180,21 +154,21 @@
     <visual>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
       <geometry>
-        <box size="1.56 0.08 0.165"/>
+        <box size="0.08 1.56 0.165"/>
       </geometry>
       <material name="LightGrey"/>
     </visual>
     <collision>
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
       <geometry>
-        <box size="1.56 0.08 0.165"/>
+        <box size="0.08 1.56 0.165"/>
       </geometry>
     </collision>
     <selfCollide>0</selfCollide>
   </link>
   <joint name="left" type="fixed">
-    <origin rpy="0.0 0.0 0.0" xyz="1.51 0.84 -0.0975"/>
-    <parent link="front_base"/>
+    <origin rpy="0.0 0.0 3.141592653589793" xyz="1.71 0.8400000000000001 0.0"/>
+    <parent link="h_bar_front_out"/>
     <child link="v_bar_left"/>
   </joint>
   <link name="v_bar_left">
@@ -219,8 +193,8 @@
     <selfCollide>0</selfCollide>
   </link>
   <joint name="frame_right" type="fixed">
-    <origin rpy="0.0 0.0 0.0" xyz="1.51 -0.84 -0.0975"/>
-    <parent link="front_base"/>
+    <origin rpy="0.0 0.0 0.0" xyz="1.71 -0.8400000000000001 0.0"/>
+    <parent link="h_bar_front_out"/>
     <child link="v_bar_right"/>
   </joint>
   <link name="v_bar_right">
@@ -240,6 +214,32 @@
       <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
       <geometry>
         <box size="3.5 0.12 0.165"/>
+      </geometry>
+    </collision>
+    <selfCollide>0</selfCollide>
+  </link>
+  <joint name="back_out" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="1.71 0.8400000000000001 0.0"/>
+    <parent link="v_bar_right"/>
+    <child link="h_bar_back_out"/>
+  </joint>
+  <link name="h_bar_back_out">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="5"/>
+      <inertia ixx="0.014" ixy="0.0" ixz="0.0" iyy="1.025" iyz="0.0" izz="1.02"/>
+    </inertial>
+    <visual>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.08 1.56 0.165"/>
+      </geometry>
+      <material name="LightGrey"/>
+    </visual>
+    <collision>
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.08 1.56 0.165"/>
       </geometry>
     </collision>
     <selfCollide>0</selfCollide>
