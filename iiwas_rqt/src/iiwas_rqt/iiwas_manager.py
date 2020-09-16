@@ -59,12 +59,23 @@ class IiwasManager(Plugin):
         handguiding_srv_name = 'start_handguiding'
         position_control_srv_name = 'start_position_control'
 
-        self._cancel_srv = rospy.ServiceProxy(cancel_srv_name, CancelMotion, persistent=True)
-        self._ptp_srv = rospy.ServiceProxy(ptp_srv_name, PTP, persistent=True)
-        self._light_srv = rospy.ServiceProxy(light_srv_name, SetBlueLight, persistent=True)
-        self._handguiding_srv = rospy.ServiceProxy(handguiding_srv_name, StartHandguiding, persistent=True)
-        self._position_control_srv = rospy.ServiceProxy(position_control_srv_name, StartPositionControl,
+        b_ns = '/iiwa_back/'
+
+        self._cancel_srv_back = rospy.ServiceProxy(b_ns + cancel_srv_name, CancelMotion, persistent=True)
+        self._ptp_srv_back = rospy.ServiceProxy(b_ns + ptp_srv_name, PTP, persistent=True)
+        self._light_srv_back = rospy.ServiceProxy(b_ns + light_srv_name, SetBlueLight, persistent=True)
+        self._handguiding_srv_back = rospy.ServiceProxy(b_ns + handguiding_srv_name, StartHandguiding, persistent=True)
+        self._position_control_srv_back = rospy.ServiceProxy(b_ns + position_control_srv_name, StartPositionControl,
                                                         persistent=True)
+
+        f_ns = '/iiwa_front/'
+
+        self._cancel_srv_front = rospy.ServiceProxy(f_ns + cancel_srv_name, CancelMotion, persistent=True)
+        self._ptp_srv_front = rospy.ServiceProxy(f_ns + ptp_srv_name, PTP, persistent=True)
+        self._light_srv_front = rospy.ServiceProxy(f_ns + light_srv_name, SetBlueLight, persistent=True)
+        self._handguiding_srv_front = rospy.ServiceProxy(f_ns + handguiding_srv_name, StartHandguiding, persistent=True)
+        self._position_control_srv_front = rospy.ServiceProxy(f_ns + position_control_srv_name, StartPositionControl,
+                                                             persistent=True)
 
     def _get_joint_limits(self):
         robot = URDF.from_parameter_server()
@@ -110,28 +121,28 @@ class IiwasManager(Plugin):
 
 
     def _cancel_f_cb(self):
-        request = CancelMotionRequest(which_iiwa=1)
-        self._execute_service(self._cancel_srv, request)
+        request = CancelMotionRequest()
+        self._execute_service(self._cancel_srv_front, request)
 
     def _cancel_b_cb(self):
-        request = CancelMotionRequest(which_iiwa=2)
-        self._execute_service(self._cancel_srv, request)
+        request = CancelMotionRequest()
+        self._execute_service(self._cancel_srv_back, request)
 
     def _handguiding_f_cb(self):
-        request = StartHandguidingRequest(which_iiwa=1)
-        self._execute_service(self._handguiding_srv, request)
+        request = StartHandguidingRequest()
+        self._execute_service(self._handguiding_srv_front, request)
 
     def _handguiding_b_cb(self):
-        request = StartHandguidingRequest(which_iiwa=2)
-        self._execute_service(self._handguiding_srv, request)
+        request = StartHandguidingRequest()
+        self._execute_service(self._handguiding_srv_back, request)
 
     def _position_f_cb(self):
-        request = StartPositionControlRequest(which_iiwa=1)
-        self._execute_service(self._position_control_srv, request)
+        request = StartPositionControlRequest()
+        self._execute_service(self._position_control_srv_front, request)
 
     def _position_b_cb(self):
-        request = StartPositionControlRequest(which_iiwa=2)
-        self._execute_service(self._position_control_srv, request)
+        request = StartPositionControlRequest()
+        self._execute_service(self._position_control_srv_back, request)
 
     def _ptp_reset_cb(self, robot_prefix):
         for i in range(7):
@@ -155,9 +166,9 @@ class IiwasManager(Plugin):
 
             value = joint_controller.value()
             request.goal.append(value)
-            request.which_iiwa = 1 if robot_prefix == 'F' else 2
+        srv = self._ptp_srv_front if robot_prefix == 'F' else self._ptp_srv_back
 
-        self._execute_service(self._ptp_srv, request)
+        self._execute_service(srv, request)
 
     def _ptp_apply_b_cb(self):
         self._ptp_accept_cb('B')
@@ -165,19 +176,15 @@ class IiwasManager(Plugin):
     def _ptp_apply_f_cb(self):
         self._ptp_accept_cb('F')
 
-    def _set_led_F_cb(self):
+    def _set_led_f_cb(self):
         request = SetBlueLightRequest()
         request.on = self._widget.checkBox_F.isChecked()
-        request.which_iiwa = 1
+        self._execute_service(self._light_srv_front, request)
 
-        self._execute_service(self._light_srv, request)
-
-    def _set_led_B_cb(self):
+    def _set_led_b_cb(self):
         request = SetBlueLightRequest()
         request.on = self._widget.checkBox_B.isChecked()
-        request.which_iiwa = 2
-
-        self._execute_service(self._light_srv, request)
+        self._execute_service(self._light_srv_back, request)
 
     def _connect_services_to_buttons(self):
         self._widget.cancel_f.clicked[bool].connect(self._cancel_f_cb)
@@ -195,8 +202,8 @@ class IiwasManager(Plugin):
         self._widget.buttonBox_F.button(QDialogButtonBox.Apply).clicked.connect(self._ptp_apply_f_cb)
         self._widget.buttonBox_B.button(QDialogButtonBox.Apply).clicked.connect(self._ptp_apply_b_cb)
 
-        self._widget.set_led_F.clicked[bool].connect(self._set_led_F_cb)
-        self._widget.set_led_B.clicked[bool].connect(self._set_led_B_cb)
+        self._widget.set_led_F.clicked[bool].connect(self._set_led_f_cb)
+        self._widget.set_led_B.clicked[bool].connect(self._set_led_b_cb)
 
 
 

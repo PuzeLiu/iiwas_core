@@ -8,14 +8,14 @@ import rospy
 motion_started = False
 
 def handle_ptp(req):
-    print('PTP', req.goal, 'for iiwas', req.which_iiwa)
+    print('PTP', req.goal)
 
     return PTPResponse(msg='OK PTP ' + str(req.goal), success=not motion_started)
 
 
 def handle_cancel(req):
     global motion_started
-    print('CANCEL_MOTION for iiwas', req.which_iiwa)
+    print('CANCEL_MOTION')
     res = CancelMotionResponse(msg='OK CANCEL_MOTION', success=motion_started)
     motion_started = False
 
@@ -24,7 +24,7 @@ def handle_cancel(req):
 
 def handle_handguiding(req):
     global motion_started
-    print('HANDGUIDING for iiwas', req.which_iiwa)
+    print('HANDGUIDING')
 
     res = StartHandguidingResponse(msg='OK HANDGUIDING', success=not motion_started)
     motion_started = True
@@ -32,14 +32,14 @@ def handle_handguiding(req):
 
 
 def handle_light(req):
-    print('TURN_BLUE for iiwas', req.which_iiwa, 'to ', req.on)
+    print('TURN_BLUE to ', req.on)
 
     return SetBlueLightResponse(msg='OK TURN_BLUE', success=True)
 
 
 def handle_position(req):
     global motion_started
-    print('POSITION_CONTROL for iiwas', req.which_iiwa)
+    print('POSITION_CONTROL')
 
     res = StartPositionControlResponse(msg='OK POSITION_CONTROL', success=not motion_started)
     motion_started = True
