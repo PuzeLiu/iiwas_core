@@ -2,9 +2,19 @@
 <launch>
     <arg name="use_front_iiwa" default="true" />
     <arg name="use_back_iiwa" default="false" />
+    <arg name="machine_name" default="" />
+
+    <!-- Joint Controller Mode, [ JointImpedanceControl | JointPositionControl ] -->
+    <arg name="control_mode" default="JointPositionControl"/>
 
     <rosparam file="$(find iiwas_driver)/config/config.yaml" command="load"/>
 
     <node name="iiwas_driver" pkg="iiwas_driver" type="iiwas_driver"
-          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true"/>
+          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true" if="$(eval machine_name=='')" />
+    <node name="iiwas_driver" pkg="iiwas_driver" type="iiwas_driver"
+          output="log" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true" machine="$(arg machine_name)"
+          unless="$(eval machine_name=='')" />
+          
+    <!-- <node name="fake_iiwas_joint_publisher" pkg="iiwas_driver" type="fake_iiwas_joint_publisher"
+          output="screen" args="$(arg use_front_iiwa) $(arg use_back_iiwa)" required="true"/> -->
 </launch>

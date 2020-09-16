@@ -1,5 +1,6 @@
 import os
 import rospkg
+import numpy as np
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
@@ -15,8 +16,8 @@ class JointController(QWidget):
         self.spin.valueChanged.connect(self._spin_updated)
 
     def set_joint_limit(self, limit):
-        lower = limit.lower
-        upper = limit.upper
+        lower = np.rad2deg(limit.lower)
+        upper = np.rad2deg(limit.upper)
 
         self.slider.setMinimum(lower * 100)
         self.slider.setMaximum(upper * 100)
@@ -40,4 +41,4 @@ class JointController(QWidget):
         return self.spin.setValue(value)
 
     def value(self):
-        return self.spin.value()
+        return np.deg2rad(self.spin.value())

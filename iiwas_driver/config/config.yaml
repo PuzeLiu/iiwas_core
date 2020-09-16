@@ -15,21 +15,26 @@ iiwa_front:
     - F_joint_6
     - F_joint_7
 
+  control_mode: 2 # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE = 1 | JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
+
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # [0.0, 0.0, 0.0, -1.5707963267948966, 0.0, 1.5707963267948966, 0.0]
+    # [1.0501165088872215, 1.4400841460523346, -1.7632792174410021, -1.9698123533772725, 1.3734738586117285, 1.6266453914370727, -0.6671652159610103]
     
   stiffness:
-    [200.0, 600.0, 20.0, 400.0, 150, 150, 50]
+    # [1000.0, 3000.0, 1000.0, 2000.0, 750, 750, 250]
+    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 50.0]
 
   damping:
     [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
 
 iiwa_back:
-  fri_app_ip: 192.170.10.1
-  fri_app_port: 30201
+  fri_ip: 192.170.10.1
+  fri_port: 30201
 
-  fri_conf_ip: 172.31.1.147
-  fri_conf_port: 30401
+  conf_ip: 172.31.1.147
+  conf_port: 30401
 
   control_freq: 1000 # in Hz
   joints:
@@ -40,6 +45,8 @@ iiwa_back:
     - B_joint_5
     - B_joint_6
     - B_joint_7
+
+  control_mode: 2 # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE = 1 | JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

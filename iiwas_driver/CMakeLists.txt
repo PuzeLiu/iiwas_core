@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
              hardware_interface
              urdf
              iiwas_srv
+             sensor_msgs
              iiwa_fri_client
 )
 
@@ -22,7 +23,9 @@ catkin_package(
 ## Build ##
 ###########
 set(HEADERS include/configuration_manager.h
-	    include/iiwa_hw_interface.h)
+			include/iiwa_hw_interface.h
+		    include/iiwa_ctrl_loop.h
+)
 set(SOURCES src/configuration_client.cpp
             src/fri_client.cpp
             src/iiwas_driver_node.cpp
@@ -37,10 +40,14 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(fake_iiwas_joint_publisher src/iiwas_mask.cpp)
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(fake_iiwas_joint_publisher ${catkin_EXPORTED_TARGETS})
 
+## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} rt)
+target_link_libraries(fake_iiwas_joint_publisher ${catkin_LIBRARIES})
 
 #############
 ## Install ##

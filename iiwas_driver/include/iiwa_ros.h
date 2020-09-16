@@ -1,9 +1,28 @@
-//
-// Created by puze on 31.07.20.
-//
+/*
+ * MIT License
+ * Copyright (c) 2020 Puze Liu, Davide Tateo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
-#ifndef PROJECT_IIWA_ROS_H
-#define PROJECT_IIWA_ROS_H
+#ifndef _IIWA_ROS_H
+#define _IIWA_ROS_H
 
 struct JState{
     double   th;   /*!< theta */
@@ -22,17 +41,5 @@ struct DJState{
     double   uex;  /*!< externally imposed torque */
 };
 
-//int bind_thread_to_core(int core_id) {
-//    int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-//    if (core_id < 0 || core_id >= num_cores)
-//        return EINVAL;
-//
-//    cpu_set_t cpuset;
-//    CPU_ZERO(&cpuset);
-//    CPU_SET(core_id, &cpuset);
-//
-//    pthread_t current_thread = pthread_self();
-//    return pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
-//}
 
-#endif //PROJECT_IIWA_ROS_H
+#endif //_IIWA_ROS_H

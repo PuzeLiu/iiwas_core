@@ -39,7 +39,7 @@ def handle_light(req):
 
 def handle_position(req):
     global motion_started
-    print('POSITION_CONTROL')
+    print('POSITION_CONTROL ', req.mode)
 
     res = StartPositionControlResponse(msg='OK POSITION_CONTROL', success=not motion_started)
     motion_started = True

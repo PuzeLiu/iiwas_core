@@ -1,7 +1,25 @@
-//
-// Created by arenz on 29.05.17.
-// Modified by puze on 31.07.20
-//
+/*
+ * MIT License
+ * Copyright (c) 2020 Puze Liu, Davide Tateo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 #include "configuration_client.h"
 #include <iostream>
@@ -75,7 +93,6 @@ bool ConfigurationClient::read(std::string& reply){
 
 bool ConfigurationClient::write(std::string msg){
     boost::system::error_code error;
-//    socket.send( boost::asio::buffer(msg + "\n"), endpoint, 0, error );
     boost::asio::write(socket, boost::asio::buffer(msg + "\n"), error);
     if(error) {
         std::cerr << "Sending " << msg << " failed. Error: " << error.message() << std::endl;
@@ -85,7 +102,7 @@ bool ConfigurationClient::write(std::string msg){
     return true;
 }
 
-bool ConfigurationClient::communicate(std::string cmd, std::string params, std::string* response){
+bool ConfigurationClient::communicate(std::string cmd, std::string params){
     std::string reply;
 
     if(!write(cmd + params)) {
@@ -96,9 +113,9 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
         return false;
     }
 
-    if(response != nullptr){
-        *response = reply;
-    }
+    reply.pop_back();
+    reply.pop_back();
+    last_response = reply;
 
     if(reply.find("OK " + cmd) == 0) {
         return true;
@@ -110,11 +127,10 @@ bool ConfigurationClient::communicate(std::string cmd, std::string params, std::
 
 int ConfigurationClient::checkReferencing() {
     std::string cmd = "CHECK_REF";
-    std::string response;
 
-    if(communicate(cmd, "", &response)) {
-        if (response.find("OK CHECK_REF 1") == 0) return 1;
-        else if (response.find("OK CHECK_REF 0") == 0) return 0;
+    if(communicate(cmd)) {
+        if (last_response.find("OK CHECK_REF 1") == 0) return 1;
+        else if (last_response.find("OK CHECK_REF 0") == 0) return 0;
     }
 
     return -1;
@@ -147,11 +163,10 @@ bool ConfigurationClient::attachSake() {
 
 bool ConfigurationClient::checkConnectionQuality() {
     std::string cmd = "CHECK_CONNECTION_QUALITY";
-    std::string response;
 
-    if(communicate(cmd, "", &response))
+    if(communicate(cmd))
     {
-        if (response.find("EXCELLENT") != std::string::npos)
+        if (last_response.find("EXCELLENT") != std::string::npos)
             return true;
     }
 
@@ -160,10 +175,9 @@ bool ConfigurationClient::checkConnectionQuality() {
 
 bool ConfigurationClient::getStiffness(double* stiffness){
     std::string cmd = "GET_JOINT_STIFFNESS";
-    std::string response;
 
-    if(communicate(cmd, "", &response)){
-        std::cout << response;
+    if(communicate(cmd)){
+        std::cout << last_response;
         return true;
     } else{
         return false;
@@ -172,10 +186,9 @@ bool ConfigurationClient::getStiffness(double* stiffness){
 
 bool ConfigurationClient::getDamping(double* damping){
     std::string cmd = "GET_JOINT_DAMPING";
-    std::string response;
 
-    if(communicate(cmd, "", &response)){
-        std::cout << response;
+    if(communicate(cmd)){
+        std::cout << last_response;
         return true;
     } else{
         return false;
@@ -272,4 +285,9 @@ bool ConfigurationClient::closeConnection(){
     std::string cmd = "CLOSE_CONNECTION";
     connected = false;
     return write(cmd);
+}
+
+bool ConfigurationClient::waitMotionEnd() {
+    std::string cmd = "WAIT_MOTION";
+    return communicate(cmd);
 }

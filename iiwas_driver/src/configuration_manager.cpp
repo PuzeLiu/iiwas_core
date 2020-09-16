@@ -1,22 +1,43 @@
-//
-// Created by puze on 10.08.20.
-//
+/*
+ * MIT License
+ * Copyright (c) 2020 Puze Liu, Davide Tateo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include "configuration_manager.h"
 
 #include <iiwa_fri_client/friLBRState.h>
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa){
+ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop) :
+        frontLoop(frontLoop), backLoop(backLoop){
     frontClient = nullptr;
     backClient = nullptr;
 
-    if(useFrontIiwa) {
+    if(frontLoop) {
         frontData = new ConfigurationData("iiwa_front");
         frontClient = constructConfClient(frontData->ns);
     }
 
-    if(useBackIiwa){
+    if(backLoop){
         backData = new ConfigurationData("iiwa_back");
         backClient = constructConfClient(backData->ns);
     }
@@ -31,6 +52,7 @@ ConfigurationManager::ConfigurationManager(bool useFrontIiwa, bool useBackIiwa){
                                           this);
     ptpSrv = nh.advertiseService("ptp", &ConfigurationManager::ptp, this);
     setESMStateSrv = nh.advertiseService("set_esm_state", &ConfigurationManager::setESMState, this);
+    setImpedanceParamSrv = nh.advertiseService("set_impedance_parameter", &ConfigurationManager::setImpedanceParam, this);
 }
 
 ConfigurationManager::~ConfigurationManager() {
@@ -74,18 +96,12 @@ bool ConfigurationManager::startPositionControl() {
     return status;
 }
 
-bool ConfigurationManager::startFrontPositionControl() {
+void ConfigurationManager::stopMotion(){
     if (frontClient)
-        return frontClient->startPositionControl();
+        frontClient->cancelMotion();
 
-    return false;
-}
-
-bool ConfigurationManager::startBackPositionControl(){
     if (backClient)
-        return backClient->startPositionControl();
-
-    return false;
+        backClient->cancelMotion();
 }
 
 ConfigurationClient* ConfigurationManager::constructConfClient(std::string ns){
@@ -134,8 +150,14 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
         ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the stiffness of the arm");
         return false;
     }
+
     if(!n_p.getParam(confData->ns + "/damping", confData->jointDamping)){
         ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the damping of the arm");
+        return false;
+    }
+
+    if(!n_p.getParam(confData->ns + "/control_mode", confData->controlMode)){
+        ROS_ERROR_STREAM_ONCE(confData->ns + ": Fail to load the control mode of the arm");
         return false;
     }
 
@@ -175,10 +197,15 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
                        << init_pos[5] << ", "
                        << init_pos[6]);
 
-    if (!confClient->ptp(init_pos)) return false;
+    if (!confClient->ptp(init_pos))
+        return false;
+
+    if (!confClient->waitMotionEnd())
+        return false;
 
     ROS_INFO_STREAM(confData->ns + ": Start FRI");
-    if (!confClient->startFRI()) return false;
+    if (!confClient->startFRI())
+        return false;
 
     ros::Duration(2).sleep();
 
@@ -187,20 +214,26 @@ bool ConfigurationManager::init(ConfigurationClient* confClient, ConfigurationDa
         return false;
     }
 
-
-    if (!confClient->startJointImpedanceCtrlMode()) {
+    if (confData->controlMode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+        if (!confClient->startJointImpedanceCtrlMode()) {
         ROS_ERROR_STREAM(confData->ns + ": Starting impedance control mode failed");
         return false;
-    }
+        }
 
-    if (!confClient->setStiffness(&confData->jointStiffness[0])) {
-        ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
-        return false;
-    }
+        if (!confClient->setStiffness(&confData->jointStiffness[0])) {
+            ROS_ERROR_STREAM(confData->ns + ": Setting stiffness failed");
+            return false;
+        }
 
-    if (!confClient->setDamping(&confData->jointDamping[0])) {
-        ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
-        return false;
+        if (!confClient->setDamping(&confData->jointDamping[0])) {
+            ROS_ERROR_STREAM(confData->ns + ": Setting damping failed");
+            return false;
+        }
+    } else if (confData->controlMode == KUKA::FRI::POSITION_CONTROL_MODE){
+        if (!confClient->startJointPositionCtrlMode()) {
+            ROS_ERROR_STREAM(confData->ns + ": Starting position control mode failed");
+            return false;
+        }
     }
 
     return true;
@@ -210,15 +243,19 @@ bool ConfigurationManager::cancelMotion(iiwas_srv::CancelMotion::Request &req,
                                         iiwas_srv::CancelMotion::Response &res) {
     res.success = false;
 
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->cancelMotion();
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
+        res.success = backClient->cancelMotion();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    if (req.which_iiwa==2 && backClient){
-        res.success = backClient->cancelMotion();
-    }
-    std::stringstream ss;
-    ss << "Service: CancelMotion | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
     return true;
 }
@@ -227,16 +264,19 @@ bool ConfigurationManager::startHandguiding(iiwas_srv::StartHandguiding::Request
                                             iiwas_srv::StartHandguiding::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->startHandguiding();
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->startHandguiding();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: StartHandguiding | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
     return true;
 }
@@ -245,22 +285,62 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
                                                 iiwas_srv::StartPositionControl::Response &res){
     res.success = false;
 
-    if (req.which_iiwa==1 && frontClient){
-        res.success = frontClient->startPositionControl();
-    }
-
-    if (req.which_iiwa==2 && backClient){
-        res.success = backClient->startPositionControl();
-    }
-
     std::stringstream ss;
-    ss << "Service: StartPositionControl | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
+    if (req.which_iiwa==1 && frontClient){
+        frontLoop->resetControllers();
+        sleep(1.0);
+
+        if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            frontData->controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
+            res.success = frontClient->startJointImpedanceCtrlMode();
+            res.success = res.success && frontClient->setStiffness(&frontData->jointStiffness[0]);
+            res.success = res.success && frontClient->setDamping(&frontData->jointDamping[0]);
+        } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            frontData->controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
+            res.success = frontClient->startJointPositionCtrlMode();
+        }
+        else{
+            ROS_WARN("Control Mode is not implemented, 0: PositionControlMode | 2: JointImpedanceControlMode");
+            return false;
+        }
+
+        res.success = res.success && frontClient->startPositionControl();
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
+        backLoop->resetControllers();
+        sleep(1.0);
+
+        if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
+            backData->controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
+            res.success = backClient->startJointImpedanceCtrlMode();
+            res.success = res.success && backClient->setStiffness(&frontData->jointStiffness[0]);
+            res.success = res.success && backClient->setDamping(&frontData->jointDamping[0]);
+        } else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
+            backData->controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
+            res.success = backClient->startJointPositionCtrlMode();
+        }
+        else{
+            ROS_WARN("Control Mode is not implemented, 0: PositionControlMode | 2: JointImpedanceControlMode");
+            return false;
+        }
+
+        res.success = backClient->startPositionControl();
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
+    }
+
     res.msg = ss.str();
     return true;
 }
 
 bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Response &res){
     res.success = false;
+
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
 
     std::vector<double> goalVec;
     if(!req.goal.size() == LBRState::NUMBER_OF_JOINTS){
@@ -274,31 +354,34 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req, iiwas_srv::PTP::Res
 
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->ptp(req.goal);
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->ptp(req.goal);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: PTP | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
-    return res.success;
+    return true;
 }
 
 bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, iiwas_srv::SetBlueLight::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setBlueLight(req.on);
-    }
-
-    if (req.which_iiwa==2 && backClient){
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
         res.success = backClient->setBlueLight(req.on);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    std::stringstream ss;
-    ss << "Service: SetBlueLight | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
     res.msg = ss.str();
     return true;
 }
@@ -306,16 +389,46 @@ bool ConfigurationManager::setBlueLight(iiwas_srv::SetBlueLight::Request &req, i
 bool ConfigurationManager::setESMState(iiwas_srv::SetESMState::Request &req, iiwas_srv::SetESMState::Response &res){
     res.success = false;
 
+    std::stringstream ss;
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | ";
+
     if (req.which_iiwa==1 && frontClient){
         res.success = frontClient->setESMState(req.state);
+        ss << frontClient->getLastResponse();
+    } else if (req.which_iiwa==2 && backClient){
+        res.success = backClient->setESMState(req.state);
+        ss << backClient->getLastResponse();
+    } else {
+        return false;
     }
 
-    if (req.which_iiwa==2 && backClient){
-        res.success = backClient->setESMState(req.state);
+    res.msg = ss.str();
+    return true;
+}
+
+bool ConfigurationManager::setImpedanceParam(iiwas_srv::SetImpedanceParam::Request &req,
+                                             iiwas_srv::SetImpedanceParam::Response &res) {
+    res.success = true;
+
+    if (req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        || req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS){
+        ROS_WARN_STREAM(KUKA::FRI::LBRState::NUMBER_OF_JOINTS << " joints of stiffness and damping is needed");
+        return false;
+    }
+
+    if (req.which_iiwa==1 && frontClient){
+        frontData->jointStiffness = req.stiffness;
+        frontData->jointDamping = req.damping;
+    } else if (req.which_iiwa==2 && backClient){
+        backData->jointStiffness = req.stiffness;
+        backData->jointDamping = req.damping;
+    } else {
+        return false;
     }
 
     std::stringstream ss;
-    ss << "Service: SetESMState | Which iiwa: " << req.which_iiwa << " | Success: " << bool(res.success);
+    ss << "Iiwa: " << (req.which_iiwa == 1 ? "Front" : "Back") << " | Joint impedance stored";
     res.msg = ss.str();
+
     return true;
 }

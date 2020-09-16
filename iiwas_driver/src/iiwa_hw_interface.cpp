@@ -1,17 +1,25 @@
-/*=============================================================================
- ==============================================================================
-
- \file    iiwas_hw_interface.cpp
-
- \author  Puze Liu
- \date    29.07.2020
-
- ==============================================================================
- \remarks
-
- Runs a interface for ROS through friClient
-
- ============================================================================*/
+/*
+ * MIT License
+ * Copyright (c) 2020 Puze Liu, Davide Tateo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 #include <iiwa_hw_interface.h>
 
@@ -66,17 +74,19 @@ namespace iiwa_hw{
 
     void HardwareInterface::write(const ros::Time &time, const ros::Duration &period) {
         if (friClient->isInitialized()) {
-            positionJointSoftLimitsInterface.enforceLimits(period);
-            positionJointSatLimitsInterface.enforceLimits(period);
-            effortJointSoftLimitsInterface.enforceLimits(period);
-            effortJointSatLimitsInterface.enforceLimits(period);
-            velocityJointSoftLimitsInterface.enforceLimits(period);
-            velocityJointSatLimitsInterface.enforceLimits(period);
+            if (hasSoftLimits) {
+                positionJointSoftLimitsInterface.enforceLimits(period);
+                effortJointSoftLimitsInterface.enforceLimits(period);
+                velocityJointSoftLimitsInterface.enforceLimits(period);
+            } else{
+                positionJointSatLimitsInterface.enforceLimits(period);
+                effortJointSatLimitsInterface.enforceLimits(period);
+                velocityJointSatLimitsInterface.enforceLimits(period);
+            }
 
             for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
                 friClient->joint_pos_des[i] = jointCommand[i].th;
                 friClient->joint_torques_des[i] = jointCommand[i].uff;
-
             }
         }
 
@@ -86,9 +96,14 @@ namespace iiwa_hw{
     void HardwareInterface::loadParam(){
         ros::NodeHandle n_p("~");
 
-        n_p.param(ns + "/use_ROS_Param_Joint_Limits_", useROSParamJointLimits ,false);
-        n_p.param(ns + "/use_ROS_Param_Soft_Limits_If_Available", useSoftLimitsIfAvailable ,true);
+        n_p.param(ns + "/use_urdf_joint_limits", useURDFJointLimits, true);
+        n_p.param(ns + "/use_soft_limits", useSoftLimits, false);
 
+	std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
+	n_p.getParam(ns + "/init_position", init_pos);
+
+	for(int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
+		jointCommand[i].th = init_pos[i];
 
         if (!n_p.param<std::string>(ns + "/fri_ip", friServerIP, "192.170.10.2"))
             ROS_WARN_STREAM_ONCE(ns + ": Unable to load application server ip from Parameter Server, use Default: "
@@ -204,8 +219,8 @@ namespace iiwa_hw{
         // Limits datastructures
         joint_limits_interface::JointLimits jointLimits;     // Position
         joint_limits_interface::SoftJointLimits softLimits;  // Soft Position
-        bool hasJointLimits = false;
-        bool hasSoftLimits = false;
+        hasJointLimits = false;
+        hasSoftLimits = false;
 
         // Get limits from URDF
         if (urdfModel == nullptr)
@@ -215,7 +230,6 @@ namespace iiwa_hw{
         }
 
         urdf::JointConstSharedPtr urdf_joint = urdfModel->getJoint(jointNames[joint_id]);
-        
 
         // Get main joint limits
         if (urdf_joint == nullptr)
@@ -223,7 +237,6 @@ namespace iiwa_hw{
             ROS_ERROR_STREAM(ns + " URDF joint not found " << jointNames[joint_id]);
             return;
         }
-
 
         // Get limits from URDF
         if (joint_limits_interface::getJointLimits(urdf_joint, jointLimits))
@@ -244,7 +257,7 @@ namespace iiwa_hw{
         }
 
         // Get limits from ROS param
-        if (useROSParamJointLimits)
+        if (!useURDFJointLimits)
         {
             if (joint_limits_interface::getJointLimits(jointNames[joint_id], nh, jointLimits))
             {
@@ -259,7 +272,7 @@ namespace iiwa_hw{
         }
 
         // Get soft limits from URDF
-        if (useSoftLimitsIfAvailable)
+        if (useSoftLimits)
         {
             if (joint_limits_interface::getSoftJointLimits(urdf_joint, softLimits))
             {

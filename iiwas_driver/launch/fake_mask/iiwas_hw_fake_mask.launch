@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-
-    
-    <include file="$(find iiwas_description)/launch/iiwas_rviz_new.launch" />
-</launch>

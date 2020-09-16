@@ -1,10 +1,28 @@
-//
-// Created by arenz on 29.05.17.
-// Modified by puze on 29.07.20.
-//
+/*
+ * MIT License
+ * Copyright (c) 2020 Puze Liu, Davide Tateo
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
-#ifndef ROBOLAB_FRICONFCONNECTION_H
-#define ROBOLAB_FRICONFCONNECTION_H
+#ifndef _CONFIGURATION_CLIENT_H
+#define _CONFIGURATION_CLIENT_H
 
 #include <string>
 #include <boost/asio.hpp>
@@ -19,10 +37,12 @@ class ConfigurationClient {
     int port;
     boost::asio::io_service io_service;
     boost::asio::ip::tcp::socket socket;
+    std::string last_response;
+
 
     bool read(std::string& reply);
     bool write(std::string msg);
-    bool communicate(std::string cmd, std::string params="", std::string* response=nullptr);
+    bool communicate(std::string cmd, std::string params="");
     void connectHandle(const boost::system::error_code& error);
     void timerHandle(const boost::system::error_code& error, bool &timeout);
 
@@ -43,6 +63,7 @@ class ConfigurationClient {
     bool startJointPositionCtrlMode();
     bool startPositionControl();
     bool cancelMotion();
+    bool waitMotionEnd();
     bool getStiffness(double *stiffness);
     bool setStiffness(double *stiffness);
     bool getDamping(double *damping);
@@ -55,7 +76,8 @@ class ConfigurationClient {
     bool startHandguiding();
     inline bool isConnected(){ return connected;}
     inline bool isMotionActive() { return motionActive;}
+    inline std::string getLastResponse() { return last_response; }
 };
 
 
-#endif //ROBOLAB_FRICONFCONNECTION_H
+#endif //_CONFIGURATION_CLIENT_H
