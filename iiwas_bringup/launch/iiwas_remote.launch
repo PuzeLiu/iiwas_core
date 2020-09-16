@@ -2,9 +2,8 @@
 <launch>
     <arg name="use_front_iiwa" default="true" />
     <arg name="use_back_iiwa" default="false" />
-    <arg name="hardware_interface" default="PositionJointInterface"/>
-    <arg name="machine_name" default="lovelace" />
-    <arg name="machine_address" default="192.168.2.4" />
+    <arg name="machine_name" default="realtime" />
+    <arg name="machine_address" default="192.168.10.1" />
 
     <machine name="$(arg machine_name)" user="puze" address="$(arg machine_address)"
          env-loader="~/catkin_ws/src/iiwas_core/iiwas_bringup/env.sh" timeout="10.0" default="false"/>
@@ -16,13 +15,11 @@
 	    <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
     </include>
 
-    <group>
-        <include file="$(find iiwas_driver)/launch/iiwas_driver.launch" >
-            <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
-            <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
-            <arg name="machine_name" value="$(arg machine_name)" />
-        </include>
-    </group>
+    <include file="$(find iiwas_driver)/launch/iiwas_driver.launch" >
+        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
+        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
+        <arg name="machine_name" value="$(arg machine_name)" />
+    </include>
 
 
 
