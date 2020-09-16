@@ -16,7 +16,7 @@
 	      
 	<!-- launch on application machine -->
 	<node name="iiwa_front" pkg="iiwas_driver" type="iiwas_driver"
-	      output="screen" required="true" machine="$(arg machine_name)" 
+	      output="log" required="true" machine="$(arg machine_name)" 
 	      if="$(eval use_front_iiwa and machine_name!='')"/>
 	      
 	<!-- launch on for visualization -->
@@ -30,7 +30,7 @@
 	      
 	<!-- launch on application machine -->      
 	<node name="iiwa_back" pkg="iiwas_driver" type="iiwas_driver"
-	      output="screen" required="true" machine="$(arg machine_name)" 
+	      output="log" required="true" machine="$(arg machine_name)" 
 	      if="$(eval use_back_iiwa and machine_name!='')"/>
 	      
 	<!-- launch on for visualization -->      
