@@ -26,7 +26,7 @@
 using namespace KUKA::FRI;
 
 namespace iiwa_hw{
-    HardwareInterface::HardwareInterface(ros::NodeHandle& nh, std::string ns) : nh(nh), ns("/" + ns) {
+    HardwareInterface::HardwareInterface() : nh("~"){
         jointState.resize(LBRState::NUMBER_OF_JOINTS);
         jointStateLast.resize(LBRState::NUMBER_OF_JOINTS);
         jointCommand.resize(LBRState::NUMBER_OF_JOINTS);
@@ -38,7 +38,7 @@ namespace iiwa_hw{
 
         loadParam();
 
-        loadURDF(nh, iiwaDescription);
+        loadURDF(iiwaDescription);
 
         iiwaReady = false;
         isAppServerStarted = false;
@@ -94,33 +94,29 @@ namespace iiwa_hw{
     }
 
     void HardwareInterface::loadParam(){
-        ros::NodeHandle n_p("~");
+        nh.param("use_urdf_joint_limits", useURDFJointLimits, true);
+        nh.param("use_soft_limits", useSoftLimits, false);
 
-        n_p.param(ns + "/use_urdf_joint_limits", useURDFJointLimits, true);
-        n_p.param(ns + "/use_soft_limits", useSoftLimits, false);
+		std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
+		nh.param("init_position", init_pos);
 
-	std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
-	n_p.getParam(ns + "/init_position", init_pos);
+		for(int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
+			jointCommand[i].th = init_pos[i];
 
-	for(int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
-		jointCommand[i].th = init_pos[i];
-
-        if (!n_p.param<std::string>(ns + "/fri_ip", friServerIP, "192.170.10.2"))
-            ROS_WARN_STREAM_ONCE(ns + ": Unable to load application server ip from Parameter Server, use Default: "
+        if (!nh.getParam("fri_ip", friServerIP))
+            ROS_WARN_STREAM_ONCE(nh.getNamespace() + " Unable to load application server ip from Parameter Server, use Default: "
                                          << friServerIP);
-        if (!n_p.param(ns + "/fri_port", friServerPort, 30202))
-            ROS_WARN_STREAM_ONCE(ns + ": Unbale to load application server port from Parameter Server, use Default: "
+        if (!nh.getParam("fri_port", friServerPort))
+            ROS_WARN_STREAM_ONCE(nh.getNamespace() + "Unable to load application server port from Parameter Server, use Default: "
                                          << friServerPort);
 
-        if (!n_p.param<std::string>(ns + "/robot_description", iiwaDescription, "/robot_description"));
+        if (!nh.param<std::string>("robot_description", iiwaDescription, "/robot_description"));
 
     }
 
-    bool HardwareInterface::initHardwareInterface() {
-        ros::NodeHandle n_p("~");
-
-        if (!n_p.getParam(ns + "/joints", jointNames)) {
-            ROS_ERROR_STREAM_ONCE(n_p.getNamespace() + ": Unbale to load joint names from Parameter Server");
+    bool HardwareInterface::initHardwareInterface(){
+        if (!nh.getParam("joints", jointNames)) {
+            ROS_ERROR_STREAM_ONCE(nh.getNamespace() + " Unable to load joint names from Parameter Server");
             return false;
         }
 
@@ -151,7 +147,7 @@ namespace iiwa_hw{
         registerInterface(&jointVelocityInterface);
         registerInterface(&jointEffortInterface);
 
-        ROS_INFO_STREAM(ns + ": ROS Hardware Interface initialized");
+        ROS_INFO_STREAM(nh.getNamespace() + " ROS Hardware Interface initialized");
         return true;
     }
 
@@ -160,15 +156,15 @@ namespace iiwa_hw{
         friConnection = new KUKA::FRI::UdpConnection();
         friApp = new KUKA::FRI::ClientApplication(*friConnection, *friClient);
 
-        ROS_INFO_STREAM(ns + ": Connecting to FRI Application Server");
+        ROS_INFO_STREAM(nh.getNamespace() + " Connecting to FRI Application Server");
         if(!friApp->connect(friServerPort, friServerIP.c_str()))
         {
             isAppServerStarted = false;
-            ROS_ERROR_STREAM(ns + ": Failed to connect FRI Application Server");
+            ROS_ERROR_STREAM(nh.getNamespace() + " Failed to connect FRI Application Server");
             return false;
         } else{
             isAppServerStarted = true;
-            ROS_INFO_STREAM(ns + ": Connection to FRI Application Server Succeed");
+            ROS_INFO_STREAM(nh.getNamespace() + " Connection to FRI Application Server Succeed");
         }
 
         return true;
@@ -178,30 +174,30 @@ namespace iiwa_hw{
         if(isAppServerStarted)
             friApp->disconnect();
 
-        ROS_INFO_STREAM(ns + ": Stop FRI connection");
+        ROS_INFO_STREAM(nh.getNamespace() + " Stop FRI connection");
     }
 
-    int HardwareInterface::loadURDF(ros::NodeHandle &nh, std::string param_name) {
+    int HardwareInterface::loadURDF(std::string param_name) {
         std::string urdf_string;
         urdfModel = new urdf::Model();
 
         std::string search_param_name;
         if (nh.searchParam(param_name, search_param_name)) {
             if (!nh.getParam(search_param_name, urdf_string))
-                ROS_ERROR_STREAM(ns + ": Counld not find URDF on the ROS param server at location:"<< search_param_name);
+                ROS_ERROR_STREAM("Could not find URDF on the ROS parameters server at location:"<< search_param_name);
         }
         else{
             if (!nh.getParam(param_name, urdf_string)){
-                ROS_ERROR_STREAM(ns + ": Counld not find URDF on the ROS param server at location:"<< param_name);
+                ROS_ERROR_STREAM("Could not find URDF on the ROS parameters server at location:"<< param_name);
             }
         }
 
         if (!urdfModel->initString(urdf_string)) {
-            ROS_ERROR_STREAM(ns + ": Unable to load URDF model");
+            ROS_ERROR_STREAM("Unable to load URDF model");
             return -1;
         }
         else {
-            ROS_INFO_STREAM(ns + ": Received URDF from param server");
+            ROS_INFO_STREAM("Received URDF from parameters server");
             return 0;
         }
 
@@ -216,7 +212,7 @@ namespace iiwa_hw{
         jointVelocityLimits[joint_id] = std::numeric_limits<double>::max();
         jointEffortLimits[joint_id] = std::numeric_limits<double>::max();
 
-        // Limits datastructures
+        // Limits data structures
         joint_limits_interface::JointLimits jointLimits;     // Position
         joint_limits_interface::SoftJointLimits softLimits;  // Soft Position
         hasJointLimits = false;
@@ -225,7 +221,7 @@ namespace iiwa_hw{
         // Get limits from URDF
         if (urdfModel == nullptr)
         {
-            ROS_WARN_STREAM(ns + "No URDF model loaded, unable to get joint limits");
+            ROS_WARN_STREAM("No URDF model loaded, unable to get joint limits");
             return;
         }
 
@@ -234,7 +230,7 @@ namespace iiwa_hw{
         // Get main joint limits
         if (urdf_joint == nullptr)
         {
-            ROS_ERROR_STREAM(ns + " URDF joint not found " << jointNames[joint_id]);
+            ROS_ERROR_STREAM(nh.getNamespace() + " URDF joint not found " << jointNames[joint_id]);
             return;
         }
 
@@ -242,17 +238,17 @@ namespace iiwa_hw{
         if (joint_limits_interface::getJointLimits(urdf_joint, jointLimits))
         {
             hasJointLimits = true;
-            ROS_DEBUG_STREAM(ns + "Joint " << jointNames[joint_id] << " has URDF position limits ["
+            ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " has URDF position limits ["
                                                    << jointLimits.min_position << ", "
                                                    << jointLimits.max_position << "]");
             if (jointLimits.has_velocity_limits)
-                ROS_DEBUG_STREAM(ns + "Joint " << jointNames[joint_id] << " has URDF velocity limit ["
+                ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " has URDF velocity limit ["
                                                        << jointLimits.max_velocity << "]");
         }
         else
         {
             if (urdf_joint->type != urdf::Joint::CONTINUOUS)
-                ROS_WARN_STREAM(ns + "Joint " << jointNames[joint_id] << " does not have a URDF "
+                ROS_WARN_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " does not have a URDF "
                         "position limit");
         }
 
@@ -262,10 +258,10 @@ namespace iiwa_hw{
             if (joint_limits_interface::getJointLimits(jointNames[joint_id], nh, jointLimits))
             {
                 hasJointLimits = true;
-                ROS_DEBUG_STREAM(ns + " Joint " << jointNames[joint_id] << " has rosparam position limits ["
+                ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " has rosparam position limits ["
                                                 << jointLimits.min_position << ", " << jointLimits.max_position << "]");
                 if (jointLimits.has_velocity_limits)
-                    ROS_DEBUG_STREAM("Namespace: " + ns +  " Joint " << jointNames[joint_id]
+                    ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id]
                                                            << " has rosparam velocity limit ["
                                                            << jointLimits.max_velocity << "]");
             }  // the else debug message provided internally by joint_limits_interface
@@ -277,11 +273,11 @@ namespace iiwa_hw{
             if (joint_limits_interface::getSoftJointLimits(urdf_joint, softLimits))
             {
                 hasSoftLimits = true;
-                ROS_DEBUG_STREAM(ns + ": Joint " << jointNames[joint_id] << " has soft joint limits.");
+                ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " has soft joint limits.");
             }
             else
             {
-                ROS_DEBUG_STREAM(ns + ": Joint " << jointNames[joint_id] << " does not have soft joint "
+                ROS_DEBUG_STREAM(nh.getNamespace() + " Joint " << jointNames[joint_id] << " does not have soft joint "
                         "limits");
             }
         }
@@ -289,14 +285,14 @@ namespace iiwa_hw{
         // Quit we we haven't found any limits in URDF or rosparam server
         if (!hasJointLimits)
         {
-            ROS_WARN_STREAM(ns + ": Could not find any limist on joint " << jointNames[joint_id]);
+            ROS_WARN_STREAM(nh.getNamespace() + " Could not find any limist on joint " << jointNames[joint_id]);
             return;
         }
 
         // Copy position limits if available
         if (jointLimits.has_position_limits)
         {
-            // Slighly reduce the joint limits to prevent floating point errors
+            // Slightly reduce the joint limits to prevent floating point errors
             jointLimits.min_position += std::numeric_limits<double>::epsilon();
             jointLimits.max_position -= std::numeric_limits<double>::epsilon();
 
@@ -320,7 +316,7 @@ namespace iiwa_hw{
 
         if (hasSoftLimits)  // Use soft limits
         {
-            ROS_INFO_STREAM_ONCE(ns +  ": Using soft saturation limits on Joints");
+            ROS_INFO_STREAM_ONCE(nh.getNamespace() + " Using soft saturation limits on Joints");
             const joint_limits_interface::PositionJointSoftLimitsHandle softHandlePosition(jointHandlePosition,
                                                                                              jointLimits, softLimits);
             positionJointSoftLimitsInterface.registerHandle(softHandlePosition);
@@ -335,7 +331,7 @@ namespace iiwa_hw{
         }
         else  // Use saturation limits
         {
-            ROS_INFO_STREAM_ONCE(ns + ": Using saturation limits (not soft limits) on Joint");
+            ROS_INFO_STREAM_ONCE(nh.getNamespace() +  " Using saturation limits (not soft limits) on Joint");
 
             const joint_limits_interface::PositionJointSaturationHandle satHandlePosition(jointHandlePosition, jointLimits);
             positionJointSatLimitsInterface.registerHandle(satHandlePosition);

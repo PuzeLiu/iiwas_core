@@ -28,34 +28,15 @@
 
 int main(int argc, char* argv[]){
     ros::init(argc, argv, "iiwas_mask", ros::init_options::AnonymousName);
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
 
     ros::Publisher pub = nh.advertise<sensor_msgs::JointState>("joint_states",1);
-
-    bool useFrontIiwa, useBackIiwa;
-
-    if(argc != 3) {
-        ROS_ERROR_STREAM("Missing command line parameters, " << argc - 1 << " provided, need 2");
-        return -1;
-    }
-
-    useFrontIiwa = std::string("true") == argv[1];
-    useBackIiwa = std::string("true") == argv[2];
-
-    if (!useFrontIiwa && !useBackIiwa){
-        ROS_ERROR_STREAM("At least one Real robot should be chosen. Otherwise please use other simulation!");
-        return -1;
-    }
-
-    if (useFrontIiwa && useBackIiwa){
-        return -1;
-    }
 
     ros::Rate rate(500);
 
     sensor_msgs::JointState msg;
 
-    if(!useFrontIiwa){
+    if(nh.getNamespace() == "/iiwa_front"){
         for(int i=0; i<7; i++){
             std::stringstream ss;
             ss << "F_joint_" << i + 1;
@@ -66,7 +47,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    if(!useBackIiwa){
+    if(nh.getNamespace() == "/iiwa_back"){
         for(int i=0; i<7; i++){
             std::stringstream ss;
             ss << "B_joint_" << i + 1;

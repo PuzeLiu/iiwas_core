@@ -52,7 +52,7 @@ const int DEFAULT_CONTROL_FREQUENCY = 1000;  // Hz
 namespace iiwa_hw {
     class HardwareInterface : public hardware_interface::RobotHW {
     public:
-        HardwareInterface(ros::NodeHandle& nh, std::string ns);
+        HardwareInterface();
 
         ~HardwareInterface();
 
@@ -67,8 +67,6 @@ namespace iiwa_hw {
             * \brief Sends the command joint position to the robot via the interface provided by iiwa_ros.
         */
         void write(const ros::Time& time, const ros::Duration& period) override;
-
-        std::string getNamespace(){return ns; };
 
         bool isIiwaReady(){ return iiwaReady;};
 
@@ -87,7 +85,7 @@ namespace iiwa_hw {
 
         void stopFRI();
 
-        int loadURDF(ros::NodeHandle &nh, std::string param_name);
+        int loadURDF(std::string param_name);
 
         virtual void registerJointLimits_(const hardware_interface::JointHandle &jointHandlePosition,
                                          const hardware_interface::JointHandle &jointHandleVelocity,
@@ -95,8 +93,6 @@ namespace iiwa_hw {
                                          std::size_t joint_id);
 
     private:
-        std::string ns;
-
         /** Robot Parameter */
         bool iiwaReady;
 

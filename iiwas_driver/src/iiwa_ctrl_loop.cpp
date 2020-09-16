@@ -24,8 +24,8 @@
 #include <iiwa_ctrl_loop.h>
 
 namespace iiwa_hw{
-    ControlLoop::ControlLoop(std::string ns, int coreId)
-    : hardwareInterface(nh, ns), coreId(coreId){
+    ControlLoop::ControlLoop(int coreId)
+    : nh("~"), hardwareInterface(), coreId(coreId){
         controllerManager.reset(new controller_manager::ControllerManager(&hardwareInterface, nh));
         oldTime = ros::Time::now();
 
@@ -70,7 +70,7 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::controlThread(){
-        /** Set realtime priority for this thread */
+        /** Set real time priority for this thread */
         struct sched_param param;
         param.sched_priority = sched_get_priority_max(SCHED_RR);
         int retvalue = sched_setscheduler(0, SCHED_RR, &param);

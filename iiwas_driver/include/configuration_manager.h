@@ -41,7 +41,7 @@
 
 class ConfigurationManager{
 public:
-    ConfigurationManager(iiwa_hw::ControlLoop* frontLoop, iiwa_hw::ControlLoop* backLoop);
+    ConfigurationManager(iiwa_hw::ControlLoop* controlLoop);
 
     ~ConfigurationManager();
 
@@ -61,30 +61,19 @@ public:
 
 private:
 
-    struct ConfigurationData{
-        ConfigurationData(std::string ns);
-        std::string ns;
-        int controlMode;
-        std::vector<double> jointStiffness;
-        std::vector<double> jointDamping;
-    };
+	int controlMode;
+	std::vector<double> jointStiffness;
+	std::vector<double> jointDamping;
 
-    ConfigurationClient* constructConfClient(std::string ns);
+    ConfigurationClient* constructConfClient();
 
-    bool init(ConfigurationClient* confClient, ConfigurationData* confData);
+    bool init(ConfigurationClient* confClient);
 
     ros::NodeHandle nh;
 
-    int controlMode;
+    ConfigurationClient* confClient;
 
-    ConfigurationClient* frontClient;
-    ConfigurationClient* backClient;
-
-    iiwa_hw::ControlLoop* frontLoop;
-    iiwa_hw::ControlLoop* backLoop;
-
-    ConfigurationData* frontData;
-    ConfigurationData* backData;
+    iiwa_hw::ControlLoop* controlLoop;
 
     ros::ServiceServer cancelMotionSrv;
     ros::ServiceServer startHandguidingSrv;

@@ -35,7 +35,7 @@ namespace iiwa_hw {
     class ControlLoop
     {
     public:
-        ControlLoop(std::string ns, int coreId);
+        ControlLoop(int coreId);
 
         void start();
         void stop();

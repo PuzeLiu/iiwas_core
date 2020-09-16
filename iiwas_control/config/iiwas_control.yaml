@@ -1,4 +1,4 @@
-front_iiwa:
+iiwa_front:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz
@@ -53,7 +53,7 @@ front_iiwa:
       - F_joint_7
 
 
-back_iiwa:
+iiwa_back:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz

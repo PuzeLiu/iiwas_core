@@ -139,10 +139,12 @@ class IiwasManager(Plugin):
     def _position_f_cb(self):
         mode = 2 if self._widget.impedance_f.isChecked() else 0
         request = StartPositionControlRequest(mode=mode)
+        self._execute_service(self._position_control_srv_front, request)
 
     def _position_b_cb(self):
         mode = 2 if self._widget.impedance_b.isChecked() else 0
         request = StartPositionControlRequest(mode=mode)
+        self._execute_service(self._position_control_srv_back, request)
 
     def _ptp_reset_cb(self, robot_prefix):
         for i in range(7):
