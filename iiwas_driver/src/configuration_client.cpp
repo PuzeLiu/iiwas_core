@@ -23,7 +23,7 @@
 
 #include "configuration_client.h"
 #include <iostream>
-#include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 #include <boost/bind.hpp>
 
 using namespace boost::asio;
