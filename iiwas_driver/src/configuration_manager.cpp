@@ -27,7 +27,7 @@
 
 using namespace KUKA::FRI;
 
-ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop* controlLoop_) :
+ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop& controlLoop_) :
         nh("~"), controlLoop(controlLoop_){
     confClient = constructConfClient();
 
@@ -221,7 +221,7 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
                                                 iiwas_srv::StartPositionControl::Response &res){
     res.success = false;
 
-    controlLoop->resetControllers();
+    controlLoop.resetControllers();
     sleep(1.0);
 
 	if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){

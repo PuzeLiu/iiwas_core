@@ -5,6 +5,8 @@ iiwa_front:
   conf_ip: 172.31.1.148
   conf_port: 30402
 
+  core_id: 1
+
   control_freq: 1000 # in Hz
   joints:
     - F_joint_1
@@ -35,6 +37,8 @@ iiwa_back:
 
   conf_ip: 172.31.1.147
   conf_port: 30401
+
+  core_id: 2
 
   control_freq: 1000 # in Hz
   joints:

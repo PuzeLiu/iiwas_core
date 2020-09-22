@@ -41,7 +41,7 @@
 
 class ConfigurationManager{
 public:
-    ConfigurationManager(iiwa_hw::ControlLoop* controlLoop);
+    ConfigurationManager(iiwa_hw::ControlLoop& controlLoop);
 
     ~ConfigurationManager();
 
@@ -73,7 +73,7 @@ private:
 
     ConfigurationClient* confClient;
 
-    iiwa_hw::ControlLoop* controlLoop;
+    iiwa_hw::ControlLoop& controlLoop;
 
     ros::ServiceServer cancelMotionSrv;
     ros::ServiceServer startHandguidingSrv;

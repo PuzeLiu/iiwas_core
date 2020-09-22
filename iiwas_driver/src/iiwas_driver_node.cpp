@@ -32,10 +32,13 @@ int main(int argc, char* argv[]){
     ros::init(argc, argv, "iiwas_drive", ros::init_options::AnonymousName);
     ros::NodeHandle nh("~");
 
-    iiwa_hw::ControlLoop* controlLoop =  nullptr;
-
-	controlLoop = new iiwa_hw::ControlLoop(1);
-	controlLoop->start();
+    int coreID;
+    if(!nh.getParam("core_id", coreID)){
+        ROS_ERROR_STREAM("Fail to get the core ID for the driver");
+        return -1;
+    }
+	iiwa_hw::ControlLoop controlLoop(coreID);
+	controlLoop.start();
 
     ConfigurationManager configurationManager(controlLoop);
 
@@ -44,14 +47,14 @@ int main(int argc, char* argv[]){
     if (!configurationManager.init()) {
         ROS_ERROR_STREAM("Initialization failed");
         ros::shutdown();
-        controlLoop->stop();
+        controlLoop.stop();
         return -1;
     }
 
     if (!configurationManager.startPositionControl()) {
         ROS_ERROR_STREAM("Failed to start position control");
         ros::shutdown();
-        controlLoop->stop();
+        controlLoop.stop();
         return -1;
     }
 
@@ -63,7 +66,7 @@ int main(int argc, char* argv[]){
 
     configurationManager.stopMotion();
 
-    controlLoop->stop();
+    controlLoop.stop();
 
     ROS_INFO_STREAM("Killing and Exit");
 }
