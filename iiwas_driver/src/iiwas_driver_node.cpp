@@ -37,6 +37,7 @@ int main(int argc, char* argv[]){
         ROS_ERROR_STREAM("Fail to get the core ID for the driver");
         return -1;
     }
+
 	iiwa_hw::ControlLoop controlLoop(coreID);
 	controlLoop.start();
 

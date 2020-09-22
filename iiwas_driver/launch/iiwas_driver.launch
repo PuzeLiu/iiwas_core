@@ -20,7 +20,7 @@
 	      if="$(eval use_front_iiwa and machine_name!='')"/>
 	      
 	<!-- launch on for visualization -->
-	<node name="iiwa_front" pkg="iiwas_driver" type="fake_iiwas_joint_publisher"
+	<node name="iiwa_front" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
 	 	  output="screen" required="true" unless="$(arg use_front_iiwa)"/>
     
     <!-- launch on realtime machine -->
@@ -34,7 +34,7 @@
 	      if="$(eval use_back_iiwa and machine_name!='')"/>
 	      
 	<!-- launch on for visualization -->      
-	<node name="iiwa_back" pkg="iiwas_driver" type="fake_iiwas_joint_publisher"
+	<node name="iiwa_back" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
 		  output="screen" required="true" unless="$(arg use_back_iiwa)"/>  
     
 </launch>

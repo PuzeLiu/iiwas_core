@@ -110,7 +110,7 @@ namespace iiwa_hw{
             ROS_WARN_STREAM_ONCE(nh.getNamespace() + "Unable to load application server port from Parameter Server, use Default: "
                                          << friServerPort);
 
-        if (!nh.param<std::string>("robot_description", iiwaDescription, "/robot_description"));
+        nh.param<std::string>("robot_description", iiwaDescription, "/robot_description");
 
     }
 
@@ -181,15 +181,9 @@ namespace iiwa_hw{
         std::string urdf_string;
         urdfModel = new urdf::Model();
 
-        std::string search_param_name;
-        if (nh.searchParam(param_name, search_param_name)) {
-            if (!nh.getParam(search_param_name, urdf_string))
-                ROS_ERROR_STREAM("Could not find URDF on the ROS parameters server at location:"<< search_param_name);
-        }
-        else{
-            if (!nh.getParam(param_name, urdf_string)){
-                ROS_ERROR_STREAM("Could not find URDF on the ROS parameters server at location:"<< param_name);
-            }
+        if (!nh.getParam(param_name, urdf_string)) {
+        	ROS_ERROR_STREAM("Could not find URDF on the ROS parameters server at location:"<< param_name);
+        	return -1;
         }
 
         if (!urdfModel->initString(urdf_string)) {

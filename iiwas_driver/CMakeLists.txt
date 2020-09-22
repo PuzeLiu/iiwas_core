@@ -30,8 +30,8 @@ set(SOURCES src/configuration_client.cpp
             src/fri_client.cpp
             src/iiwas_driver_node.cpp
             src/iiwa_hw_interface.cpp
-	    src/iiwa_ctrl_loop.cpp
-	    src/configuration_manager.cpp
+	        src/iiwa_ctrl_loop.cpp
+	        src/configuration_manager.cpp
 )
 
 include_directories(
@@ -40,14 +40,14 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-add_executable(fake_iiwas_joint_publisher src/iiwas_mask.cpp)
+add_executable(iiwas_fake_joint_publisher src/iiwas_fake_joint_publisher.cpp)
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-add_dependencies(fake_iiwas_joint_publisher ${catkin_EXPORTED_TARGETS})
+add_dependencies(iiwas_fake_joint_publisher ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} rt)
-target_link_libraries(fake_iiwas_joint_publisher ${catkin_LIBRARIES})
+target_link_libraries(iiwas_fake_joint_publisher ${catkin_LIBRARIES})
 
 #############
 ## Install ##
