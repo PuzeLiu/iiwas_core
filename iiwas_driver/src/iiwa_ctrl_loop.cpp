@@ -42,6 +42,7 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::stop() {
+    	controllerManager->~ControllerManager();
         running = false;
         if(thread)
             thread->join();
@@ -53,16 +54,16 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::run(){
-        while (running  && hardwareInterface.isIiwaReady()){
+        while (running & hardwareInterface.getIsAppServerStarted()){
             auto new_t = ros::Time::now();
             elapsedTime = new_t - oldTime;
             oldTime = new_t;
             // Input
             hardwareInterface.read(oldTime, elapsedTime);
 
+            reset = hardwareInterface.getFRICommandingWait();
             // Control
             controllerManager->update(oldTime, elapsedTime, reset);
-            reset = false;
 
             // Output
             hardwareInterface.write(oldTime, elapsedTime);

@@ -40,7 +40,7 @@ namespace iiwa_hw{
 
         loadURDF(iiwaDescription);
 
-        iiwaReady = false;
+//        iiwaReady = false;
         isAppServerStarted = false;
     }
 
@@ -56,13 +56,11 @@ namespace iiwa_hw{
         if(!initFRI())
             return false;
 
-        iiwaReady = true;
-
         return true;
     }
 
     void HardwareInterface::read(const ros::Time &time, const ros::Duration &period) {
-        if (friClient->isInitialized()) {
+        if (friClient->isDataAvailable()) {
             jointStateLast = jointState;
             for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
                 jointState[i].th = friClient->latest_measured_joint_pos[i];
@@ -73,24 +71,34 @@ namespace iiwa_hw{
     }
 
     void HardwareInterface::write(const ros::Time &time, const ros::Duration &period) {
-        if (friClient->isInitialized()) {
-            if (hasSoftLimits) {
-                positionJointSoftLimitsInterface.enforceLimits(period);
-                effortJointSoftLimitsInterface.enforceLimits(period);
-                velocityJointSoftLimitsInterface.enforceLimits(period);
-            } else{
-                positionJointSatLimitsInterface.enforceLimits(period);
-                effortJointSatLimitsInterface.enforceLimits(period);
-                velocityJointSatLimitsInterface.enforceLimits(period);
-            }
-
-            for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-                friClient->joint_pos_des[i] = jointCommand[i].th;
-                friClient->joint_torques_des[i] = jointCommand[i].uff;
-            }
+        if (friClient->isCommandingActive()) {
+				if (hasSoftLimits) {
+					positionJointSoftLimitsInterface.enforceLimits(period);
+					effortJointSoftLimitsInterface.enforceLimits(period);
+					velocityJointSoftLimitsInterface.enforceLimits(period);
+				} else{
+					positionJointSatLimitsInterface.enforceLimits(period);
+					effortJointSatLimitsInterface.enforceLimits(period);
+					velocityJointSatLimitsInterface.enforceLimits(period);
+				}
+				for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
+					friClient->joint_pos_des[i] = jointCommand[i].th;
+					friClient->joint_torques_des[i] = jointCommand[i].uff;
+				}
+        	}
+        else if (friClient->isCommandingWait()){
+			if (hasSoftLimits) {
+				positionJointSoftLimitsInterface.reset();
+			} else{
+				positionJointSatLimitsInterface.reset();
+			}
+        	for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
+        						friClient->joint_pos_des[i] = jointCommand[i].th;
+        						friClient->joint_torques_des[i] = jointCommand[i].uff;
+        	}
         }
 
-        iiwaReady = !friClient->isClosing() && friApp->step();
+        friApp->step();
     }
 
     void HardwareInterface::loadParam(){
@@ -166,15 +174,14 @@ namespace iiwa_hw{
             isAppServerStarted = true;
             ROS_INFO_STREAM(nh.getNamespace() + " Connection to FRI Application Server Succeed");
         }
-
         return true;
     }
 
     void HardwareInterface::stopFRI() {
-        if(isAppServerStarted)
+        if(isAppServerStarted){
+        	isAppServerStarted = false;
             friApp->disconnect();
-
-        ROS_INFO_STREAM(nh.getNamespace() + " Stop FRI connection");
+        }
     }
 
     int HardwareInterface::loadURDF(std::string param_name) {

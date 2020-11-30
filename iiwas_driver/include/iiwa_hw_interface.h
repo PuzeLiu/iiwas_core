@@ -68,12 +68,22 @@ namespace iiwa_hw {
         */
         void write(const ros::Time& time, const ros::Duration& period) override;
 
-        bool isIiwaReady(){ return iiwaReady;};
+        inline const bool getIsAppServerStarted(){ return isAppServerStarted;};
+
+        inline const bool getFRICommandingWait(){ return friClient->isCommandingWait();};
 
         void stop(){
             stopFRI();
             ros::shutdown();
         };
+
+        const std::vector<JState> getJointState(){
+        	return jointState;
+        }
+
+        const std::vector<DJState> getJointCommand(){
+        	return jointCommand;
+        }
 
     protected:
 
@@ -94,8 +104,6 @@ namespace iiwa_hw {
 
     private:
         /** Robot Parameter */
-        bool iiwaReady;
-
         std::vector<JState> jointState, jointStateLast;
         std::vector<DJState> jointCommand;
 
@@ -118,7 +126,7 @@ namespace iiwa_hw {
 
         std::string iiwaDescription;
 
-        /** Hardward Interface*/
+        /** Hardware Interface*/
         hardware_interface::JointStateInterface jointStateInterface;   /**< Interface for joint state */
         hardware_interface::PositionJointInterface jointPositionInterface; /**< Interface for joint position control */
         hardware_interface::VelocityJointInterface jointVelocityInterface; /**< Interface for joint position control */

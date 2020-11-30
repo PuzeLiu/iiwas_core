@@ -48,7 +48,7 @@ public:
     bool init();
 
     bool startPositionControl();
-    void stopMotion();
+    void stop();
 
     bool cancelMotion(iiwas_srv::CancelMotion::Request &req, iiwas_srv::CancelMotion::Response &res);
     bool startHandguiding(iiwas_srv::StartHandguiding::Request &req, iiwas_srv::StartHandguiding::Response &res);

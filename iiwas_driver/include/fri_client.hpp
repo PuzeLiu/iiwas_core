@@ -35,8 +35,9 @@
 class FRIClient : public KUKA::FRI::LBRClient
 {
 private:
-    bool initialized;
-    bool closing;
+//    bool initialized;
+//    bool closing;
+    int state;
    
 public:
     const double *latest_measured_joint_pos;
@@ -82,12 +83,33 @@ public:
     */
    virtual void command();
 
-    inline bool isInitialized() {
-        return initialized;
+
+    inline bool isIdle() {
+    	return state == KUKA::FRI::ESessionState::IDLE;
     }
 
-    inline bool isClosing() {
-        return closing;
+    inline bool isMonitoringWait(){
+    	return state == KUKA::FRI::ESessionState::MONITORING_WAIT;
+    }
+
+    inline bool isMonitoringReady(){
+    	return state = KUKA::FRI::ESessionState::MONITORING_READY;
+    }
+
+    inline bool isDataAvailable(){
+    	return state > KUKA::FRI::ESessionState::MONITORING_WAIT;
+    }
+
+    inline bool isCommandingWait(){
+    	return state == KUKA::FRI::ESessionState::COMMANDING_WAIT;
+    }
+
+    inline bool isCommandingActive(){
+    	return state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE;
+    }
+
+    const int getState(){
+    	return state;
     }
 
 };

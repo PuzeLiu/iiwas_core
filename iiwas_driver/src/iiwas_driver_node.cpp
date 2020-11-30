@@ -27,7 +27,6 @@
 #include "configuration_manager.h"
 #include "iiwa_fri_client/friClientIf.h"
 
-
 int main(int argc, char* argv[]){
     ros::init(argc, argv, "iiwas_drive", ros::init_options::AnonymousName);
     ros::NodeHandle nh("~");
@@ -65,9 +64,9 @@ int main(int argc, char* argv[]){
         rate.sleep();
     }
 
-    configurationManager.stopMotion();
+    configurationManager.stop();
 
     controlLoop.stop();
 
-    ROS_INFO_STREAM("Killing and Exit");
+    return -1;
 }

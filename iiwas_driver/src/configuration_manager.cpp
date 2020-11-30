@@ -45,15 +45,6 @@ ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop& controlLoop_) :
 }
 
 ConfigurationManager::~ConfigurationManager() {
-    if (confClient) {
-        if (confClient->isMotionActive())
-            confClient->cancelMotion();
-
-        if (confClient->isConnected())
-            confClient->closeConnection();
-
-        delete confClient;
-    }
 }
 
 bool ConfigurationManager::startPositionControl() {
@@ -65,9 +56,16 @@ bool ConfigurationManager::startPositionControl() {
     return status;
 }
 
-void ConfigurationManager::stopMotion(){
-    if (confClient)
-        confClient->cancelMotion();
+void ConfigurationManager::stop(){
+    if (confClient) {
+        if (confClient->isMotionActive())
+            confClient->cancelMotion();
+
+        if (confClient->isConnected())
+            confClient->closeConnection();
+
+        delete confClient;
+    }
 }
 
 ConfigurationClient* ConfigurationManager::constructConfClient(){

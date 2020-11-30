@@ -37,12 +37,12 @@ FRIClient::FRIClient()
        joint_pos_des[i] = 0.0;
     }
 
-    initialized = false;
-    closing = false;
+    state = -1;
 
     latest_measured_joint_pos = nullptr;
     latest_measured_joint_torque = nullptr;
     latest_measured_external_torque = nullptr;
+
 }
 
 
@@ -53,6 +53,7 @@ FRIClient::~FRIClient()
 
 void FRIClient::onStateChange(ESessionState oldState, ESessionState newState)
 {
+	state = newState;
     std::string nameOld, nameNew;
 
     switch (oldState)
@@ -74,32 +75,24 @@ void FRIClient::onStateChange(ESessionState oldState, ESessionState newState)
             break;
     }
 
-
     switch (newState)
     {
         case IDLE:
-            initialized = false;
-            closing = true;
             nameNew = "IDLE";
             break;
         case MONITORING_WAIT:
-            initialized = true;
             nameNew = "MONITORING_WAIT";
             break;
         case MONITORING_READY:
-            initialized = true;
             for(int i = 0; i< LBRState::NUMBER_OF_JOINTS; i++){
                 joint_torques_des[i] = 0.0;
             }
-
             nameNew = "MONITORING_READY";
             break;
         case COMMANDING_WAIT:
-            initialized = true;
             nameNew = "COMMANDING_WAIT";
             break;
         case COMMANDING_ACTIVE:
-            initialized = true;
             nameNew = "COMMANDING_ACTIVE";
             break;
 
