@@ -21,7 +21,7 @@
     <xacro:property name="world_frame_origin_x" value="-0.048"/>
     <xacro:property name="world_frame_origin_y" value="-0.076"/>
 
-    <xacro:macro name="iiwas_frame" params="name front_x front_y back_x back_y">
+    <xacro:macro name="iiwas_frame" params="name front_x front_y front_z back_x back_y back_z">
 
         <link name="world"/>
         <joint name="iiwa_frame_origin_joint" type="fixed">
@@ -74,7 +74,7 @@
         <joint name="front_base_joint" type="fixed">
             <origin xyz="${front_x - world_frame_origin_x}
                    ${front_y - world_frame_origin_y}
-                   ${base_h/2}"
+                   ${base_h/2 + front_z}"
                     rpy="0.0 0.0 0.0"/>
             <parent link="iiwa_frame_origin"/>
             <child link="front_base"/>
@@ -147,7 +147,7 @@
         <joint name="back_base_joint" type="fixed">
             <origin xyz="${back_x - world_frame_origin_x}
                      ${back_y - world_frame_origin_y}
-                     ${base_h/2}"
+                     ${base_h/2 + back_z}"
                     rpy="0.0 0.0 0.0"/>
             <parent link="iiwa_frame_origin"/>
             <child link="back_base"/>

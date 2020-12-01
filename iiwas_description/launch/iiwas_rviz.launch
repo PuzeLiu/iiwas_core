@@ -6,16 +6,16 @@
     <!-- <arg name="world_iiwas_f_roll" default="0.00084844"/>
     <arg name="world_iiwas_f_pitch" default="-0.00264906"/>
     <arg name="world_iiwas_f_yaw" default="0.01872297"/> -->
-    <arg name="world_iiwas_f_x" default="0.2"/>
-    <arg name="world_iiwas_f_y" default="0.9"/>
-    <arg name="world_iiwas_f_z" default="0.0"/>
+    <arg name="world_iiwas_f_x" default="0.196"/>
+    <arg name="world_iiwas_f_y" default="0.805"/>
+    <arg name="world_iiwas_f_z" default="0.00"/>
     <arg name="world_iiwas_f_roll" default="0.0"/>
     <arg name="world_iiwas_f_pitch" default="0.0"/>
     <arg name="world_iiwas_f_yaw" default="0.0"/>
 
-    <arg name="world_iiwas_b_x" default="3.22"/>
-    <arg name="world_iiwas_b_y" default="0.9"/>
-    <arg name="world_iiwas_b_z" default="0.0"/>
+    <arg name="world_iiwas_b_x" default="3.204"/>
+    <arg name="world_iiwas_b_y" default="0.793"/>
+    <arg name="world_iiwas_b_z" default="0.011"/>
     <arg name="world_iiwas_b_roll" default="0.0"/>
     <arg name="world_iiwas_b_pitch" default="0.0"/>
     <arg name="world_iiwas_b_yaw" default="0.0"/>
