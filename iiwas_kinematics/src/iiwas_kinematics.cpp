@@ -22,23 +22,23 @@ namespace iiwas_kinematics {
         T_ee.setIdentity();
     }
 
-    Kinematics::TransformMatrixType Kinematics::transform_i(double q, int i) {
-        Kinematics::TransformMatrixType T_i;
-        T_i.setIdentity();
+    void Kinematics::transform_i(double q, int i, Kinematics::TransformMatrixType& T_i) {
         T_i << cos(q), -sin(q) * cos(dh_alpha[i]), sin(q) * sin(dh_alpha[i]), dh_a[i] * cos(q),
                 sin(q), cos(q) * cos(dh_alpha[i]), -cos(q) * sin(dh_alpha[i]), dh_a[i] * sin(q),
                 0., sin(dh_alpha[i]), cos(dh_alpha[i]), dh_d[i],
                 0., 0., 0., 1.;
-        return T_i;
     }
 
     void Kinematics::forward_kinematics(const Kinematics::JointArrayType &q, Vector3d &out_ee_pos,
                                         Quaterniond &out_ee_quad) {
         TransformMatrixType T;
         T.setIdentity();
+        TransformMatrixType T_tmp;
         for (int i = 0; i < NUM_OF_JOINTS; ++i) {
-            T = T * transform_i(q[i], i);
+            transform_i(q[i], i, T_tmp);
+            T = T * T_tmp;
         }
+//        cout<< "Transformation Matrix: \n" << T << endl;
         out_ee_pos = T.block<3, 1>(0, 3);
         out_ee_quad = T.block<3, 3>(0, 0);
     }

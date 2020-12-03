@@ -9,8 +9,7 @@ project(iiwas_kinematics)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
         roscpp
-        rospy
-        )
+        rospy)
 
 find_package(Eigen3 REQUIRED)
 ## System dependencies are found with CMake's conventions

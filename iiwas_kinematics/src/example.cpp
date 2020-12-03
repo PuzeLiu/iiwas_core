@@ -24,8 +24,9 @@ int main(int argc, char* argv[]){
         kinematics.forward_kinematics(q, ee_pos, ee_quad);
     }
     auto finish = chrono::high_resolution_clock::now();
-    cout << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e9 << "s\n";
+    cout << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
     cout << "Position: " << endl << ee_pos << endl;
     cout << "Rotation: " << endl << ee_quad.coeffs() << endl;
+    cout << "Rotation Matrix: " << endl << ee_quad.matrix() << endl;
     return 0;
 }

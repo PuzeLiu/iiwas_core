@@ -26,7 +26,7 @@ namespace iiwas_kinematics {
         void forward_kinematics(const JointArrayType& q, Vector3d& out_ee_pos, Quaterniond& out_ee_quad);
 
     private:
-        TransformMatrixType transform_i(double q, int i);
+        void transform_i(double q, int i, TransformMatrixType& out_T);
 
     private:
         JointArrayType dh_a;
