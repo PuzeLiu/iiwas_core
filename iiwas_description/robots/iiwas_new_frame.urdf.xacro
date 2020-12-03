@@ -9,14 +9,14 @@
     <xacro:property name="M_PI" value="3.1415926535897931"/>
     <xacro:property name="base_height" default="0.03"/>
     <!-- offset values from world to robot base frame.  0.165+0.015 m is the height of the frame + half height of the plate -->
-    <xacro:arg name="world_to_iiwas_f_x" default="0.20"/>
-    <xacro:arg name="world_to_iiwas_f_y" default="-0.61"/>
+    <xacro:arg name="world_to_iiwas_f_x" default="0.190"/>
+    <xacro:arg name="world_to_iiwas_f_y" default="0.813"/>
     <xacro:arg name="world_to_iiwas_f_z" default="0.0"/>
     <xacro:arg name="world_to_iiwas_f_roll" default="0.0"/>
     <xacro:arg name="world_to_iiwas_f_pitch" default="0.0"/>
     <xacro:arg name="world_to_iiwas_f_yaw" default="0.0"/>
-    <xacro:arg name="world_to_iiwas_b_x" default="3.2"/>
-    <xacro:arg name="world_to_iiwas_b_y" default="0.61"/>
+    <xacro:arg name="world_to_iiwas_b_x" default="3.198"/>
+    <xacro:arg name="world_to_iiwas_b_y" default="0.813"/>
     <xacro:arg name="world_to_iiwas_b_z" default="0.0"/>
     <xacro:arg name="world_to_iiwas_b_roll" default="0.0"/>
     <xacro:arg name="world_to_iiwas_b_pitch" default="0.0"/>
