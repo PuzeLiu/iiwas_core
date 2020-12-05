@@ -32,7 +32,7 @@ namespace iiwas_kinematics {
     }
 
     void Kinematics::forward_kinematics(const Kinematics::JointArrayType &q, Vector3d &out_ee_pos,
-                                        Quaterniond &out_ee_quad) {
+                                        Quaterniond &out_ee_quat) {
         TransformMatrixType T;
         T.setIdentity();
         TransformMatrixType T_tmp;
@@ -42,14 +42,14 @@ namespace iiwas_kinematics {
         }
 //        cout<< "Transformation Matrix: \n" << T << endl;
         out_ee_pos = T.block<3, 1>(0, 3);
-        out_ee_quad = T.block<3, 3>(0, 0);
+        out_ee_quat = T.block<3, 3>(0, 0);
     }
 
     void Kinematics::jacobian(const JointArrayType &q, JacobianType &out_jacobian) {
         JacobianPosType jac_pos;
         JacobianRotType jac_rot;
         jacobian_pos(q, jac_pos);
-        jacobian_pos(q, jac_rot);
+        jacobian_rot(q, jac_rot);
         out_jacobian.block<3, NUM_OF_JOINTS>(0, 0) = jac_pos;
         out_jacobian.block<3, NUM_OF_JOINTS>(3, 0) = jac_rot;
     }
@@ -93,9 +93,9 @@ namespace iiwas_kinematics {
         T.setIdentity();
         TransformMatrixType T_tmp;
         for (int i = 0; i < NUM_OF_JOINTS; ++i) {
+            out_jacobian.block<3, 1>(0, i) = T.block<3, 1>(0, 2);
             transform_i(q[i], i, T_tmp);
             T = T * T_tmp;
-            out_jacobian.block<3, 1>(0, i) = T.block<3, 1>(0, 3);
         }
     }
 
