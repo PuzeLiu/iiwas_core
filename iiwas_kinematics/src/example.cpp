@@ -11,7 +11,11 @@ using namespace iiwas_kinematics;
 using namespace std;
 
 int main(int argc, char* argv[]){
-    Kinematics kinematics = Kinematics();
+    Vector3d tcp_pos(0.1, 0.2, 0.5);
+    Quaterniond tcp_quat(1., 0.5, 0.1, 0.6);
+    tcp_quat.normalize();
+
+    Kinematics kinematics = Kinematics(tcp_pos, tcp_quat);
     Kinematics::JointArrayType q;
     std::srand((unsigned int) time(0));
 
@@ -29,7 +33,7 @@ int main(int argc, char* argv[]){
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; ++i) {
         q.setRandom();
-        kinematics.forward_kinematics(q, ee_pos, ee_quat);
+        kinematics.ForwardKinematics(q, ee_pos, ee_quat);
     }
     auto finish = chrono::high_resolution_clock::now();
     cout << "Forward Kinematics Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
@@ -44,7 +48,7 @@ int main(int argc, char* argv[]){
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; ++i) {
         q.setRandom();
-        kinematics.jacobian_pos(q, jacobian_lin);
+        kinematics.JacobianPos(q, jacobian_lin);
     }
     finish = chrono::high_resolution_clock::now();
     cout << "Linear Jacobian Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
@@ -60,7 +64,7 @@ int main(int argc, char* argv[]){
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; ++i) {
         q.setRandom();
-        kinematics.jacobian_rot(q, jacobian_rot);
+        kinematics.JacobianRot(q, jacobian_rot);
     }
     finish = chrono::high_resolution_clock::now();
     cout << "Rotation Jacobian Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
@@ -75,7 +79,7 @@ int main(int argc, char* argv[]){
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; ++i) {
         q.setRandom();
-        kinematics.jacobian(q, jacobian);
+        kinematics.Jacobian(q, jacobian);
     }
     finish = chrono::high_resolution_clock::now();
     cout << "Total Jacobian Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
@@ -98,15 +102,15 @@ int main(int argc, char* argv[]){
 
     for (int i = 0; i < 10000; ++i) {
         q = q.setRandom() * M_PI;
-        kinematics.jacobian(q, jacobian_test);
+        kinematics.Jacobian(q, jacobian_test);
         for (int j = 0; j < NUM_OF_JOINTS; ++j) {
             q_positive = q;
             q_positive(j) += jac_eps;
-            kinematics.forward_kinematics(q_positive, ee_pos_positive, ee_rot_positive);
+            kinematics.ForwardKinematics(q_positive, ee_pos_positive, ee_rot_positive);
 
             q_negative = q;
             q_negative(j) -= jac_eps;
-            kinematics.forward_kinematics(q_negative, ee_pos_negative, ee_rot_negative);
+            kinematics.ForwardKinematics(q_negative, ee_pos_negative, ee_rot_negative);
 
             jacobian_numerical.block<3, 1>(0, j) = (ee_pos_positive - ee_pos_negative) / 2 / (jac_eps);
 
@@ -116,7 +120,7 @@ int main(int argc, char* argv[]){
         jac_diff = (jacobian_test - jacobian_numerical).norm();
 
         if (jac_diff > 1e-6){
-            cout << "Jacobian Error!" << endl;
+            cout << "Jacobian Error!!!!" << endl;
             cout << " q: " << q << endl ;
             cout << "Jacobian Numerical: " << endl << jacobian_numerical << endl;
             cout << "Jacobian Analytical: " << endl << jacobian_test << endl;

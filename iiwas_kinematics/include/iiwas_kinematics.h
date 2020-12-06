@@ -26,27 +26,33 @@ namespace iiwas_kinematics {
 
         Kinematics(const Vector3d& tcp_position, const Quaterniond& tcp_quaternion);
 
-        void forward_kinematics(const JointArrayType& q, Vector3d& out_ee_pos, Quaterniond& out_ee_quad);
-        void jacobian(const JointArrayType& q, JacobianType& out_jacobian);
-        void jacobian_pos(const JointArrayType& q, JacobianPosType& out_jacobian);
-        void jacobian_rot(const JointArrayType& q, JacobianRotType& out_jacobian);
+        void ForwardKinematics(const JointArrayType& q, Vector3d& out_ee_pos, Quaterniond& out_ee_quad);
+        void Jacobian(const JointArrayType& q, JacobianType& out_jacobian);
+        void JacobianPos(const JointArrayType& q, JacobianPosType& out_jacobian);
+        void JacobianRot(const JointArrayType& q, JacobianRotType& out_jacobian);
 
     private:
         void transform_i(double q, int i, TransformMatrixType& out_T);
 
     private:
-        double d_bs;     // Distance from base to shoulder
-        double d_se;     // Distance from shoulder to elbow
-        double d_ew;      // Distance from elbow to wrist
-        double d_wf;    // Distance from elbow to finger(tip)
+        double d_bs_;     // Distance from base to shoulder
+        double d_se_;     // Distance from shoulder to elbow
+        double d_ew_;     // Distance from elbow to wrist
+        double d_wf_;     // Distance from elbow to finger(tip)
 
-        JointArrayType dh_a;
-        JointArrayType dh_alpha;
-        JointArrayType dh_d;
+        JointArrayType dh_a_;       // DH-Parameter a
+        JointArrayType dh_alpha_;   // DH-Parameter alpha
+        JointArrayType dh_d_;       // DH-Parameter d
 
-        Vector3d tcp_pos;
-        Quaterniond tcp_quat;
-        TransformMatrixType T_ee;
+    public:
+        JointArrayType pos_limits_upper;    // Joints position upper limits
+        JointArrayType pos_limits_lower;    // Joints position lower limits
+        JointArrayType vel_limits_upper;    // Joints velocity upper limits
+        JointArrayType vel_limits_lower;    // Joints velocity lower limits
+
+        Vector3d tcp_pos_;
+        Quaterniond tcp_quat_;
+        TransformMatrixType T, T_tmp, T_ee_;
     };
 }
 #endif //SRC_IIWAS_KINEMATICS_H
