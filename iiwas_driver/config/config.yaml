@@ -17,7 +17,9 @@ iiwa_front:
     - F_joint_6
     - F_joint_7
 
-  control_mode: 2 # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE = 1 | JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
+  # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE (NOT IMPLEMENTED) = 1 |
+  #               JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
+  control_mode: 0
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
