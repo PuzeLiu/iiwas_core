@@ -35,24 +35,24 @@ namespace iiwas_kinematics {
         void transform_i(double q, int i, TransformMatrixType& out_T);
 
     private:
-        double d_bs_;     // Distance from base to shoulder
-        double d_se_;     // Distance from shoulder to elbow
-        double d_ew_;     // Distance from elbow to wrist
-        double d_wf_;     // Distance from elbow to finger(tip)
+        double dBs_;     // Distance from base to shoulder
+        double dSe_;     // Distance from shoulder to elbow
+        double dEw_;     // Distance from elbow to wrist
+        double dWf_;     // Distance from elbow to finger(tip)
 
-        JointArrayType dh_a_;       // DH-Parameter a
-        JointArrayType dh_alpha_;   // DH-Parameter alpha
-        JointArrayType dh_d_;       // DH-Parameter d
+        JointArrayType dhA_;       // DH-Parameter a
+        JointArrayType dhAlpha_;   // DH-Parameter alpha
+        JointArrayType dhD_;       // DH-Parameter d
 
     public:
-        JointArrayType pos_limits_upper;    // Joints position upper limits
-        JointArrayType pos_limits_lower;    // Joints position lower limits
-        JointArrayType vel_limits_upper;    // Joints velocity upper limits
-        JointArrayType vel_limits_lower;    // Joints velocity lower limits
+        JointArrayType posLimitsUpper_;    // Joints position upper limits
+        JointArrayType posLimitsLower_;    // Joints position lower limits
+        JointArrayType velLimitsUpper_;    // Joints velocity upper limits
+        JointArrayType velLimitsLower_;    // Joints velocity lower limits
 
-        Vector3d tcp_pos_;
-        Quaterniond tcp_quat_;
-        TransformMatrixType T, T_tmp, T_ee_;
+        Vector3d eePos_;
+        Quaterniond eeQuat_;
+        TransformMatrixType transform_, transformTmp_, transformEE_;
     };
 }
 #endif //SRC_IIWAS_KINEMATICS_H
