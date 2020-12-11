@@ -52,6 +52,16 @@ namespace iiwas_kinematics {
         out_ee_quad = transform_.block<3, 3>(0, 0);
     }
 
+    void Kinematics::ForwardKinematics(const Kinematics::JointArrayType &q, Vector3d &out_ee_pos) {
+        transform_.setIdentity();
+        for (int i = 0; i < NUM_OF_JOINTS; ++i) {
+            transform_i(q[i], i, transformTmp_);
+            transform_ = transform_ * transformTmp_;
+        }
+        transform_ = transform_ * transformEE_;
+        out_ee_pos = transform_.block<3, 1>(0, 3);
+    }
+
     void Kinematics::Jacobian(const JointArrayType &q, JacobianType &out_jacobian) {
         JacobianPosType jac_pos;
         JacobianRotType jac_rot;

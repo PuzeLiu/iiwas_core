@@ -27,6 +27,7 @@ namespace iiwas_kinematics {
         Kinematics(const Vector3d& tcp_position, const Quaterniond& tcp_quaternion);
 
         void ForwardKinematics(const JointArrayType& q, Vector3d& out_ee_pos, Quaterniond& out_ee_quad);
+        void ForwardKinematics(const JointArrayType& q, Vector3d& out_ee_pos);
         void Jacobian(const JointArrayType& q, JacobianType& out_jacobian);
         void JacobianPos(const JointArrayType& q, JacobianPosType& out_jacobian);
         void JacobianRot(const JointArrayType& q, JacobianRotType& out_jacobian);
