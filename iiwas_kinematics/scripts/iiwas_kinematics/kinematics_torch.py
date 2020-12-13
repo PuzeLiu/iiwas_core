@@ -619,13 +619,16 @@ if __name__ == "__main__":
 
     # Test for calculating redundancy
     for i in range(10):
+        # yzy_test = torch.rand(3) * torch.tensor([2 * np.pi, np.pi, 2 * np.pi]) - torch.tensor([np.pi, 0, np.pi])
+        # kine_test = KinematicsTorch(tcp_pos=torch.rand(3),
+        #                             tcp_quat=Rotation.from_euler_yzy(yzy_test).as_quat())
+        # q_test = torch.rand(7) * (kine_test.joint_limits[:, 1]) * 2 + kine_test.joint_limits[:, 0]
+
         yzy_test = torch.rand(3) * torch.tensor([2 * np.pi, np.pi, 2 * np.pi]) - torch.tensor([np.pi, 0, np.pi])
-        kine_test = KinematicsTorch(tcp_pos=torch.rand(3),
-                                    tcp_quat=Rotation.from_euler_yzy(yzy_test).as_quat())
+        kine_test = KinematicsTorch(tcp_pos=torch.tensor([0.1, 0.2, 0.5]),
+                                tcp_quat=torch.tensor([1., 0.5, 0.1, 0.6])/torch.norm(torch.tensor([1., 0.5, 0.1, 0.6])))
+        q_test = torch.tensor([-0.1, 0.2, -0.3, -0.4, -0.5, 0.6, -0.7])
 
-        # kine_test = KinematicsTorch()
-
-        q_test = torch.rand(7) * (kine_test.joint_limits[:, 1]) * 2 + kine_test.joint_limits[:, 0]
         pose_test = kine_test.forward_kinematics(q_test)
         gc = torch.sign(q_test[[1, 3, 5]])
         psi_test = kine_test.get_redundancy(q_test)
