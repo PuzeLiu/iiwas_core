@@ -2,27 +2,24 @@
 <launch>
     <arg name="use_front_iiwa" default="false"/>
     <arg name="use_back_iiwa" default="false"/>
-    <arg name="front_controllers" default="joint_state_controller
-                                           joint_trajectory_controller"/>
+    <arg name="front_controllers" default="joint_trajectory_controller"/>
 <!--                                           joint_position_controller"/>-->
-    <arg name="back_controllers" default="joint_state_controller
-                                           joint_trajectory_controller"/>
+    <arg name="back_controllers" default="joint_trajectory_controller"/>
 <!--                                          joint_position_controller"/>-->
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find iiwas_control)/config/iiwas_control.yaml" command="load"/>
 
-    <group if="$(arg use_front_iiwa)" ns="iiwa_front">
+    <group if="$(arg use_front_iiwa)">
         <!-- load the controllers -->
-        <node name="iiwas_front_controller" pkg="controller_manager" type="spawner" respawn="false"
-              output="screen" args="$(arg front_controllers)"/>
-
+        <node name="iiwas_front_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="iiwa_front/joint_state_controller iiwa_front/$(arg front_controllers)"/>
     </group>
 
-    <group if="$(arg use_back_iiwa)" ns="iiwa_back">
+    <group if="$(arg use_back_iiwa)">
         <!-- load the controllers -->
-        <node name="iiwas_back_controller" pkg="controller_manager" type="spawner" respawn="false"
-              output="screen" args="$(arg back_controllers)"/>    
+        <node name="iiwas_back_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="iiwa_back/joint_state_controller iiwa_back/$(arg back_controllers)"/>
     </group>
     
   	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" ns="iiwa_front">
