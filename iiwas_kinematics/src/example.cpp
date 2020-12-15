@@ -96,15 +96,16 @@ int main(int argc, char* argv[]){
     Quaterniond quatInvTest;
     double psi;
     Kinematics::JointArrayType qInv;
-    q.setRandom() * M_PI;
-    kinematics.forwardKinematics(q, xInvTest, quatInvTest);
-    kinematics.getRedundancy(q, gc, psi);
+
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < 10000; ++i) {
+        q.setRandom() * M_PI;
+        kinematics.forwardKinematics(q, xInvTest, quatInvTest);
+        kinematics.getRedundancy(q, gc, psi);
         if(kinematics.inverseKinematics(xInvTest, quatInvTest, gc, psi, qInv)){
-//            if((q - qInv).norm()>1e-6) {
-//                cout << "Test Inverse Kinematics Error at: " << q << endl;
-//            }
+            if((q - qInv).norm()>1e-6) {
+                cout << "Test Inverse Kinematics Error at: " << q << endl;
+            }
         }
     }
     finish = chrono::high_resolution_clock::now();
