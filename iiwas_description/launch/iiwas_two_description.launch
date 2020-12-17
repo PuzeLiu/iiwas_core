@@ -18,47 +18,11 @@
     <arg name="frame_urdf" default="$(find iiwas_description)/robots/iiwas_frame_urdf.xacro"/>
     <arg name="iiwa_urdf" default="$(find iiwas_description)/robots/iiwa.urdf.xacro"/>
 
-    <param name="iiwas_frame/robot_description"
-           command="$(find xacro)/xacro '$(arg frame_urdf)' namespace:='iiwas_frame'
-           world_to_front_base_x:=$(arg world_iiwa_f_x) world_to_front_base_y:=$(arg world_iiwa_f_y) world_to_front_base_z:=$(arg world_iiwa_f_z)
-           world_to_back_base_x:=$(arg world_iiwa_b_x) world_to_back_base_y:=$(arg world_iiwa_b_y) world_to_back_base_z:=$(arg world_iiwa_b_z)"/>
-
-    <param name="iiwa_front/robot_description"
-           command="$(find xacro)/xacro '$(arg iiwa_urdf)' namespace:='iiwa_front'
-           parent:='front_base' robot_name:='F' "/>
-    <param name="iiwa_back/robot_description"
-           command="$(find xacro)/xacro '$(arg iiwa_urdf)' namespace:='iiwa_back'
-           parent:='back_base' robot_name:='B' "/>
-
-<!--    <param name="iiwa_back_description"-->
-<!--           command="$(find xacro)/xacro '$(arg urdf_file)'-->
-<!--           world_to_iiwa_f_x:=$(arg world_iiwa_f_x) world_to_iiwa_f_y:=$(arg world_iiwa_f_y) world_to_iiwa_f_z:=$(arg world_iiwa_f_z)-->
-<!--           world_to_iiwa_f_roll:=$(arg world_iiwa_f_roll) world_to_iiwa_f_pitch:=$(arg world_iiwa_f_pitch) world_to_iiwa_f_yaw:=$(arg world_iiwa_f_yaw)-->
-<!--           world_to_iiwa_b_x:=$(arg world_iiwa_b_x) world_to_iiwa_b_y:=$(arg world_iiwa_b_y) world_to_iiwa_b_z:=$(arg world_iiwa_b_z)-->
-<!--           world_to_iiwa_b_roll:=$(arg world_iiwa_b_roll) world_to_iiwa_b_pitch:=$(arg world_iiwa_b_pitch) world_to_iiwa_b_yaw:=$(arg world_iiwa_b_yaw)-->
-<!--           hardware_interface:=$(arg hardware_interface)"/>-->
+    <arg name="front_controllers" default="joint_trajectory_controller"/>
+    <arg name="back_controllers" default="joint_trajectory_controller"/>
 
     <node name="rviz" pkg="rviz" type="rviz"
           args="-d $(find iiwas_description)/config/iiwas_two_separate.rviz"/>
-
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="frame_publisher" output="screen" ns="iiwas_frame">
-        <param name="publish_frequency" type="double" value="50.0"/>
-    </node>
-
-    <node name="front_joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" ns="iiwa_front">
-    </node>
-
-    <node name="back_joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" ns="iiwa_back">
-    </node>
-
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" ns="iiwa_front">
-        <param name="publish_frequency" type="double" value="50.0"/>
-    </node>
-
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" ns="iiwa_back">
-        <param name="publish_frequency" type="double" value="50.0"/>
-    </node>
-
 
     <arg name="world_name" default="$(find iiwas_gazebo)/worlds/iiwas_world.world"/>
     <arg name="gui" default="true"/>
@@ -72,12 +36,61 @@
         <!--        <arg name="physics" value="bullet" />-->
     </include>
 
-    <node name="frame_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-          args="-urdf -model iiwas_frame -robot_namespace iiwas_frame -param iiwas_frame/robot_description"/>
+    <rosparam file="$(find iiwas_control)/config/iiwas_control.yaml" command="load"/>
 
-    <node name="iiwa_front_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-          args="-urdf -model iiwa_front -param iiwa_front/robot_description -reference_frame iiwas_frame::front_base -robot_namespace iiwa_front"/>
+    <group ns="iiwas_frame">
+        <param name="robot_description"
+               command="$(find xacro)/xacro '$(arg frame_urdf)' namespace:='iiwas_frame'
+               world_to_front_base_x:=$(arg world_iiwa_f_x) world_to_front_base_y:=$(arg world_iiwa_f_y) world_to_front_base_z:=$(arg world_iiwa_f_z)
+               world_to_back_base_x:=$(arg world_iiwa_b_x) world_to_back_base_y:=$(arg world_iiwa_b_y) world_to_back_base_z:=$(arg world_iiwa_b_z)"/>
 
-    <node name="iiwa_back_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-          args="-urdf -model iiwa_back -param iiwa_back/robot_description -reference_frame iiwas_frame::back_base  -robot_namespace iiwa_back"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="frame_publisher" output="screen" ns="iiwas_frame">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+
+        <node name="frame_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+              args="-urdf -model iiwas_frame -param robot_description"/>
+    </group>
+
+    <group ns="iiwa_front">
+        <param name="robot_description"
+               command="$(find xacro)/xacro '$(arg iiwa_urdf)'
+               parent:='front_base' robot_name:='F' "/>
+
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+
+        <node name="iiwas_front_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="joint_state_controller $(arg front_controllers)"/>
+
+        <node name="iiwa_front_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+              args="-urdf -model iiwa_front -param robot_description -wait iiwas_frame
+              -reference_frame iiwas_frame::front_base"/>
+
+        <node name="iiwa_front_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller">
+        </node>
+    </group>
+
+    <group ns="iiwa_back">
+        <param name="robot_description"
+               command="$(find xacro)/xacro '$(arg iiwa_urdf)'
+               parent:='back_base' robot_name:='B' "/>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+
+        <node name="iiwas_back_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="joint_state_controller $(arg back_controllers)"/>
+
+        <node name="iiwa_back_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+              args="-urdf -model iiwa_back -param robot_description -wait iiwas_frame
+              -reference_frame iiwas_frame::back_base"/>
+
+        <node name="iiwa_back_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller">
+        </node>
+    </group>
+
+
 </launch>

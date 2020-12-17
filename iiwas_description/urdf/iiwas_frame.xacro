@@ -148,7 +148,7 @@
             <origin xyz="${back_x - world_frame_origin_x}
                      ${back_y - world_frame_origin_y}
                      ${base_h/2 + back_z}"
-                    rpy="0.0 0.0 0.0"/>
+                    rpy="0.0 0.0 ${M_PI}"/>
             <parent link="iiwa_frame_origin"/>
             <child link="back_base"/>
         </joint>

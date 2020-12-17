@@ -11,8 +11,7 @@
   <xacro:arg name="robot_name" default="F"/>
   <xacro:arg name="parent" default="front_base"/>
   <xacro:arg name="base_rpy" default="0 0 0"/>
-  <xacro:arg name="namespace" default=""/>
-  
+
   <!-- Fix to world just for testing -->
   <link name="$(arg parent)"/>
   
@@ -21,10 +20,13 @@
     <origin xyz="0 0 ${base_height/2}" rpy="$(arg base_rpy)" />
   </xacro:iiwa14>
 
+  <gazebo reference="$(arg parent)">
+    <kinematic>true</kinematic>
+  </gazebo>
+
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotParam>$(arg namespace)/robot_description</robotParam>
     </plugin>
   </gazebo>
-  
+
 </robot>

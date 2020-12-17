@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
-<robot name="iiwas" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="iiwas_frame" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:include filename="$(find iiwas_description)/urdf/materials.xacro" />
     <xacro:include filename="$(find iiwas_description)/urdf/iiwas_frame.xacro"/>
 
-    <xacro:arg name="namespace" default="/iiwas_frame"/>
 
     <xacro:property name="M_PI" value="3.1415926535897931"/>
     <xacro:arg name="world_to_front_base_x" default="0.190"/>
@@ -21,17 +20,7 @@
     <!-- Load Gazebo lib and set the robot namespace -->
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotParam>$(arg namespace)/robot_description</robotParam>
         </plugin>
     </gazebo>
-
-<!--    <gazebo reference="iiwas_frame">-->
-<!--        <material value="Gazebo/Black"/>-->
-<!--        <static>true</static>-->
-<!--        <turnGravityOff>0-->
-<!--        </turnGravityOff> &lt;!&ndash; use gravity for the base even if disabled for the arms in order to prevent iiwas from falling&ndash;&gt;-->
-<!--    </gazebo>-->
-
-
 
 </robot>
