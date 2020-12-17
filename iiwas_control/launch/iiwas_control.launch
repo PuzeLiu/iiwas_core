@@ -1,35 +1,28 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="use_front_iiwa" default="false"/>
-    <arg name="use_back_iiwa" default="false"/>
+    <arg name="use_front" default="true"/>
+    <arg name="use_back" default="true"/>
     <arg name="front_controllers" default="joint_trajectory_controller"/>
-<!--                                           joint_position_controller"/>-->
     <arg name="back_controllers" default="joint_trajectory_controller"/>
-<!--                                          joint_position_controller"/>-->
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find iiwas_control)/config/iiwas_control.yaml" command="load"/>
 
-    <group if="$(arg use_front_iiwa)">
+    <group ns="iiwa_front" if="$(arg use_front)">
         <!-- load the controllers -->
-        <node name="iiwas_front_controller" pkg="controller_manager" type="spawner" respawn="true"
-              output="screen" args="iiwa_front/joint_state_controller iiwa_front/$(arg front_controllers)"/>
+        <node name="iiwa_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="joint_state_controller $(arg front_controllers)"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
     </group>
 
-    <group if="$(arg use_back_iiwa)">
+    <group ns="iiwa_back" if="$(arg use_back)">
         <!-- load the controllers -->
-        <node name="iiwas_back_controller" pkg="controller_manager" type="spawner" respawn="true"
-              output="screen" args="iiwa_back/joint_state_controller iiwa_back/$(arg back_controllers)"/>
+        <node name="iiwa_controller" pkg="controller_manager" type="spawner" respawn="true"
+              output="screen" args="joint_state_controller $(arg back_controllers)"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
     </group>
-    
-  	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" ns="iiwa_front">
-        <param name="publish_frequency" type="double" value="50.0"/>
-	</node>
-	
-	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" ns="iiwa_back">
-    	<param name="publish_frequency" type="double" value="50.0"/>
-    </node>
-
-
-
 </launch>

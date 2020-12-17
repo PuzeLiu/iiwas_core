@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_front" default="true"/>
+    <arg name="use_back" default="true"/>
+    <arg name="use_gripper" default="true"/>
+
+    <arg name="world_iiwa_f_x" default="0.190"/>
+    <arg name="world_iiwa_f_y" default="0.813"/>
+    <arg name="world_iiwa_f_z" default="0.0"/>
+    <arg name="world_iiwa_f_rpy" default="0 0 0"/>
+
+    <arg name="world_iiwa_b_x" default="3.198"/>
+    <arg name="world_iiwa_b_y" default="0.813"/>
+    <arg name="world_iiwa_b_z" default="0.0"/>
+    <arg name="world_iiwa_b_rpy" default="0 0 0"/>
+
+    <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
+
+    <node name="rviz" pkg="rviz" type="rviz"
+          args="-d $(find iiwas_description)/config/iiwas_two_separate.rviz"/>
+
+    <include file="$(find iiwas_description)/launch/iiwas_bringup.launch">
+        <arg name="use_front" value="$(arg use_front)"/>
+        <arg name="use_back" value="$(arg use_back)"/>
+        <arg name="use_gripper" value="$(arg use_gripper)"/>
+
+        <arg name="world_iiwa_f_x" value="$(arg world_iiwa_f_x)"/>
+        <arg name="world_iiwa_f_y" value="$(arg world_iiwa_f_y)"/>
+        <arg name="world_iiwa_f_z" value="$(arg world_iiwa_f_z)"/>
+        <arg name="world_iiwa_f_rpy" value="$(arg world_iiwa_f_rpy)"/>
+
+        <arg name="world_iiwa_b_x" value="$(arg world_iiwa_b_x)"/>
+        <arg name="world_iiwa_b_y" value="$(arg world_iiwa_b_y)"/>
+        <arg name="world_iiwa_b_z" value="$(arg world_iiwa_b_z)"/>
+        <arg name="world_iiwa_b_rpy" value="$(arg world_iiwa_b_rpy)"/>
+
+        <arg name="hardware_interface" value="hardware_interface/PositionJointInterface"/>
+    </include>
+
+    <group ns="iiwas_frame">
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="frame_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+    </group>
+
+    <group ns="iiwa_front" if="$(arg use_front)">
+        <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+    </group>
+
+    <group ns="iiwa_back" if="$(arg use_back)">
+        <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+    </group>
+
+</launch>
