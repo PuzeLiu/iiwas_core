@@ -321,10 +321,16 @@
             <selfCollide>0</selfCollide>
         </link>
 
-        <gazebo reference="${name}">
-            <material value="Gazebo/Black"/>
-            <turnGravityOff>0
-            </turnGravityOff> <!-- use gravity for the base even if disabled for the arms in order to prevent iiwas from falling-->
+        <gazebo reference="front_base_joint">
+            <preserveFixedJoint>true</preserveFixedJoint>
+        </gazebo>
+        <gazebo reference="front_base">
+        </gazebo>
+
+        <gazebo reference="back_base_joint">
+            <preserveFixedJoint>true</preserveFixedJoint>
+        </gazebo>
+        <gazebo reference="back_base">
         </gazebo>
 
     </xacro:macro>

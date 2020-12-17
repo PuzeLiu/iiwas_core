@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="iiwas" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:include filename="$(find iiwas_description)/urdf/materials.xacro" />
-    <xacro:include filename="$(find iiwas_description)/urdf/iiwas_frame.urdf.xacro"/>
+    <xacro:include filename="$(find iiwas_description)/urdf/iiwas_frame.xacro"/>
     <xacro:include filename="$(find iiwas_description)/urdf/iiwa14.xacro"/>
     <xacro:include filename="$(find iiwas_description)/urdf/util_defs.xml"/>
     <!-- the mass values and inertia may not be completly correct as the moment so this model should just be used as a kinematic one now-->
