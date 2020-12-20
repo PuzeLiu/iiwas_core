@@ -68,6 +68,11 @@
       <selfCollide>0</selfCollide>
     </gazebo>
 
+    <!-- Link7 -->
+    <gazebo reference="${robot_name}_joint_ee">
+      <preserveFixedJoint>1</preserveFixedJoint>
+    </gazebo>
+
   </xacro:macro>
 
 </robot>

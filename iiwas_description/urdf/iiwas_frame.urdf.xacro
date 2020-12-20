@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <!--       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"-->
-    <!--       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"-->
-    <!--       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface">-->
+<robot name="iiwas_frame" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find iiwas_description)/urdf/materials.xacro" />
+    <xacro:arg name="world_to_front_base_x" default="0.190"/>
+    <xacro:arg name="world_to_front_base_y" default="0.813"/>
+    <xacro:arg name="world_to_front_base_z" default="0.0"/>
+
+    <xacro:arg name="world_to_back_base_x" default="3.198"/>
+    <xacro:arg name="world_to_back_base_y" default="0.813"/>
+    <xacro:arg name="world_to_back_base_z" default="0.0"/>
+
 
     <xacro:property name="horizontal_bar_outer_l" value="1.56"/>
     <xacro:property name="horizontal_bar_outer_w" value="0.08"/>
@@ -20,6 +26,9 @@
     <xacro:property name="base_to_bar_y" value="0.61"/>
     <xacro:property name="world_frame_origin_x" value="-0.048"/>
     <xacro:property name="world_frame_origin_y" value="-0.076"/>
+
+    <xacro:property name="M_PI" value="3.1415926535897931"/>
+
 
     <xacro:macro name="iiwas_frame" params="name front_x front_y front_z back_x back_y back_z">
 
@@ -324,15 +333,20 @@
         <gazebo reference="front_base_joint">
             <preserveFixedJoint>true</preserveFixedJoint>
         </gazebo>
-        <gazebo reference="front_base">
-        </gazebo>
 
         <gazebo reference="back_base_joint">
             <preserveFixedJoint>true</preserveFixedJoint>
         </gazebo>
-        <gazebo reference="back_base">
-        </gazebo>
-
     </xacro:macro>
+
+    <xacro:iiwas_frame name="iiwas_frame" front_x="$(arg world_to_front_base_x)" front_y="$(arg world_to_front_base_y)"
+                       front_z ="$(arg world_to_front_base_z)" back_x="$(arg world_to_back_base_x)"
+                       back_y="$(arg world_to_back_base_y)" back_z ="$(arg world_to_back_base_z)"/>
+
+    <!-- Load Gazebo lib and set the robot namespace -->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        </plugin>
+    </gazebo>
 
 </robot>
