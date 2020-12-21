@@ -26,7 +26,7 @@
 using namespace KUKA::FRI;
 
 namespace iiwa_hw{
-    HardwareInterface::HardwareInterface() : nh("~"){
+    HardwareInterface::HardwareInterface() : nh(){
         jointState.resize(LBRState::NUMBER_OF_JOINTS);
         jointStateLast.resize(LBRState::NUMBER_OF_JOINTS);
         jointCommand.resize(LBRState::NUMBER_OF_JOINTS);
@@ -40,7 +40,6 @@ namespace iiwa_hw{
 
         loadURDF(iiwaDescription);
 
-//        iiwaReady = false;
         isAppServerStarted = false;
     }
 
@@ -117,8 +116,7 @@ namespace iiwa_hw{
         if (!nh.getParam("fri_port", friServerPort))
             ROS_WARN_STREAM_ONCE(nh.getNamespace() + "Unable to load application server port from Parameter Server, use Default: "
                                          << friServerPort);
-
-        nh.param<std::string>("robot_description", iiwaDescription, "/robot_description");
+        nh.param<std::string>("urdf_param", iiwaDescription, "/robot_description");
 
     }
 

@@ -29,7 +29,7 @@
 
 int main(int argc, char* argv[]){
     ros::init(argc, argv, "iiwas_drive", ros::init_options::AnonymousName);
-    ros::NodeHandle nh("~");
+    ros::NodeHandle nh;
 
     int coreID;
     if(!nh.getParam("core_id", coreID)){

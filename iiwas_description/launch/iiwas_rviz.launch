@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="use_front" default="true"/>
-    <arg name="use_back" default="true"/>
+    <arg name="use_front_iiwa" default="true"/>
+    <arg name="use_back_iiwa" default="true"/>
     <arg name="use_gripper" default="true"/>
 
     <arg name="world_iiwa_f_x" default="0.190"/>
@@ -16,26 +16,15 @@
 
     <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
 
+    <!-- Description -->
+    <include file="$(find iiwas_description)/launch/iiwas_bringup.launch">
+        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
+        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
+        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+    </include>
+
     <node name="rviz" pkg="rviz" type="rviz"
           args="-d $(find iiwas_description)/config/iiwas_two_separate.rviz"/>
-
-    <include file="$(find iiwas_description)/launch/iiwas_bringup.launch">
-        <arg name="use_front" value="$(arg use_front)"/>
-        <arg name="use_back" value="$(arg use_back)"/>
-        <arg name="use_gripper" value="$(arg use_gripper)"/>
-
-        <arg name="world_iiwa_f_x" value="$(arg world_iiwa_f_x)"/>
-        <arg name="world_iiwa_f_y" value="$(arg world_iiwa_f_y)"/>
-        <arg name="world_iiwa_f_z" value="$(arg world_iiwa_f_z)"/>
-        <arg name="world_iiwa_f_rpy" value="$(arg world_iiwa_f_rpy)"/>
-
-        <arg name="world_iiwa_b_x" value="$(arg world_iiwa_b_x)"/>
-        <arg name="world_iiwa_b_y" value="$(arg world_iiwa_b_y)"/>
-        <arg name="world_iiwa_b_z" value="$(arg world_iiwa_b_z)"/>
-        <arg name="world_iiwa_b_rpy" value="$(arg world_iiwa_b_rpy)"/>
-
-        <arg name="hardware_interface" value="hardware_interface/PositionJointInterface"/>
-    </include>
 
     <group ns="iiwas_frame">
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="frame_publisher" output="screen">

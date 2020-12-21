@@ -28,7 +28,7 @@
 using namespace KUKA::FRI;
 
 ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop& controlLoop_) :
-        nh("~"), controlLoop(controlLoop_){
+        nh(), controlLoop(controlLoop_){
     confClient = constructConfClient();
 
     cancelMotionSrv = nh.advertiseService("cancel_motion", &ConfigurationManager::cancelMotion,

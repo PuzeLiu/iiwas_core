@@ -19,7 +19,7 @@ iiwa_front:
 
   # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE (NOT IMPLEMENTED) = 1 |
   #               JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
-  control_mode: 0
+  control_mode: 2
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -32,6 +32,8 @@ iiwa_front:
 
   damping:
     [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
+
+  urdf_param: robot_description
 
 iiwa_back:
   fri_ip: 192.170.10.1
@@ -62,3 +64,5 @@ iiwa_back:
 
   damping:
     [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
+
+  urdf_param: robot_description

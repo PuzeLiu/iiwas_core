@@ -9,32 +9,36 @@
 
     <rosparam file="$(find iiwas_driver)/config/config.yaml" command="load"/>
 	
-	<!-- launch on realtime machine -->
-	<node name="iiwa_front" pkg="iiwas_driver" type="iiwas_driver"
-	      output="screen" required="true" 
-	      if="$(eval use_front_iiwa and machine_name=='')"/>
-	      
-	<!-- launch on application machine -->
-	<node name="iiwa_front" pkg="iiwas_driver" type="iiwas_driver"
-	      output="log" required="true" machine="$(arg machine_name)" 
-	      if="$(eval use_front_iiwa and machine_name!='')"/>
-	      
-	<!-- launch on for visualization -->
-	<node name="iiwa_front" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
-	 	  output="screen" required="true" unless="$(arg use_front_iiwa)"/>
-    
-    <!-- launch on realtime machine -->
-	<node name="iiwa_back" pkg="iiwas_driver" type="iiwas_driver"
-	      output="screen" required="true" 
-	      if="$(eval use_back_iiwa and machine_name =='')"/>
-	      
-	<!-- launch on application machine -->      
-	<node name="iiwa_back" pkg="iiwas_driver" type="iiwas_driver"
-	      output="log" required="true" machine="$(arg machine_name)" 
-	      if="$(eval use_back_iiwa and machine_name!='')"/>
-	      
-	<!-- launch on for visualization -->      
-	<node name="iiwa_back" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
-		  output="screen" required="true" unless="$(arg use_back_iiwa)"/>  
+  <group ns="iiwa_front">
+  	<!-- launch on realtime machine -->
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_driver"
+  	      output="screen" required="true" 
+  	      if="$(eval use_front_iiwa and machine_name=='')"/>
+  	      
+  	<!-- launch on application machine -->
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_driver"
+  	      output="log" required="true" machine="$(arg machine_name)" 
+  	      if="$(eval use_front_iiwa and machine_name!='')"/>
+  	
+  	<!-- launch on for visualization -->
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
+  	 	  output="screen" required="true" unless="$(arg use_front_iiwa)"/>
+  </group>
+
+  <group ns="iiwa_back">
+      <!-- launch on realtime machine -->
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_driver"
+  	      output="screen" required="true" 
+  	      if="$(eval use_back_iiwa and machine_name =='')"/>
+  	      
+  	<!-- launch on application machine -->      
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_driver"
+  	      output="log" required="true" machine="$(arg machine_name)" 
+  	      if="$(eval use_back_iiwa and machine_name!='')"/>
+  	      
+  	<!-- launch on for visualization -->      
+  	<node name="iiwa_driver" pkg="iiwas_driver" type="iiwas_fake_joint_publisher"
+  		  output="screen" required="true" unless="$(arg use_back_iiwa)"/>  
+  </group>
     
 </launch>

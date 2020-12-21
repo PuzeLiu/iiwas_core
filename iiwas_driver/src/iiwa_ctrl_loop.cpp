@@ -25,7 +25,7 @@
 
 namespace iiwa_hw{
     ControlLoop::ControlLoop(int coreId)
-    : nh("~"), hardwareInterface(), coreId(coreId){
+    : nh(), hardwareInterface(), coreId(coreId){
         controllerManager.reset(new controller_manager::ControllerManager(&hardwareInterface, nh));
         oldTime = ros::Time::now();
 
