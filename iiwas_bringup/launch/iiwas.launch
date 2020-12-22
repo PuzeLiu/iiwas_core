@@ -29,8 +29,8 @@
     <include file="$(find iiwas_control)/launch/iiwas_control.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
-        <arg name="front_controllers" value="joint_trajectory_controller"/>
-        <arg name="back_controllers" value="joint_trajectory_controller"/>
+        <arg name="front_controllers" value="joint_position_trajectory_controller"/>
+        <arg name="back_controllers" value="joint_position_trajectory_controller"/>
     </include>
 
 

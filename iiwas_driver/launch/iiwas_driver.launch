@@ -4,9 +4,6 @@
     <arg name="use_back_iiwa" default="false" />
     <arg name="machine_name" default="" />
 
-    <!-- Joint Controller Mode, [ JointImpedanceControl | JointPositionControl ] -->
-    <arg name="control_mode" default="JointPositionControl"/>
-
     <rosparam file="$(find iiwas_driver)/config/config.yaml" command="load"/>
 	
   <group ns="iiwa_front">
