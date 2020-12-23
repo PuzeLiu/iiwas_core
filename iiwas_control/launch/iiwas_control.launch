@@ -30,7 +30,7 @@
     <group ns="iiwa_back" if="$(arg use_back_iiwa)">
         <!-- load the controllers -->
         <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen"
-              args="joint_state_controller $(arg front_controllers)"/>
+              args="joint_state_controller $(arg back_controllers)"/>
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
             <param name="publish_frequency" type="double" value="50.0"/>
