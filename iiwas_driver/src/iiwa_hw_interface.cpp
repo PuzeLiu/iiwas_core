@@ -80,10 +80,19 @@ namespace iiwa_hw{
 					effortJointSatLimitsInterface.enforceLimits(period);
 					velocityJointSatLimitsInterface.enforceLimits(period);
 				}
-				for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-					friClient->joint_pos_des[i] = jointCommand[i].th;
-					friClient->joint_torques_des[i] = jointCommand[i].uff;
-				}
+				
+                if (friClient->robotState().getClientCommandMode() == KUKA::FRI::TORQUE){
+                    for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
+                        friClient->joint_pos_des[i] = friClient->latest_measured_joint_pos[i];
+                        friClient->joint_torques_des[i] = jointCommand[i].uff;
+                    }
+
+                } else{
+                    for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
+                       friClient->joint_pos_des[i] = jointCommand[i].th;
+                    }
+                }
+                
         	}
         else if (friClient->isCommandingWait()){
 			if (hasSoftLimits) {
