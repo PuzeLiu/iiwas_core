@@ -51,7 +51,7 @@ bool ConfigurationManager::startPositionControl() {
     bool status = true;
 
     if (confClient)
-        status = confClient->startPositionControl();
+        status = confClient->startControl();
 
     return status;
 }
@@ -172,8 +172,8 @@ bool ConfigurationManager::init(ConfigurationClient* confClient) {
         return false;
     }
 
-    if (controlMode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
-        if (!confClient->startJointImpedanceCtrlMode()) {
+    if (controlMode == ControlMode::IMPEDANCE_CONTROL){
+        if (!confClient->setJointImpedanceCtrlMode()) {
         ROS_ERROR_STREAM(nh.getNamespace() + " Starting impedance control mode failed");
         return false;
         }
@@ -187,9 +187,14 @@ bool ConfigurationManager::init(ConfigurationClient* confClient) {
             ROS_ERROR_STREAM(nh.getNamespace() + " Setting damping failed");
             return false;
         }
-    } else if (controlMode == KUKA::FRI::POSITION_CONTROL_MODE){
-        if (!confClient->startJointPositionCtrlMode()) {
+    } else if (controlMode == ControlMode::POSITION_CONTROL){
+        if (!confClient->setJointPositionCtrlMode()) {
             ROS_ERROR_STREAM(nh.getNamespace() + " Starting position control mode failed");
+            return false;
+        }
+    } else if (controlMode == ControlMode::TORQUE_CONTROL){
+        if (!confClient->setJointTorqueCtrlMode()){
+            ROS_ERROR_STREAM(nh.getNamespace() + " Starting torque control mode failed");
             return false;
         }
     }
@@ -224,19 +229,19 @@ bool ConfigurationManager::startPositionCtrl(iiwas_srv::StartPositionControl::Re
 
 	if(req.mode == KUKA::FRI::JOINT_IMP_CONTROL_MODE){
 		controlMode = KUKA::FRI::JOINT_IMP_CONTROL_MODE;
-		res.success = confClient->startJointImpedanceCtrlMode();
+		res.success = confClient->setJointImpedanceCtrlMode();
 		res.success = res.success && confClient->setStiffness(&jointStiffness[0]);
 		res.success = res.success && confClient->setDamping(&jointDamping[0]);
 	} else if(req.mode == KUKA::FRI::POSITION_CONTROL_MODE){
 		controlMode = KUKA::FRI::POSITION_CONTROL_MODE;
-		res.success = confClient->startJointPositionCtrlMode();
+		res.success = confClient->setJointPositionCtrlMode();
 	}
 	else{
 		ROS_WARN("Control Mode is not implemented, 0: PositionControlMode | 2: JointImpedanceControlMode");
 		return false;
 	}
 
-	res.success = res.success && confClient->startPositionControl();
+	res.success = res.success && confClient->startControl();
 	res.msg = confClient->getLastResponse();
     return true;
 }

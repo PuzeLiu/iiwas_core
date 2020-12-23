@@ -59,9 +59,10 @@ class ConfigurationClient {
     int checkReferencing();
     bool performSensorReferencing();
     bool startFRI();
-    bool startJointImpedanceCtrlMode();
-    bool startJointPositionCtrlMode();
-    bool startPositionControl();
+    bool setJointImpedanceCtrlMode();
+    bool setJointPositionCtrlMode();
+    bool setJointTorqueCtrlMode();
+    bool startControl();
     bool cancelMotion();
     bool waitMotionEnd();
     bool getStiffness(double *stiffness);

@@ -27,7 +27,12 @@
 #include <iiwa_fri_client/friLBRClient.h>
 #include <iiwa_fri_client/friLBRState.h>
 
-
+enum ControlMode{
+    POSITION_CONTROL = 0,
+    IMPEDANCE_CONTROL = 1,
+    TORQUE_CONTROL = 2,
+    NO_CONTROL = 3
+};
 
 /**
  * \brief Test client that superposes joint torques with sine waves.

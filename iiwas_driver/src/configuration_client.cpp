@@ -237,15 +237,21 @@ bool ConfigurationClient::setDamping(double* damping){
     return communicate(cmd, params.str());
 }
 
-bool ConfigurationClient::startJointImpedanceCtrlMode(){
+bool ConfigurationClient::setJointImpedanceCtrlMode(){
     std::string cmd = "JOINT_IMPEDANCE_MODE";
     return communicate(cmd);
 }
 
-bool ConfigurationClient::startJointPositionCtrlMode(){
+bool ConfigurationClient::setJointPositionCtrlMode(){
     std::string cmd = "JOINT_POSITION_MODE";
     return communicate(cmd);
 }
+
+bool ConfigurationClient::setJointTorqueCtrlMode(){
+    std::string cmd = "JOINT_TORQUE_MODE";
+    return communicate(cmd);
+}
+
 
 bool ConfigurationClient::setESMState(int state){
     std::string cmd = "SET_ESM";
@@ -271,7 +277,7 @@ bool ConfigurationClient::setBlueLight(bool enabled) {
     return communicate(cmd, params);
 }
 
-bool ConfigurationClient::startPositionControl(){
+bool ConfigurationClient::startControl(){
     std::string cmd = "POSITION_CONTROL";
 
     if(!communicate(cmd))

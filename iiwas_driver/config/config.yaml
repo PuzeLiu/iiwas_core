@@ -7,7 +7,7 @@ iiwa_front:
 
   core_id: 4
 
-  control_freq: 1000 # in Hz
+  control_freq: 500 # in Hz
   joints:
     - F_joint_1
     - F_joint_2
@@ -17,8 +17,8 @@ iiwa_front:
     - F_joint_6
     - F_joint_7
 
-  # Control mode: POSITION_CONTROL_MODE = 0 | CART_IMP_CONTROL_MODE (NOT IMPLEMENTED) = 1 |
-  #               JOINT_IMP_CONTROL_MODE = 2 | NO_CONTROL = 3
+  # Control mode: POSITION_CONTROL = 0 | IMPEDANCE_CONTROL = 1 |
+  #               TORQUE_CONTROL = 2 | NO_CONTROL = 3
   control_mode: 2
 
   init_position:
@@ -28,12 +28,12 @@ iiwa_front:
     
   stiffness:
 #    [1000.0, 3000.0, 1000.0, 2000.0, 750, 750, 250]
-#    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 50.0]
-    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 00.0]
+    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 50.0]
+#    [200.0, 600.0, 200.0, 400.0, 150.0, 150.0, 00.0]
 
   damping:
-#    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
-    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.0]
+    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
+#    [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.0]
 
   urdf_param: robot_description
 
