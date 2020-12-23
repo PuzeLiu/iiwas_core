@@ -3,8 +3,8 @@ iiwa_front:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz
 
-  joint_position_controller:
-    type: position_controllers/JointGroupPositionController
+  joint_position_trajectory_controller:
+    type: position_controllers/JointTrajectoryController
     joints:
       - F_joint_1
       - F_joint_2
@@ -24,18 +24,16 @@ iiwa_front:
       - F_joint_5
       - F_joint_6
       - F_joint_7
-
     gains:
-      F_joint_1: {p: 800.0, i: 100, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_2: {p: 800.0, i: 1000, d: 100.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_3: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_4: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_5: {p: 300.0, i: 5, d: 10.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_6: {p: 50.0, i: 1, d: 1.0, i_clamp_min: -100, i_clamp_max: 100}
-      F_joint_7: {p: 10.0, i: 0.1, d: 1.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_1: {p: 800.0, i: 100.0, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_2: {p: 800.0, i: 100.0, d: 100.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_3: {p: 300.0, i: 10.0, d: 25.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_4: {p: 300.0, i: 10.0, d: 25.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_5: {p: 200.0, i: 10.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_6: {p: 200.0, i: 10.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_7: {p: 100.0, i: 15.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
 
-
-  joint_position_trajectory_controller:
+  joint_position_impedance_trajectory_controller:
     type: position_controllers/JointTrajectoryController
     joints:
       - F_joint_1
@@ -52,8 +50,8 @@ iiwa_back:
     type: joint_state_controller/JointStateController
     publish_rate: 1000  # in Hz
 
-  joint_position_controller:
-    type: position_controllers/JointGroupPositionController
+  joint_position_trajectory_controller:
+    type: position_controllers/JointTrajectoryController
     joints:
       - B_joint_1
       - B_joint_2
@@ -64,7 +62,7 @@ iiwa_back:
       - B_joint_7
 
   joint_torque_trajectory_controller:
-    type: effort_controllers/JointGroupPositionController
+    type: effort_controllers/JointTrajectoryController
     joints:
       - B_joint_1
       - B_joint_2
@@ -73,17 +71,16 @@ iiwa_back:
       - B_joint_5
       - B_joint_6
       - B_joint_7
-
     gains:
-      B_joint_1: {p: 800.0, i: 100, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_2: {p: 800.0, i: 1000, d: 100.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_3: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_4: {p: 800.0, i: 10, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_5: {p: 300.0, i: 5, d: 10.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_6: {p: 50.0, i: 1, d: 1.0, i_clamp_min: -100, i_clamp_max: 100}
-      B_joint_7: {p: 10.0, i: 0.1, d: 1.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_1: {p: 800.0, i: 100.0, d: 80.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_2: {p: 800.0, i: 100.0, d: 100.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_3: {p: 300.0, i: 10.0, d: 25.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_4: {p: 300.0, i: 10.0, d: 25.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_5: {p: 200.0, i: 10.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_6: {p: 200.0, i: 10.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
+      B_joint_7: {p: 100.0, i: 15.0, d: 5.0, i_clamp_min: -100, i_clamp_max: 100}
 
-  joint_position_trajectory_controller:
+  joint_position_impedance_trajectory_controller:
     type: position_controllers/JointTrajectoryController
     joints:
       - B_joint_1
