@@ -87,8 +87,6 @@ namespace iiwa_hw{
                         friClient->joint_pos_des[i] = friClient->latest_measured_joint_pos[i];
                         friClient->joint_torques_des[i] = jointCommand[i].uff;
                     }
-//                    friClient->joint_pos_des[0] = 0.;
-//                    friClient->joint_pos_des[1] = 0.;
                 } else{
                     for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
                        friClient->joint_pos_des[i] = jointCommand[i].th;
