@@ -161,6 +161,12 @@ namespace iiwas_kinematics {
         out_q(5) = globalConfiguration_(5) * acos(cos_q6);
         out_q(6) = atan2(globalConfiguration_(6) * (auxA_(6, 0) * sin(psi) + auxB_(6, 0) * cos(psi) + auxC_(6, 0)),
                            globalConfiguration_(6) * (auxA_(6, 1) * sin(psi) + auxB_(6, 1) * cos(psi) + auxC_(6, 1)));
+
+        for (int i = 0; i < NUM_OF_JOINTS; ++i) {
+            if (out_q(i) < posLimitsLower_(i) || out_q(i) > posLimitsUpper_(i) ){
+                return false;
+            }
+        }
         return true;
     }
 
