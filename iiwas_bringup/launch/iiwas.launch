@@ -7,7 +7,7 @@
     <arg name="back_controllers" default="joint_position_trajectory_controller" />
 
     <!-- Description -->
-    <include file="$(find iiwas_description)/launch/iiwas_bringup.launch">
+    <include file="$(find iiwas_description)/launch/iiwas_description.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
