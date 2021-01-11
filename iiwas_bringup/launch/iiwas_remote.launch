@@ -29,29 +29,12 @@
         </node>
     </group>
 
-    <arg name="front_control_mode" value="0" if="$(eval front_controllers == 'joint_position_trajectory_controller')"/>
-    <arg name="front_control_mode" value="1" if="$(eval front_controllers == 'joint_position_impedance_trajectory_controller')"/>
-    <arg name="front_control_mode" value="2" if="$(eval front_controllers == 'joint_torque_trajectory_controller')"/>
-    <arg name="back_control_mode" value="0" if="$(eval back_controllers == 'joint_position_trajectory_controller')"/>
-    <arg name="back_control_mode" value="1" if="$(eval back_controllers == 'joint_position_impedance_trajectory_controller')"/>
-    <arg name="back_control_mode" value="2" if="$(eval back_controllers == 'joint_torque_trajectory_controller')"/>
-
-    <include file="$(find iiwas_driver)/launch/iiwas_driver.launch" >
-        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
-        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
-        <arg name="front_control_mode" value="$(arg front_control_mode)"/>
-        <arg name="back_control_mode" value="$(arg back_control_mode)"/>
-        <arg name="machine_name" value="$(arg machine_name)" />
-    </include>
-
-    <!-- Controllers -->
-    <include file="$(find iiwas_control)/launch/iiwas_control.launch">
+    <include file="$(find iiwas_bringup)/launch/iiwas_barebone.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
-        <arg name="front_controllers" value="$(arg front_controllers)"/>
-        <arg name="back_controllers" value="$(arg back_controllers)"/>
+        <arg name="machine_name" value="$(arg machine_name)" />
+        <arg name="front_controllers" value="$(arg front_controllers)" />
+        <arg name="back_controllers" value="$(arg back_controllers)" />
     </include>
-
-
 
 </launch>
