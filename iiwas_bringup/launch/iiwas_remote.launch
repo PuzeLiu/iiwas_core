@@ -9,9 +9,11 @@
     <arg name="back_controllers" default="joint_torque_trajectory_controller" />
 <!--    <arg name="front_controllers" default="joint_position_trajectory_controller" />-->
 <!--    <arg name="back_controllers" default="joint_position_trajectory_controller" />-->
+    <arg name="user_name" default="puze"/>
+    <arg name="env_load_dir" default="~/catkin_ws/src/iiwas_core/iiwas_bringup/env.sh"/>
 
-    <machine name="$(arg machine_name)" user="puze" address="$(arg machine_address)"
-         env-loader="~/catkin_ws/src/iiwas_core/iiwas_bringup/env.sh" timeout="10.0" default="false"/>
+    <machine name="$(arg machine_name)" user="$(arg user_name)" address="$(arg machine_address)"
+         env-loader="$(arg env_load_dir)" timeout="10.0" default="false"/>
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
