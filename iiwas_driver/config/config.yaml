@@ -34,6 +34,9 @@ iiwa_front:
 
   urdf_param: robot_description
 
+  use_urdf_joint_limits: true
+  use_soft_limits: false
+
 iiwa_back:
   fri_ip: 192.170.10.1
   fri_port: 30201
@@ -66,3 +69,6 @@ iiwa_back:
     [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
 
   urdf_param: robot_description
+
+  use_urdf_joint_limits: true
+  use_soft_limits: false
