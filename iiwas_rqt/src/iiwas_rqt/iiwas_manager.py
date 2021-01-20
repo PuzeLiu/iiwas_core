@@ -78,13 +78,15 @@ class IiwasManager(Plugin):
                                                              persistent=True)
 
     def _get_joint_limits(self):
-        robot = URDF.from_parameter_server()
+        robot = dict()
+        robot['F'] = URDF.from_parameter_server(key='/iiwa_front/robot_description')
+        robot['B'] = URDF.from_parameter_server(key='/iiwa_back/robot_description')
 
         for robot_prefix in ['F', 'B']:
             for i in range(7):
                 index = str(i+1)
                 joint_name = robot_prefix + '_joint_' + index
-                limit = robot.joint_map[joint_name].limit
+                limit = robot[robot_prefix].joint_map[joint_name].limit
 
                 joint_controller_name = 'controller_' + robot_prefix + '_' + index
                 joint_controller = getattr(self._widget, joint_controller_name)
