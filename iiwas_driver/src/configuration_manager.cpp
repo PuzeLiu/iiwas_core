@@ -167,6 +167,10 @@ bool ConfigurationManager::init(ConfigurationClient *confClient) {
 		return false;
 	}
 
+	if (!setControlMode()){
+        return false;
+	}
+
 	return true;
 }
 
