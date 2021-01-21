@@ -111,12 +111,7 @@ bool ConfigurationManager::init(ConfigurationClient *confClient) {
 		return false;
 	}
 
-	if (!nh.getParam("control_mode", controlMode)) {
-		ROS_ERROR_STREAM_ONCE(
-				nh.getNamespace()
-						+ " Fail to load the control mode of the arm");
-		return false;
-	}
+	controlMode = nh.param("control_mode", ControlMode::IMPEDANCE_CONTROL);
 
 	if (!confClient->connectToServer()) {
 		ROS_ERROR_STREAM(
