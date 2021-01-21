@@ -111,7 +111,8 @@ bool ConfigurationManager::init(ConfigurationClient *confClient) {
 		return false;
 	}
 
-	controlMode = nh.param("control_mode", ControlMode::IMPEDANCE_CONTROL);
+	controlMode = ControlMode::IMPEDANCE_CONTROL;
+	controlMode = nh.param("control_mode", controlMode);
 
 	if (!confClient->connectToServer()) {
 		ROS_ERROR_STREAM(
