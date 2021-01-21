@@ -16,10 +16,6 @@ iiwa_front:
     - F_joint_6
     - F_joint_7
 
-  # Control mode: POSITION_CONTROL = 0 | IMPEDANCE_CONTROL = 1 |
-  #               TORQUE_CONTROL = 2 | NO_CONTROL = 3
-  control_mode: 0
-
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     # [0.0, 0.0, 0.0, -1.5707963267948966, 0.0, 1.5707963267948966, 0.0]
@@ -54,10 +50,6 @@ iiwa_back:
     - B_joint_5
     - B_joint_6
     - B_joint_7
-
-  # Control mode: POSITION_CONTROL = 0 | IMPEDANCE_CONTROL = 1 |
-  #               TORQUE_CONTROL = 2 | NO_CONTROL = 3
-  control_mode: 0
 
   init_position:
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
