@@ -68,6 +68,7 @@ private:
     ConfigurationClient* constructConfClient();
 
     bool init(ConfigurationClient* confClient);
+    bool setControlMode();
 
     ros::NodeHandle nh;
 
