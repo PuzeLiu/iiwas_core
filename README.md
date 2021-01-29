@@ -14,9 +14,9 @@ roslaunch iiwas_bringup iiwas_remote.launch use_front_iiwa:=[TRUE|FALSE] front_c
 
 In above line, the important arguments for that launch file are highlighted. The use_*_iiwa arguments control for which arms the controllers are running. The *_controllers argument decide upon how the active arms are controlled. There are three options to choose from:
 
-* joint_torque_trajectory_controller: TODO
-* joint_position_trajectory_controller: PD-Controller -> achieves higher precision but is less compliant
-* joint_position_impedance_trajectory_controller: Impedance Controller -> compliance but less precise
+* joint_torque_trajectory_controller: PID torque controller -> Uses torque overlay commands to control the robot. It's the most precise controller, but the actuator signal can be too noisy.
+* joint_position_trajectory_controller: PD-Controller -> Uses Kuka's position control. Achieves good tracking and steady-state precision but is not compliant.
+* joint_position_impedance_trajectory_controller: Impedance Controller -> Uses Kuka's joint impedance control. It's compliant but less precise than position control.
 
 The default argument is to use impedance control, as it is the safest operation mode. Please only deviate from this default when you are familiar with the robot and need higher preicision for your task.
 
