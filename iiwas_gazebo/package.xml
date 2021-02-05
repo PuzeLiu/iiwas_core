@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>iiwas_gazebo</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>The iiwas_gazebo package</description>
 
   <maintainer email="davide@robot-learning.de">Davide Tateo</maintainer>

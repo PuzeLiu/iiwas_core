@@ -9,9 +9,6 @@
   <license>MIT</license>
 
 
-  <url type="website">http://wiki.ros.org/iiwas_rqt</url>
-
-
   <author email="davide@robot-learning.de">Davide Tateo</author> -->
 
   <buildtool_depend>catkin</buildtool_depend>
