@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "iiwas_kinematics.h"
+#include "iiwas_kinematics/iiwas_kinematics.h"
 #include <chrono>
 #include <math.h>
 

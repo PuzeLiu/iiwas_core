@@ -1,6 +1,9 @@
-#include "iiwas_kinematics.h"
+#include "iiwas_kinematics/iiwas_kinematics.h"
 #include "math.h"
 #include <iostream>
+
+using namespace Eigen;
+using namespace std;
 
 namespace iiwas_kinematics {
 
