@@ -113,6 +113,32 @@ int main(int argc, char* argv[]){
 
 
     /**
+    * Example Jacobian from numerical
+    */
+    cout << "#################################" << endl;
+    cout << "#       Test Numerical IK       #" << endl;
+    cout << "#################################" << endl;
+
+    Vector3d xNumIKTest;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < 10000; ++i) {
+        q.setRandom() * M_PI;
+        kinematics.forwardKinematics(q, xNumIKTest);
+
+        q.setRandom() * M_PI;
+        if (!kinematics.numericalInverseKinematics(xNumIKTest, q, 1e-4, 200)){
+            cout << "Test Numerical Inverse Kinematics Error at: " << q.transpose() << endl;
+            Vector3d xCur;
+            kinematics.forwardKinematics(q, xCur);
+            cout << "Error: " << (xNumIKTest - xCur).norm() << endl;
+        }
+    }
+    finish = chrono::high_resolution_clock::now();
+    cout << "Jacobian Numerical Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
+
+
+    /**
      * Example Jacobian from numerical
      */
     cout << "#################################" << endl;

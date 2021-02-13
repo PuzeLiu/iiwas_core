@@ -101,7 +101,6 @@ namespace iiwas_kinematics {
         double c6 = cos(q_6);
         double s7 = sin(q_7);
         double c7 = cos(q_7);
-        
 
         out_jacobian(0, 0) = dEw_ * ((s1 * c2 * c3 + s3 * c1) * s4 - s1 * s2 * c4) - dSe_ * s1 * s2 + dWf_ * ((((-s1 * c2 * c3 - s3 * c1) * c4 - s1 * s2 * s4) * c5 + (s1 * s3 * c2 - c1 * c3) * s5) * s6 + (-(-s1 * c2 * c3 - s3 * c1) * s4 - s1 * s2 * c4) * c6) + eePos_.x() * (((((-s1 * c2 * c3 - s3 * c1) * c4 - s1 * s2 * s4) * c5 + (s1 * s3 * c2 - c1 * c3) * s5) * c6 + ((-s1 * c2 * c3 - s3 * c1) * s4 + s1 * s2 * c4) * s6) * c7 + ((-(-s1 * c2 * c3 - s3 * c1) * c4 + s1 * s2 * s4) * s5 + (s1 * s3 * c2 - c1 * c3) * c5) * s7) + eePos_.y() * ((-(((-s1 * c2 * c3 - s3 * c1) * c4 - s1 * s2 * s4) * c5 + (s1 * s3 * c2 - c1 * c3) * s5) * c6 - ((-s1 * c2 * c3 - s3 * c1) * s4 + s1 * s2 * c4) * s6) * s7 + ((-(-s1 * c2 * c3 - s3 * c1) * c4 + s1 * s2 * s4) * s5 + (s1 * s3 * c2 - c1 * c3) * c5) * c7) + eePos_.z() * ((((-s1 * c2 * c3 - s3 * c1) * c4 - s1 * s2 * s4) * c5 + (s1 * s3 * c2 - c1 * c3) * s5) * s6 + (-(-s1 * c2 * c3 - s3 * c1) * s4 - s1 * s2 * c4) * c6);
         out_jacobian(0, 1) = dEw_ * (s2 * s4 * c1 * c3 + c1 * c2 * c4) + dSe_ * c1 * c2 + dWf_ * (((-s2 * c1 * c3 * c4 + s4 * c1 * c2) * c5 + s2 * s3 * s5 * c1) * s6 + (s2 * s4 * c1 * c3 + c1 * c2 * c4) * c6) + eePos_.x() * ((((-s2 * c1 * c3 * c4 + s4 * c1 * c2) * c5 + s2 * s3 * s5 * c1) * c6 + (-s2 * s4 * c1 * c3 - c1 * c2 * c4) * s6) * c7 + ((s2 * c1 * c3 * c4 - s4 * c1 * c2) * s5 + s2 * s3 * c1 * c5) * s7) + eePos_.y() * ((-((-s2 * c1 * c3 * c4 + s4 * c1 * c2) * c5 + s2 * s3 * s5 * c1) * c6 - (-s2 * s4 * c1 * c3 - c1 * c2 * c4) * s6) * s7 + ((s2 * c1 * c3 * c4 - s4 * c1 * c2) * s5 + s2 * s3 * c1 * c5) * c7) + eePos_.z() * (((-s2 * c1 * c3 * c4 + s4 * c1 * c2) * c5 + s2 * s3 * s5 * c1) * s6 + (s2 * s4 * c1 * c3 + c1 * c2 * c4) * c6);
@@ -181,12 +180,7 @@ namespace iiwas_kinematics {
         out_q(6) = atan2(globalConfiguration_(6) * (auxA_(6, 0) * sin(psi) + auxB_(6, 0) * cos(psi) + auxC_(6, 0)),
                            globalConfiguration_(6) * (auxA_(6, 1) * sin(psi) + auxB_(6, 1) * cos(psi) + auxC_(6, 1)));
 
-        for (int i = 0; i < NUM_OF_JOINTS; ++i) {
-            if (out_q(i) < posLimitsLower_(i) || out_q(i) > posLimitsUpper_(i) ){
-                return false;
-            }
-        }
-        return true;
+        return checkFeasibility(out_q);
     }
 
     void Kinematics::getRedundancy(const Kinematics::JointArrayType &q, Vector3d &gc, double &psi){
@@ -352,6 +346,42 @@ namespace iiwas_kinematics {
         auxC_(6, 0) = C_w(2, 1);
         auxC_(6, 1) = -C_w(2, 0);
 
+        return true;
+    }
+
+    bool Kinematics::numericalInverseKinematics(const Vector3d &x, JointArrayType &qInOut, double tol, int max_iter) {
+        JacobianPosType jac;
+        Vector3d xCur, err;
+        Matrix3d damper;
+        damper = damper.setIdentity() * 1e-6;
+        for (int i = 0; i < max_iter; ++i) {
+            jacobianPos(qInOut, jac);
+            forwardKinematics(qInOut, xCur);
+
+            err = x - xCur;
+
+            if (err.norm() < tol){
+                return checkFeasibility(qInOut);
+            }
+            if (err.norm() > 0.1){
+                err = err.normalized() * 0.1;
+            }
+            qInOut += jac.transpose() * (jac * jac.transpose() + damper).inverse() * err;
+
+            for (int j = 0; j < NUM_OF_JOINTS; ++j) {
+                if (qInOut[j] < posLimitsLower_[j]) qInOut[j] = posLimitsLower_[j] + 0.1;
+                else if (qInOut[j] > posLimitsUpper_[j]) qInOut[j] = posLimitsUpper_[j] - 0.1;
+            }
+        }
+        return false;
+    }
+
+    bool Kinematics::checkFeasibility(const Kinematics::JointArrayType &qResult) {
+        for (int i = 0; i < NUM_OF_JOINTS; ++i) {
+            if (qResult(i) < posLimitsLower_(i) || qResult(i) > posLimitsUpper_(i) ){
+                return false;
+            }
+        }
         return true;
     }
 
