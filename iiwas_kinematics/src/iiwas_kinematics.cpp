@@ -354,6 +354,9 @@ namespace iiwas_kinematics {
         Vector3d xCur, err;
         Matrix3d damper;
         damper = damper.setIdentity() * 1e-6;
+
+        Matrix<double, 7, 7> E;
+        E.setIdentity();
         for (int i = 0; i < max_iter; ++i) {
             jacobianPos(qInOut, jac);
             forwardKinematics(qInOut, xCur);
@@ -366,7 +369,9 @@ namespace iiwas_kinematics {
             if (err.norm() > 0.1){
                 err = err.normalized() * 0.1;
             }
-            qInOut += jac.transpose() * (jac * jac.transpose() + damper).inverse() * err;
+
+            auto jacInv = jac.transpose() * (jac * jac.transpose() + damper).inverse();
+            qInOut += jacInv * err - 0.01 * (E - jacInv * jac) * qInOut;
 
             for (int j = 0; j < NUM_OF_JOINTS; ++j) {
                 if (qInOut[j] < posLimitsLower_[j]) qInOut[j] = posLimitsLower_[j] + 0.1;
