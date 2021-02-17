@@ -5,7 +5,7 @@
 #ifndef SRC_IIWAS_KINEMATICS_H
 #define SRC_IIWAS_KINEMATICS_H
 
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 namespace iiwas_kinematics {
     const int NUM_OF_JOINTS = 7;

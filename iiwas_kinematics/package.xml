@@ -5,6 +5,9 @@
   <description>The iiwas_kinematics package</description>
 
   <maintainer email="puze@robot-learning.de">Puze Liu</maintainer>
+  
+  <author email="puze@robot-learning.de">Puze Liu</author>
+  <author email="pascal@robot-learning.de">Pascal klink</author>
 
   <license>MIT</license>
 

@@ -12,7 +12,7 @@
 namespace py = pybind11;
 
 
-PYBIND11_MODULE(iiwas_kinematics, m) {
+PYBIND11_MODULE(iiwas_kinematics_py, m) {
 	py::class_<iiwas_kinematics::Kinematics>(m, "Kinematics")
 		.def(py::init<>())
 		.def(py::init([](Eigen::Vector3d vec, Eigen::Vector4d quat_raw) {

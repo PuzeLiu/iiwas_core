@@ -5,7 +5,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['iiwas_kinematics',],
-    package_dir={'': 'scripts'})
+    packages=['iiwas_kinematics_torch'],
+    package_dir={'': 'src'})
 
 setup(**setup_args) 
