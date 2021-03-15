@@ -9,8 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
    )
 
 find_package(pinocchio REQUIRED)
-
-
 find_package(Eigen3 REQUIRED)
 
 catkin_package(
