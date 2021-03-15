@@ -23,7 +23,7 @@
 
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/parsers/urdf.hpp>
-#include <pinocchio/algorithm/joint-configuration.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
@@ -60,6 +60,22 @@ int main(int argc, char* argv[]){
     cout << "Inertia Matrix Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
     data.M.triangularView<Eigen::StrictlyLower>() = data.M.transpose().triangularView<Eigen::StrictlyLower>();
     cout << data.M << endl;
+
+    /**
+     * Example Inertia Matrix
+     */
+    cout << "#################################" << endl;
+    cout << "#         Test Gravity          #" << endl;
+    cout << "#################################" << endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < 10000; ++i) {
+        q.setRandom();
+		computeGeneralizedGravity(model, data, q);
+    }
+    finish = chrono::high_resolution_clock::now();
+    cout << "Gravity Time: " << chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() / 10000. / 1.e6 << "ms\n";
+    cout << data.g << endl;
 
 
     /**
