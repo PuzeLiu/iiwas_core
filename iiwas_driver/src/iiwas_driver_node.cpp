@@ -58,15 +58,14 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    ros::Rate rate(100);
+    ros::Rate rate(10);
     while(ros::ok()){
         ros::spinOnce();
         rate.sleep();
     }
 
-    configurationManager.stop();
-
     controlLoop.stop();
+    configurationManager.stop();
 
     return -1;
 }
