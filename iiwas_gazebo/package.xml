@@ -4,16 +4,25 @@
   <version>1.0.0</version>
   <description>The iiwas_gazebo package</description>
 
+  <maintainer email="puze@robot-learning.de">Puze Liu</maintainer>
   <maintainer email="davide@robot-learning.de">Davide Tateo</maintainer>
 
   <license>MIT</license>
 
   <url type="website">http://wiki.ros.org/iiwas_gazebo</url>
 
-
+  <maintainer email="puze@robot-learning.de">Puze Liu</maintainer>
   <author email="davide@robot-learning.de">Davide Tateo</author>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <build_depend>gazebo_ros</build_depend>
+  <build_depend>gazebo_ros_control</build_depend>
+  <exec_depend>gazebo_ros_control</exec_depend>
   <exec_depend>iiwas_description</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
+
+  <export>
+    <gazebo_ros_control plugin="${prefix}/iiwas_hw_sim_plugins.xml"/>
+  </export>
 </package>

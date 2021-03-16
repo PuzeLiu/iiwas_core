@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <robot name="iiwas" xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:include filename="$(find iiwas_description)/urdf/materials.xacro" />
-    <xacro:include filename="iiwas_frame.urdf.xacro"/>
     <xacro:include filename="$(find iiwas_description)/urdf/iiwa14.xacro"/>
     <xacro:include filename="$(find iiwas_description)/urdf/util_defs.xml"/>
     <!-- the mass values and inertia may not be completly correct as the moment so this model should just be used as a kinematic one now-->
@@ -23,9 +21,10 @@
     <xacro:arg name="world_to_iiwas_b_yaw" default="0.0"/>
     <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
     <!-- construct the iiwas frame, all link is based on the front_base -->
-    <xacro:iiwas_frame name="iiwas_frame" front_x="$(arg world_to_iiwas_f_x)" front_y="$(arg world_to_iiwas_f_y)"
-                       front_z ="$(arg world_to_iiwas_f_z)" back_x="$(arg world_to_iiwas_b_x)"
-                       back_y="$(arg world_to_iiwas_b_y)" back_z ="$(arg world_to_iiwas_b_z)"/>
+    <xacro:include filename="$(find iiwas_description)/urdf/iiwas_frame.urdf.xacro"/>
+<!--    <xacro:iiwas_frame name="iiwas_frame" front_x="$(arg world_to_iiwas_f_x)" front_y="$(arg world_to_iiwas_f_y)"-->
+<!--                       front_z ="$(arg world_to_iiwas_f_z)" back_x="$(arg world_to_iiwas_b_x)"-->
+<!--                       back_y="$(arg world_to_iiwas_b_y)" back_z ="$(arg world_to_iiwas_b_z)"/>-->
 
     <!-- spawn the robot on each of the base-->
     <!-- iiwas front arm -->
