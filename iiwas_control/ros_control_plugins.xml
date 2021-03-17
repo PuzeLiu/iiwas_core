@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<library path="lib/libff_joint_trajectory_controller">
+    <class name="feedforward_controllers/JointTrajectoryController"
+           type="feedforward_controllers::JointTrajectoryController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The JointTrajectoryController with feedforward term of inertia matrix. i.e. M(q) * \ddot{q} + pid
+        </description>
+    </class>
+</library>

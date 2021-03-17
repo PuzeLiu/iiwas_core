@@ -15,9 +15,20 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>Eigen3</build_depend>
+  <build_depend>joint_trajectory_controller</build_depend>
+  <build_depend>controller_manager</build_depend>
+  <build_depend>controller_interface</build_depend>
+  <build_depend>hardware_interface</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>controller_interface</exec_depend>
+
+  <export>
+    <controller_interface plugin="${prefix}/ros_control_plugins.xml"/>
+  </export>
 
 </package>

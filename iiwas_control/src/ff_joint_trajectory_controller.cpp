@@ -21,17 +21,17 @@
  * SOFTWARE.
  */
 
-#ifndef SRC_IIWAS_DYNAMICS_H
-#define SRC_IIWAS_DYNAMICS_H
+#include "ff_joint_trajectory_controller/ff_joint_trajectory_controller.h"
 
-#include <pinocchio/parsers/urdf.hpp>
-namespace iiwas_dynamics{
-class Dynamics {
-    Dynamics();
-    ~Dynamics();
+#include <pluginlib/class_list_macros.h>
+#include <trajectory_interface/quintic_spline_segment.h>
+#include <joint_trajectory_controller/joint_trajectory_controller.h>
 
-
-};
+namespace feedforward_controllers {
+	typedef feedforward_controllers::FeedForwardJointTrajectoryController
+			<trajectory_interface::QuinticSplineSegment<double>>
+			JointTrajectoryController;
 }
 
-#endif //SRC_IIWAS_DYNAMICS_H
+PLUGINLIB_EXPORT_CLASS(feedforward_controllers::JointTrajectoryController,
+                       controller_interface::ControllerBase);

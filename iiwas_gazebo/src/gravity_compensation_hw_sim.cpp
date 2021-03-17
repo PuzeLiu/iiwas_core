@@ -48,7 +48,6 @@ namespace iiwas_gazebo {
 		pinoJointVelocity.resize(pinoModel.nq);
 		pinoJointEffort.resize(pinoModel.nq);
 
-		ROS_INFO_STREAM("Joint Control Interface " << joint_control_methods_[0]);
 		return true;
 	}
 
@@ -78,10 +77,7 @@ namespace iiwas_gazebo {
 	}
 
 	void GravityCompensationHWSim::writeSim(ros::Time time, ros::Duration period) {
-		if (joint_control_methods_[0] == EFFORT || joint_control_methods_[1] == POSITION_PID ||
-		    joint_control_methods_[0] == VELOCITY_PID) {
-			pinocchio::computeGeneralizedGravity(pinoModel, pinoData, pinoJointPosition);
-		}
+		pinocchio::computeGeneralizedGravity(pinoModel, pinoData, pinoJointPosition);
 
 		// If the E-stop is active, joints controlled by position commands will maintain their positions.
 		if (e_stop_active_) {

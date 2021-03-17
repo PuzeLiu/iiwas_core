@@ -14,7 +14,6 @@ find_package(Eigen3 REQUIRED)
 
 catkin_package(
     INCLUDE_DIRS include
-    #   LIBRARIES iiwas_kinematics
     CATKIN_DEPENDS roscpp gazebo_ros gazebo_ros_control
     DEPENDS EIGEN3
 )
