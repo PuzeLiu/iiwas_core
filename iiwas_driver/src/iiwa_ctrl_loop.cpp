@@ -54,7 +54,7 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::run(){
-        while (running & hardwareInterface.getIsAppServerStarted()){
+        while (running && hardwareInterface.getIsAppServerStarted()){
             auto new_t = ros::Time::now();
             elapsedTime = new_t - oldTime;
             oldTime = new_t;
@@ -71,18 +71,39 @@ namespace iiwa_hw{
     }
 
     void ControlLoop::controlThread(){
+        pthread_t this_thread = pthread_self();
         /** Set real time priority for this thread */
         struct sched_param param;
-        param.sched_priority = sched_get_priority_max(SCHED_RR);
-        int retvalue = sched_setscheduler(0, SCHED_RR, &param);
-        if (retvalue != 0) {
-            ROS_ERROR_STREAM("Thread priority NOT set to max " << retvalue);
+        param.sched_priority = sched_get_priority_max(SCHED_FIFO);
+        int ret = pthread_setschedparam(this_thread, SCHED_FIFO, &param);
+
+        if (ret != 0) {
+            ROS_ERROR_STREAM("Unsuccessful in setting producer thread realtime priority. Error code: " << ret);
             return;
+        }
+
+        // Now verify the change in thread priority
+        int policy = 0;
+        ret = pthread_getschedparam(this_thread, &policy, &param);
+        if (ret != 0)
+        {
+            ROS_ERROR_STREAM("Couldn't retrieve real-time scheduling paramers");
+            exit(-1);
+        }
+        // Check the correct policy was applied
+        if (policy != SCHED_FIFO)
+        {
+            ROS_ERROR_STREAM("Producer thread: Scheduling is NOT SCHED_FIFO!");
+            exit(-1);
+        }
+        else
+        {
+            ROS_INFO_STREAM("Producer thread: SCHED_FIFO OK");
         }
 
         if(bindThreadToCore(coreId) != 0){
             ROS_ERROR_STREAM("Could not bind "<< nh.getNamespace() << " thread to core: " << coreId);
-            return;
+            exit(-1);
         }
 
         run();
