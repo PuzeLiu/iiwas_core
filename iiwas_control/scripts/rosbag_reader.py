@@ -3,69 +3,55 @@ import numpy as np
 import matplotlib.pyplot as plt
 import rosbag
 
+
+def read_bag(bag, joint_id):
+    position = []
+    velocity = []
+    acceleration = []
+    effort = []
+
+    start = False
+    count = 0
+    for topic, msg, t in bag.read_messages():
+        if topic in ["/iiwa_front/joint_position_trajectory_controller/state",
+                     "/iiwa_front/joint_feedforward_trajectory_controller/state"]:
+            if not start:
+                if abs(msg.desired.positions[joint_id]) > 1e-3:
+                    start = True
+                else:
+                    continue
+
+            if count < 8000:
+                count += 1
+                position.append([msg.desired.positions[joint_id], msg.actual.positions[joint_id], msg.error.positions[joint_id]])
+                velocity.append([msg.desired.velocities[joint_id], msg.actual.velocities[joint_id], msg.error.velocities[joint_id]])
+                acceleration.append([msg.desired.accelerations[joint_id]])
+                if len(msg.desired.effort) > 0:
+                    effort.append([msg.desired.effort[joint_id]])
+            else:
+                break
+        elif topic == ["iiwa_front/joint_states"]:
+            if not start:
+                continue
+            elif count < 8000:
+                effort.append([msg.effort[joint_id]])
+    return np.array(position), np.array(velocity), np.array(acceleration), np.array(effort)
+
 if __name__ == '__main__':
-    torque_file = "torque_2"
-    position_file = "torque_3"
-    bag_torque = rosbag.Bag(os.path.join("/home/puze/Desktop", torque_file + ".bag"))
-    bag_position = rosbag.Bag(os.path.join("/home/puze/Desktop", position_file + ".bag"))
+    file = "2021-03-23-18-32-14"
+    bag = rosbag.Bag(os.path.join("/home/puze/Desktop/real_trajectory/feedforward", file + ".bag"))
 
-    des_positions_torque = []
-    actual_positions_torque = []
-    error_positions_torque = []
-
-    des_velocities_torque = []
-    actual_velocities_torque = []
-    error_velocities_torque = []
-
-    des_positions_position = []
-    actual_positions_position = []
-    error_positions_position = []
-
-    des_velocities_position = []
-    actual_velocities_position = []
-    error_velocities_position = []
-
-    start = False
-    for topic, msg, t in bag_torque.read_messages():
-        if abs(msg.desired.positions[3]) > 1e-3:
-            start = True
-        if start:
-            des_positions_torque.append(msg.desired.positions[3])
-            actual_positions_torque.append(msg.actual.positions[3])
-            error_positions_torque.append(np.abs(msg.error.positions[3]))
-
-            des_velocities_torque.append(msg.desired.velocities[3])
-            actual_velocities_torque.append(msg.actual.velocities[3])
-            error_velocities_torque.append(msg.error.velocities[3])
-
-    start = False
-    for topic, msg, t in bag_position.read_messages():
-        if abs(msg.desired.positions[3]) > 1e-3:
-            start = True
-        if start:
-            des_positions_position.append(msg.desired.positions[3])
-            actual_positions_position.append(msg.actual.positions[3])
-            error_positions_position.append(np.abs(msg.error.positions[3]))
-
-            des_velocities_position.append(msg.desired.velocities[3])
-            actual_velocities_position.append(msg.actual.velocities[3])
-            error_velocities_position.append(msg.error.velocities[3])
+    pos, vel, acc, torque = read_bag(bag, joint_id=5)
 
     fig, axes = plt.subplots(3)
-    axes[0].plot(des_positions_torque, label="torque")
-    axes[0].plot(des_positions_position, label="position")
-    axes[1].plot(actual_positions_torque, label="torque")
-    axes[1].plot(actual_positions_position, label="position")
-    axes[2].plot(error_positions_torque, label="torque")
-    axes[2].plot(error_positions_position, label="position")
-    plt.legend()
-
-    fig, axes = plt.subplots(3)
-    axes[0].plot(des_velocities_torque, label="torque")
-    axes[0].plot(des_velocities_position, label="position")
-    axes[1].plot(actual_velocities_torque, label="torque")
-    axes[1].plot(actual_velocities_position, label="position")
-    axes[2].plot(error_velocities_torque, label="torque")
-    axes[2].plot(error_velocities_position, label="position")
-    plt.legend()
+    t = np.linspace(0, 8, 8000)
+    axes[0].plot(t, pos[:, 0], label="desired_pos")
+    axes[0].plot(t, pos[:, 1], label="actual_pos")
+    axes[1].plot(t, vel[:, 0], label="desired_vel")
+    axes[1].plot(t, vel[:, 1], label="actual_vel")
+    axes[2].scatter(t, acc[:, 0], label="desired_acc", s=1)
+    # axes[2].plot(acc[:, 1], label="actual_acc")
+    axes[0].legend()
+    axes[1].legend()
+    axes[2].legend()
     plt.show()

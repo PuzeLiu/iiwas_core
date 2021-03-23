@@ -9,8 +9,10 @@
 <!--    <arg name="back_controllers" default="joint_torque_trajectory_controller" />-->
 <!--    <arg name="front_controllers" default="joint_position_trajectory_controller" />-->
 <!--    <arg name="back_controllers" default="joint_position_trajectory_controller" />-->
-    <arg name="front_controllers" default="joint_position_impedance_trajectory_controller" />
-    <arg name="back_controllers" default="joint_position_impedance_trajectory_controller" />
+<!--    <arg name="front_controllers" default="joint_position_impedance_trajectory_controller" />-->
+<!--    <arg name="back_controllers" default="joint_position_impedance_trajectory_controller" />-->
+    <arg name="front_controllers" default="joint_feedforward_trajectory_controller" />
+    <arg name="back_controllers" default="joint_feedforward_trajectory_controller" />
 
     <arg name="user_name" default="puze"/>
     <arg name="env_load_dir" default="~/catkin_ws/src/iiwas_core/iiwas_bringup/env.sh"/>
