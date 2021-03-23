@@ -40,6 +40,16 @@ namespace feedforward_controllers {
 		typedef joint_trajectory_controller::JointTrajectoryController<SegmentImpl, EffortJointInterface>
 				JointTrajectoryController;
 
+		using JointTrajectoryController::state_publisher_period_;
+		using JointTrajectoryController::last_state_publish_time_;
+		using JointTrajectoryController::state_publisher_;
+		using JointTrajectoryController::time_data_;
+		using JointTrajectoryController::old_time_data_;
+		using JointTrajectoryController::desired_state_;
+		using JointTrajectoryController::current_state_;
+		using JointTrajectoryController::state_error_;
+
+
 	public:
 		/** \brief Override the init function of the base class. */
 		virtual bool init(EffortJointInterface *hw, ros::NodeHandle &root_nh, ros::NodeHandle &controller_nh);
@@ -50,6 +60,15 @@ namespace feedforward_controllers {
 	protected:
 		pinocchio::Model pinoModel;
 		pinocchio::Data pinoData;
+		std::vector<double> desired_torque_;
+		bool calculatedTorque;
+
+		/**
+		 * \brief Publish current controller state at a throttled frequency.
+		 * \note This method is realtime-safe and is meant to be called from \ref update, as it shares data with it without
+		 * any locking.
+		 */
+		void publishState(const ros::Time& time);
 	};
 
 	template<class SegmentImpl>
@@ -59,9 +78,6 @@ namespace feedforward_controllers {
 		if (!JointTrajectoryController::init(hw, root_nh, controller_nh))
 			return false;
 
-		ROS_INFO_STREAM("###########" << root_nh.getNamespace());
-		ROS_INFO_STREAM("###########" << controller_nh.getNamespace());
-
 		std::string description_xml;
 		if (!root_nh.getParam("robot_description", description_xml)) {
 			ROS_ERROR_STREAM("Did not find the " << root_nh.getNamespace() << "robot_description");
@@ -70,15 +86,17 @@ namespace feedforward_controllers {
 
 		pinocchio::urdf::buildModelFromXML(description_xml, pinoModel);
 		pinoData = pinocchio::Data(pinoModel);
+		desired_torque_.resize(pinoModel.nq);
+		state_publisher_->msg_.desired.effort.resize(pinoModel.nq);
 		return true;
 	}
 
 	template<class SegmentImpl>
 	void FeedForwardJointTrajectoryController<SegmentImpl>::update(const ros::Time &time, const ros::Duration &period) {
+		calculatedTorque = false;
 		JointTrajectoryController::update(time, period);
 
 		/** Add Feedforward Term*/
-		double command_i = 0.;
 		Eigen::VectorXd pinoJointPosition =
 				Eigen::VectorXd::Map(JointTrajectoryController::desired_state_.position.data(),
 				                     JointTrajectoryController::desired_state_.position.size());
@@ -90,8 +108,37 @@ namespace feedforward_controllers {
 		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
 		for (unsigned int i = 0; i < JointTrajectoryController::joint_names_.size(); ++i) {
-			command_i = JointTrajectoryController::joints_[i].getCommand() + ffTerm[i];
-			JointTrajectoryController::joints_[i].setCommand(command_i);
+			desired_torque_[i] = JointTrajectoryController::joints_[i].getCommand() + ffTerm[i];
+			JointTrajectoryController::joints_[i].setCommand(desired_torque_[i]);
+		}
+		calculatedTorque = true;
+
+		// Update time data
+		old_time_data_ = *(time_data_.readFromRT());
+		publishState(old_time_data_.uptime + period);
+	}
+
+	template<class SegmentImpl>
+	void FeedForwardJointTrajectoryController<SegmentImpl>::publishState(const ros::Time &time) {
+		if (!state_publisher_period_.isZero() && last_state_publish_time_ + state_publisher_period_ < time
+		    && calculatedTorque)
+		{
+			if (state_publisher_ && state_publisher_->trylock())
+			{
+				last_state_publish_time_ += state_publisher_period_;
+
+				state_publisher_->msg_.header.stamp          = time_data_.readFromRT()->time;
+				state_publisher_->msg_.desired.positions     = desired_state_.position;
+				state_publisher_->msg_.desired.velocities    = desired_state_.velocity;
+				state_publisher_->msg_.desired.accelerations = desired_state_.acceleration;
+				state_publisher_->msg_.desired.effort        = desired_torque_;
+				state_publisher_->msg_.actual.positions      = current_state_.position;
+				state_publisher_->msg_.actual.velocities     = current_state_.velocity;
+				state_publisher_->msg_.error.positions       = state_error_.position;
+				state_publisher_->msg_.error.velocities      = state_error_.velocity;
+
+				state_publisher_->unlockAndPublish();
+			}
 		}
 	}
 }

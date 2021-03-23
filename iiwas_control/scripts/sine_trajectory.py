@@ -6,8 +6,9 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rosbag
 
 if __name__ == '__main__':
-    type_name = 'position'
+    # type_name = 'position'
     # type_name = 'torque'
+    type_name = 'feedforward'
     use_front = True
 
     topic_name = '/iiwa_front/' if use_front else '/iiwa_back/'
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     goal = np.pi / 4
     period = 8
 
-    joint_id = 0
+    joint_id = 1
 
     traj = JointTrajectory()
 
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     rospy.sleep(3.0)
 
     traj.points.clear()
-    for i in np.linspace(0, period * t_final, int(period * t_final * 100)):
+    for i in np.linspace(0, period * t_final, int(period * t_final * 100)+1):
         traj_point = JointTrajectoryPoint()
 
         traj_point.positions = init_position.copy()
@@ -55,7 +56,10 @@ if __name__ == '__main__':
 
         traj.points.append(traj_point)
 
+    del traj.points[0]
+
     while True:
-        traj.header.stamp = rospy.Time.now()
+        traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
         cmdPub.publish(traj)
         rospy.sleep(period * t_final)
+        break
