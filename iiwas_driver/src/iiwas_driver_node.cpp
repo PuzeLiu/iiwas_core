@@ -64,8 +64,8 @@ int main(int argc, char* argv[]){
         rate.sleep();
     }
 
+	configurationManager.stop();
     controlLoop.stop();
-    configurationManager.stop();
 
     return -1;
 }
