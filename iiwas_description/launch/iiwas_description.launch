@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="use_front_iiwa" default="true"/>
-    <arg name="use_back_iiwa" default="true"/>
-    <arg name="use_gripper" default="false"/>
-
     <arg name="world_iiwa_f_x" default="0.190"/>
     <arg name="world_iiwa_f_y" default="0.813"/>
     <arg name="world_iiwa_f_z" default="0.0"/>
@@ -28,7 +24,6 @@
         <arg name="parent" value="front_base"/>
         <arg name="base_iiwa_rpy" value="$(arg world_iiwa_f_rpy)"/>
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
-        <arg name="use_gripper" value="$(arg use_gripper)"/>
     </include>
 
     <include file="$(find iiwas_description)/launch/iiwa_single_description.launch" ns="iiwa_back">
@@ -36,6 +31,5 @@
         <arg name="parent" value="back_base"/>
         <arg name="base_iiwa_rpy" value="$(arg world_iiwa_b_rpy)"/>
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
-        <arg name="use_gripper" value="$(arg use_gripper)"/>
     </include>
 </launch>
