@@ -97,13 +97,12 @@ namespace feedforward_controllers {
 		JointTrajectoryController::update(time, period);
 
 		/** Add Feedforward Term*/
-		Eigen::VectorXd pinoJointPosition =
-				Eigen::VectorXd::Map(JointTrajectoryController::desired_state_.position.data(),
-				                     JointTrajectoryController::desired_state_.position.size());
-		Eigen::VectorXd pinoJointAcceleration =
-				Eigen::VectorXd::Map(JointTrajectoryController::desired_state_.acceleration.data(),
-				                     JointTrajectoryController::desired_state_.acceleration.size());
-
+		Eigen::VectorXd pinoJointPosition(pinoModel.nq);
+		Eigen::VectorXd pinoJointAcceleration(pinoModel.nq);
+		for (int j = 0; j < JointTrajectoryController::desired_state_.position.size(); ++j) {
+			pinoJointPosition[j] = JointTrajectoryController::desired_state_.position[j];
+			pinoJointAcceleration[j] = JointTrajectoryController::desired_state_.acceleration[j];
+		}
 		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
 		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
@@ -111,7 +110,8 @@ namespace feedforward_controllers {
 			desired_torque_[i] = JointTrajectoryController::joints_[i].getCommand() + ffTerm[i];
 			JointTrajectoryController::joints_[i].setCommand(desired_torque_[i]);
 		}
-		calculatedTorque = true;
+
+        calculatedTorque = true;
 
 		// Update time data
 		old_time_data_ = *(time_data_.readFromRT());
