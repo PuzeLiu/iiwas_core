@@ -39,14 +39,12 @@ namespace iiwas_gazebo {
 		auto model_ptr = boost::make_shared<urdf::ModelInterface>(*urdf_model);
 		pinocchio::urdf::buildModel(model_ptr, pinoModel, false);
 		pinoData = pinocchio::Data(pinoModel);
-		if (n_dof_ != pinoModel.nq) {
-			ROS_ERROR_STREAM(
-					"The number of Dof " << n_dof_ << " is not aligned with pinocchio spawned model " << pinoModel.nq);
-			exit(-1);
-		}
 		pinoJointPosition.resize(pinoModel.nq);
 		pinoJointVelocity.resize(pinoModel.nq);
 		pinoJointEffort.resize(pinoModel.nq);
+		pinoJointPosition.setZero();
+		pinoJointVelocity.setZero();
+		pinoJointVelocity.setZero();
 
 		return true;
 	}
