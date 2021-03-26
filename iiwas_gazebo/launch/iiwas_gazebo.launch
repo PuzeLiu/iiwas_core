@@ -13,8 +13,6 @@
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
-        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
-        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
     </include>
 
@@ -48,14 +46,12 @@
 
     <group ns="iiwa_front" if="$(arg use_front_iiwa)">
         <node name="iiwa_model_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-              args="-urdf -model iiwa_front -param robot_description -wait iiwas_frame
-              -reference_frame iiwas_frame::front_base"/>
+              args="-urdf -model iiwa_front -param robot_description -wait iiwas_frame"/>
     </group>
 
     <group ns="iiwa_back" if="$(arg use_back_iiwa)">
         <node name="iiwa_model_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-              args="-urdf -model iiwa_back -param robot_description -wait iiwas_frame
-              -reference_frame iiwas_frame::back_base"/>
+              args="-urdf -model iiwa_back -param robot_description -wait iiwas_frame"/>
     </group>
     
 </launch>
