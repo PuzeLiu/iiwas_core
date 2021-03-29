@@ -107,14 +107,14 @@
                 <material name="Brown"/>
             </visual>
 
-            <collision>
+            <!--  <collision>
                 <origin xyz="0.0 0.0 0.0"
                         rpy="0.0 0.0 0.0"/>
                 <geometry>
                     <box size="${base_l} ${base_w} ${base_h}"/>
                 </geometry>
             </collision>
-            <selfCollide>0</selfCollide>
+            <selfCollide>0</selfCollide>  -->
         </link>
 
         <joint name="back_in" type="fixed">
@@ -180,14 +180,14 @@
                 <material name="Brown"/>
             </visual>
 
-            <collision>
+            <!-- <collision>
                 <origin xyz="0.0 0.0 0.0"
                         rpy="0.0 0.0 0.0"/>
                 <geometry>
                     <box size="${base_l} ${base_w} ${base_h}"/>
                 </geometry>
             </collision>
-            <selfCollide>0</selfCollide>
+            <selfCollide>0</selfCollide>  -->
         </link>
 
         <joint name="front_out" type="fixed">

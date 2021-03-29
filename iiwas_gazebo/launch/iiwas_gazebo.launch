@@ -8,6 +8,7 @@
     
 <!--    <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>-->
     <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
+    <arg name="controller_type" default="joint_feedforward_trajectory_controller"/>
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
@@ -33,8 +34,8 @@
     <include file="$(find iiwas_control)/launch/iiwas_control.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
-        <arg name="front_controllers" value="joint_feedforward_trajectory_controller"/>
-        <arg name="back_controllers" value="joint_feedforward_trajectory_controller"/>
+        <arg name="front_controllers" value="$(arg controller_type)"/>
+        <arg name="back_controllers" value="$(arg controller_type)"/>
     </include>
 
     <group ns="iiwas_frame">
