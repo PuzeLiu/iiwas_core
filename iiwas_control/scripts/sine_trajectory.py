@@ -18,8 +18,8 @@ if __name__ == '__main__':
     cmdPub = rospy.Publisher(topic_name + "joint_" + type_name + "_trajectory_controller/command", JointTrajectory, queue_size=1)
     rospy.sleep(2.0)
 
-    t_final = 1
-    goal = np.pi / 6
+    t_final = 1.5
+    goal = -np.pi / 4
     period = 8
 
     joint_id = 3
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     traj.joint_names.append(joint_prefix + "_joint_6")
     traj.joint_names.append(joint_prefix + "_joint_7")
 
-    init_position = [0., np.pi/4, 0., 0., 0., 0, 0.]
+    init_position = [0., 0, 0., 0., 0., 0, 0.]
     traj_point_goal = JointTrajectoryPoint()
     traj_point_goal.positions = init_position
     traj_point_goal.velocities = [0., 0., 0., 0., 0., 0., 0.]
