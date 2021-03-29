@@ -4,7 +4,7 @@
     <arg name="front_rpy" default="0 0 0"/>
 
     <arg name="back_xyz" default="3.198 0.813 0.03"/>
-    <arg name="back_rpy" default="0 0 0"/>
+    <arg name="back_rpy" default="0 0 3.14159265359"/>
 
     <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
     
