@@ -66,17 +66,21 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.24150"  friction="0.31909"/>
+<!--      <dynamics damping="0.24150"  friction="0.31909"/> &lt;!&ndash; ETH &ndash;&gt;-->
+      <dynamics damping="0.330320"  friction="0.384477"/>
     </joint>
 
     <link name="${robot_name}_link_1">
       <inertial>
-<!--        <origin xyz="0 -0.03 0.12" rpy="0 0 0"/>-->
-        <origin xyz="-0.003508 0.001602 -0.03139" rpy="0 0 0"/>  <!-- inertial from sl but in different coordinate system -->
-        <mass value="3.947808"/>
-<!--          <inertia ixx="0.004554"  ixy="0.00000"  ixz="-0.00000" iyy="0.00454" iyz="0.00001" izz="0.00029" />-->
-<!--          <inertia ixx="0.04554"  ixy="0.0000"  ixz="-0.0000" iyy="0.0454" iyz="0.0001" izz="0.0029" />-->
-          <inertia ixx="0.4554"  ixy="0.0001"  ixz="-0.0002" iyy="0.4542" iyz="0.0005" izz="0.0289" />
+          <!-- ETH
+          <origin xyz="-0.003508 0.001602 -0.03139" rpy="0 0 0"/>
+          <mass value="3.947808"/>
+          <inertia ixx="0.004554"  ixy="0.00000"  ixz="-0.00000" iyy="0.00454" iyz="0.00001" izz="0.00029" />
+          -->
+
+          <mass value="2.356723"/>
+          <origin xyz="0.000000 0.000000 -0.249990" rpy="0 0 0"/>
+          <inertia ixx="0.099939"  ixy="-0.000029"  iyy="0.099716" ixz="-0.000026" iyz="0.000099" izz="0.001000" />
       </inertial>
 
       <visual>
@@ -108,17 +112,21 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.37328"  friction="0.18130"/>
+<!--      <dynamics damping="0.37328"  friction="0.18130"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.212160"  friction="0.496333"/>
     </joint>
 
     <link name="${robot_name}_link_2">
       <inertial>
-<!--        <origin xyz="0.0003 0.059 0.042" rpy="0 0 0"/>-->
-        <origin xyz="-0.007671 0.166693  -0.003551" rpy="0 0 0"/>  <!-- inertial from sl but in different coordinate system -->
-        <mass value="4.502752"/>
-<!--          <inertia ixx="0.00032"  ixy="0.00000"  ixz="0.000007" iyy="0.000100" iyz="-0.000003" izz="0.000419" />-->
-<!--          <inertia ixx="0.0032"  ixy="0.0000"  ixz="0.00007" iyy="0.00100" iyz="-0.00003" izz="0.00419" />-->
-          <inertia ixx="0.0318"  ixy="0.0000"  ixz="0.0007" iyy="0.0100" iyz="-0.0003" izz="0.0419" />
+          <!-- ETH
+          <mass value="4.502752"/>
+          <origin xyz="-0.007671 0.166693  -0.003551" rpy="0 0 0"/>
+          <inertia ixx="0.00032"  ixy="0.00000"  ixz="0.000007" iyy="0.000100" iyz="-0.000003" izz="0.000419" />
+          -->
+
+          <mass value="6.000000"/>
+          <origin xyz="-0.004595 0.150863 0.028496" rpy="0 0 0"/>
+          <inertia ixx="0.003001"  ixy="-0.000099"  iyy="0.001000" ixz="0.000099" iyz="-0.000099" izz="0.003001" />
       </inertial>
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -149,17 +157,21 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.11025"  friction="0.07302"/>
+<!--      <dynamics damping="0.11025"  friction="0.07302"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.100000"  friction="0.173951"/>
     </joint>
 
     <link name="${robot_name}_link_3">
       <inertial>
-<!--        <origin xyz="0 0.03 0.13" rpy="0 0 0"/>-->
-        <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/> <!-- inertial from sl but in different coordinate system -->
-        <mass value="2.455197"/>
-<!--          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />-->
-<!--          <inertia ixx="0.02233"  ixy="-0.00046"  ixz="0.00068" iyy="0.02191" iyz="0.00072" izz="0.00725" />-->
-          <inertia ixx="0.2233"  ixy="-0.0046"  ixz="0.0068" iyy="0.2191" iyz="0.0072" izz="0.0725" />
+          <!-- ETH
+          <mass value="2.455197"/>
+          <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/>
+          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />
+          -->
+
+          <mass value="6.00000"/>
+          <origin xyz="-0.006630 -0.001947 -0.057071" rpy="0 0 0"/>
+          <inertia ixx="0.003001"  ixy="-0.000099"  iyy="0.003001" ixz="0.000099" iyz="0.000099" izz="0.001000" />
       </inertial>
 
       <visual>
@@ -191,17 +203,21 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.10000"  friction="0.17671"/>
+<!--      <dynamics damping="0.10000"  friction="0.17671"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.219041"  friction="0.375100"/>
     </joint>
 
     <link name="${robot_name}_link_4">
       <inertial>
-<!--        <origin xyz="0 0.067 0.034" rpy="0 0 0"/>-->
-        <origin xyz="0.000196 -0.052679 0.038182" rpy="0 0 0"/> <!-- inertial from sl but in different coordinate system -->
-        <mass value="2.611550"/>
-<!--          <inertia ixx="0.038444"  ixy="0.000880"  ixz="-0.001120" iyy="0.011437" iyz="-0.001113" izz=" 0.049880" />-->
-<!--          <inertia ixx="0.38444"  ixy="0.00880"  ixz="-0.01120" iyy="0.11437" iyz="-0.01113" izz=" 0.49880" />-->
-          <inertia ixx="3.8444"  ixy="0.0880"  ixz="-0.1120" iyy="1.1437" iyz="-0.1113" izz=" 4.9880" />
+          <!-- ETH
+          <mass value="2.611550"/>
+          <origin xyz="0.000196 -0.052679 0.038182" rpy="0 0 0"/>
+          <inertia ixx="0.038444"  ixy="0.000880"  ixz="-0.001120" iyy="0.011437" iyz="-0.001113" izz=" 0.049880" />
+          -->
+
+          <mass value="1.224529"/>
+          <origin xyz="0.044234 0.050000 0.006944" rpy="0 0 0"/>
+          <inertia ixx="0.003001"  ixy="0.000099"  iyy="0.001000" ixz="-0.000099" iyz="0.000099" izz="0.003001" />
       </inertial>
 
       <visual>
@@ -233,17 +249,21 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.10000"  friction="0.03463"/>
+<!--      <dynamics damping="0.10000"  friction="0.03463"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.185923"  friction="0.481099"/>
     </joint>
 
     <link name="${robot_name}_link_5">
       <inertial>
-<!--        <origin xyz="0.0001 0.021 0.076" rpy="0 0 0"/>-->
-        <origin xyz="0.000054  -0.002367 -0.21134" rpy="0 0 0"/> <!-- inertial from sl but in different coordinate system -->
-        <mass value="3.410009"/>
-<!--          <inertia ixx="0.002769"  ixy="-0.000008"  ixz="0.000006" iyy="0.002842" iyz="-0.000001" izz="0.000117" />-->
-<!--          <inertia ixx="0.02769"  ixy="-0.00008"  ixz="0.00006" iyy="0.02842" iyz="-0.00001" izz="0.00117" />-->
-          <inertia ixx="0.2769"  ixy="-0.0008"  ixz="0.0006" iyy="0.2842" iyz="-0.0001" izz="0.0117" />
+          <!-- ETH
+          <mass value="3.410009"/>
+          <origin xyz="0.000054  -0.002367 -0.21134" rpy="0 0 0"/>
+          <inertia ixx="0.002769"  ixy="-0.000008"  ixz="0.000006" iyy="0.002842" iyz="-0.000001" izz="0.000117" />
+          -->
+
+          <mass value="6.00000"/>
+          <origin xyz="-0.002930 0.015256 0.035846" rpy="0 0 0"/>
+          <inertia ixx="0.003001"  ixy="-0.000099"  iyy="0.003001" ixz="-0.000099" iyz="0.000099" izz="0.001000" />
       </inertial>
 
       <visual>
@@ -275,17 +295,21 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.12484"  friction="0.13391"/>
+<!--      <dynamics damping="0.12484"  friction="0.13391"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.100000"  friction="0.196149"/>
     </joint>
 
     <link name="${robot_name}_link_6">
       <inertial>
-<!--        <origin xyz="0 0.0006 0.0004" rpy="0 0 0"/>-->
-        <origin xyz="0.000492  0.020190  -0.027496" rpy="0 0 0"/>   <!-- inertial from sl but in different coordinate system -->
-        <mass value="3.387949"/>
-<!--          <inertia ixx="0.000500"  ixy="-0.000050"  ixz="-0.000024" iyy="0.002809" iyz="-0.000041" izz="0.002315" />-->
-<!--          <inertia ixx="0.00500"  ixy="-0.00050"  ixz="-0.00024" iyy="0.02809" iyz="-0.00041" izz="0.02315" />-->
-          <inertia ixx="0.0500"  ixy="-0.0050"  ixz="-0.0024" iyy="0.2809" iyz="-0.0041" izz="0.2315" />
+          <!-- ETH
+          <mass value="3.387949"/>
+          <origin xyz="0.000492  0.020190  -0.027496" rpy="0 0 0"/>
+          <inertia ixx="0.000500"  ixy="-0.000050"  ixz="-0.000024" iyy="0.002809" iyz="-0.000041" izz="0.002315" />
+          -->
+
+          <mass value="1.410742"/>
+          <origin xyz="0.015383 -0.046263 0.011131" rpy="0 0 0"/>
+          <inertia ixx="0.001000"  ixy="0.000099"  iyy="0.001000" ixz="0.000099" iyz="0.000099" izz="0.001000" />
       </inertial>
 
       <visual>
@@ -317,17 +341,21 @@
                          soft_upper_limit="${173 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <dynamics damping="0.10000"  friction="0.08710"/>
+<!--      <dynamics damping="0.10000"  friction="0.08710"/> &lt;!&ndash; ETH &ndash;&gt;-->
+        <dynamics damping="0.100000"  friction="0.299238"/>
     </joint>
 
     <link name="${robot_name}_link_7">
       <inertial>
-<!--        <origin xyz="0 0 0.02" rpy="0 0 0"/>-->
-        <origin xyz="-0.034656 -0.023242 0.07138" rpy="0 0 0"/> <!-- inertial from sl but in different coordinate system -->
-        <mass value="0.354321"/>
-<!--          <inertia ixx="0.007946"  ixy="0.000221"  ixz="-0.000294" iyy=" 0.010889" iyz="-0.000294" izz="0.002944" />-->
-<!--          <inertia ixx="0.07946"  ixy="0.00221"  ixz="-0.00294" iyy=" 0.10889" iyz="-0.00294" izz="0.02944" />-->
-          <inertia ixx="0.7946"  ixy="0.0221"  ixz="-0.0294" iyy=" 1.0889" iyz="-0.0294" izz="0.2944" />
+          <!-- ETH
+          <mass value="0.354321"/>
+          <origin xyz="-0.034656 -0.023242 0.07138" rpy="0 0 0"/>
+          <inertia ixx="0.007946"  ixy="0.000221"  ixz="-0.000294" iyy=" 0.010889" iyz="-0.000294" izz="0.002944" />
+          -->
+
+          <mass value="1.00000"/>
+          <origin xyz="0.001241 0.004168 0.100000" rpy="0 0 0"/>
+          <inertia ixx="0.001000"  ixy="-0.000099"  iyy="0.001000" ixz="-0.000099" iyz="0.000099" izz="0.001000" />
       </inertial>
 
       <visual>

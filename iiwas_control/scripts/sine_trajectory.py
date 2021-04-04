@@ -18,7 +18,7 @@ if __name__ == '__main__':
     cmdPub = rospy.Publisher(topic_name + "joint_" + type_name + "_trajectory_controller/command", JointTrajectory, queue_size=1)
     rospy.sleep(2.0)
 
-    t_final = 1
+    t_final = 1.5
     goal = np.pi / 4
     period = 8
 
