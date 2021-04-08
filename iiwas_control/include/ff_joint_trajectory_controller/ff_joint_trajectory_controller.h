@@ -41,14 +41,39 @@ namespace feedforward_controllers {
 		typedef joint_trajectory_controller::JointTrajectoryController<SegmentImpl, EffortJointInterface>
 				JointTrajectoryController;
 
+		using typename JointTrajectoryController::Scalar;
+		using typename JointTrajectoryController::Segment;
+		using typename JointTrajectoryController::Trajectory;
+		using typename JointTrajectoryController::TrajectoryPtr;
+		using typename JointTrajectoryController::JointTrajectoryConstPtr;
+		using typename JointTrajectoryController::TrajectoryPerJoint;
+		using typename JointTrajectoryController::TimeData;
+		using typename JointTrajectoryController::RealtimeGoalHandlePtr;
+
+
+		using JointTrajectoryController::name_;
+		using JointTrajectoryController::joint_names_;
+		using JointTrajectoryController::verbose_;
+		using JointTrajectoryController::rt_active_goal_;
+		using JointTrajectoryController::default_tolerances_;
+		using JointTrajectoryController::angle_wraparound_;
+		using JointTrajectoryController::allow_partial_joints_goal_;
+
+		using JointTrajectoryController::current_state_;         ///< Preallocated workspace variable.
+		using JointTrajectoryController::desired_state_;         ///< Preallocated workspace variable.
+		using JointTrajectoryController::old_desired_state_;     ///< Preallocated workspace variable.
+		using JointTrajectoryController::state_error_;           ///< Preallocated workspace variable.
+		using JointTrajectoryController::desired_joint_state_;   ///< Preallocated workspace variable.
+		using JointTrajectoryController::state_joint_error_;     ///< Preallocated workspace variable.
+
 		using JointTrajectoryController::state_publisher_period_;
 		using JointTrajectoryController::last_state_publish_time_;
 		using JointTrajectoryController::state_publisher_;
 		using JointTrajectoryController::time_data_;
 		using JointTrajectoryController::old_time_data_;
-		using JointTrajectoryController::desired_state_;
-		using JointTrajectoryController::current_state_;
-		using JointTrajectoryController::state_error_;
+		using JointTrajectoryController::curr_trajectory_box_;
+		using JointTrajectoryController::successful_joint_traj_;
+		using JointTrajectoryController::hw_iface_adapter_;
 
 
 	public:
@@ -71,6 +96,10 @@ namespace feedforward_controllers {
 		 * any locking.
 		 */
 		void publishState(const ros::Time& time);
+
+		void trajectoryCommandCB(const JointTrajectoryConstPtr& msg);
+
+		trajectory_msgs::JointTrajectory cubicSplineInterpolate(const JointTrajectoryConstPtr& msg);
 	};
 
 	template<class SegmentImpl>
@@ -90,14 +119,132 @@ namespace feedforward_controllers {
 		pinoData = pinocchio::Data(pinoModel);
 		desired_torque_.resize(pinoModel.nq);
 		pid_torque_.resize(pinoModel.nq);
-		state_publisher_->msg_.desired.effort.resize(pinoModel.nq);
 		return true;
 	}
 
 	template<class SegmentImpl>
 	void FeedForwardJointTrajectoryController<SegmentImpl>::update(const ros::Time &time, const ros::Duration &period) {
 		calculatedTorque = false;
-		JointTrajectoryController::update(time, period);
+		// Get currently followed trajectory
+		TrajectoryPtr curr_traj_ptr;
+		curr_trajectory_box_.get(curr_traj_ptr);
+		Trajectory& curr_traj = *curr_traj_ptr;
+
+		old_time_data_ = *(time_data_.readFromRT());
+
+		// Update time data
+		TimeData time_data;
+		time_data.time   = time;                                     // Cache current time
+		time_data.period = period;                                   // Cache current control period
+		time_data.uptime = old_time_data_.uptime + period; // Update controller uptime
+		time_data_.writeFromNonRT(time_data); // TODO: Grrr, we need a lock-free data structure here!
+
+		// NOTE: It is very important to execute the two above code blocks in the specified sequence: first get current
+		// trajectory, then update time data. Hopefully the following paragraph sheds a bit of light on the rationale.
+		// The non-rt thread responsible for processing new commands enqueues trajectories that can start at the _next_
+		// control cycle (eg. zero start time) or later (eg. when we explicitly request a start time in the future).
+		// If we reverse the order of the two blocks above, and update the time data first; it's possible that by the time we
+		// fetch the currently followed trajectory, it has been updated by the non-rt thread with something that starts in the
+		// next control cycle, leaving the current cycle without a valid trajectory.
+
+		updateStates(time_data.uptime, curr_traj_ptr.get());
+
+		// Update current state and state error
+		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i)
+		{
+			typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.uptime.toSec(), desired_joint_state_);
+			if (curr_traj[i].end() == segment_it)
+			{
+				// Non-realtime safe, but should never happen under normal operation
+				ROS_ERROR_NAMED(name_,
+				                "Unexpected error: No trajectory defined at current time. Please contact the package maintainer.");
+				return;
+			}
+
+			// Get state error for current joint
+			state_joint_error_.position[0] = state_error_.position[i];
+			state_joint_error_.velocity[0] = state_error_.velocity[i];
+			state_joint_error_.acceleration[0] = state_error_.acceleration[i];
+
+			//Check tolerances
+			const RealtimeGoalHandlePtr rt_segment_goal = segment_it->getGoalHandle();
+			if (rt_segment_goal && rt_segment_goal == rt_active_goal_)
+			{
+				// Check tolerances
+				if (time_data.uptime.toSec() < segment_it->endTime())
+				{
+					// Currently executing a segment: check path tolerances
+					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>& joint_tolerances = segment_it->getTolerances();
+					if (!checkStateTolerancePerJoint(state_joint_error_, joint_tolerances.state_tolerance))
+					{
+						if (verbose_)
+						{
+							ROS_ERROR_STREAM_NAMED(name_,"Path tolerances failed for joint: " << joint_names_[i]);
+							checkStateTolerancePerJoint(state_joint_error_, joint_tolerances.state_tolerance, true);
+						}
+						rt_segment_goal->preallocated_result_->error_code =
+								control_msgs::FollowJointTrajectoryResult::PATH_TOLERANCE_VIOLATED;
+						rt_segment_goal->setAborted(rt_segment_goal->preallocated_result_);
+						rt_active_goal_.reset();
+						successful_joint_traj_.reset();
+					}
+				}
+				else if (segment_it == --curr_traj[i].end())
+				{
+					if (verbose_)
+						ROS_DEBUG_STREAM_THROTTLE_NAMED(1,name_,"Finished executing last segment, checking goal tolerances");
+
+					// Controller uptime
+					const ros::Time uptime = time_data_.readFromRT()->uptime;
+
+					// Checks that we have ended inside the goal tolerances
+					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>& tolerances = segment_it->getTolerances();
+					const bool inside_goal_tolerances = checkStateTolerancePerJoint(state_joint_error_, tolerances.goal_state_tolerance);
+
+					if (inside_goal_tolerances)
+					{
+						successful_joint_traj_[i] = 1;
+					}
+					else if (uptime.toSec() < segment_it->endTime() + tolerances.goal_time_tolerance)
+					{
+						// Still have some time left to meet the goal state tolerances
+					}
+					else
+					{
+						if (verbose_)
+						{
+							ROS_ERROR_STREAM_NAMED(name_,"Goal tolerances failed for joint: "<< joint_names_[i]);
+							// Check the tolerances one more time to output the errors that occurs
+							checkStateTolerancePerJoint(state_joint_error_, tolerances.goal_state_tolerance, true);
+						}
+
+						rt_segment_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
+						rt_segment_goal->setAborted(rt_segment_goal->preallocated_result_);
+						rt_active_goal_.reset();
+						successful_joint_traj_.reset();
+					}
+				}
+			}
+		}
+
+		//If there is an active goal and all segments finished successfully then set goal as succeeded
+		RealtimeGoalHandlePtr current_active_goal(JointTrajectoryController::rt_active_goal_);
+		if (current_active_goal && JointTrajectoryController::successful_joint_traj_.count() == JointTrajectoryController::getNumberOfJoints())
+		{
+			current_active_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
+			current_active_goal->setSucceeded(current_active_goal->preallocated_result_);
+			current_active_goal.reset(); // do not publish feedback
+			JointTrajectoryController::rt_active_goal_.reset();
+			JointTrajectoryController::successful_joint_traj_.reset();
+		}
+
+		updateFuncExtensionPoint(curr_traj, time_data);
+
+		// Hardware interface adapter: Generate and send commands
+		hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
+		                                desired_state_, state_error_);
+
+		JointTrajectoryController::setActionFeedback();
 
 		/** Add Feedforward Term*/
 		Eigen::VectorXd pinoJointPosition(pinoModel.nq);
@@ -123,8 +270,7 @@ namespace feedforward_controllers {
         calculatedTorque = true;
 
 		// Update time data
-		old_time_data_ = *(time_data_.readFromRT());
-		publishState(old_time_data_.uptime + period);
+		publishState(time_data.uptime);
 	}
 
 	template<class SegmentImpl>
@@ -136,7 +282,7 @@ namespace feedforward_controllers {
 			{
 				last_state_publish_time_ += state_publisher_period_;
 
-				state_publisher_->msg_.header.stamp          = time_data_.readFromRT()->time;
+				state_publisher_->msg_.header.stamp          = time;
 				state_publisher_->msg_.desired.positions     = desired_state_.position;
 				state_publisher_->msg_.desired.velocities    = desired_state_.velocity;
 				state_publisher_->msg_.desired.accelerations = desired_state_.acceleration;
@@ -150,6 +296,20 @@ namespace feedforward_controllers {
 				state_publisher_->unlockAndPublish();
 			}
 		}
+	}
+
+	template<class SegmentImpl>
+	void FeedForwardJointTrajectoryController<SegmentImpl>::trajectoryCommandCB(const JointTrajectoryConstPtr& msg){
+		trajectory_msgs::JointTrajectory cubicSplineTrajectory = cubicSplineInterpolate(msg);
+		const bool update_ok = updateTrajectoryCommand(cubicSplineTrajectory, RealtimeGoalHandlePtr());
+		if (update_ok) {JointTrajectoryController::preemptActiveGoal();}
+	}
+
+	template<class SegmentImpl>
+	trajectory_msgs::JointTrajectory
+	FeedForwardJointTrajectoryController<SegmentImpl>::cubicSplineInterpolate(const JointTrajectoryConstPtr& msg){
+		ROS_INFO_STREAM("############Got in##################");
+		return *msg;
 	}
 }
 
