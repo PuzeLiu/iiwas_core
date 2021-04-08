@@ -64,8 +64,8 @@ namespace iiwa_hw{
             for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
                 auto velocityMeasure = (friClient->latest_measured_joint_pos[i] - jointStateLast[i].th) / period.toSec();
                 jointState[i].th = friClient->latest_measured_joint_pos[i];
-                jointState[i].thd = (velocityMeasure + jointStateLast[i].thd)/2;
-                jointState[i].load = friClient->latest_measured_joint_torque[i];
+                jointState[i].thd = velocityMeasure * 0.274 + jointStateLast[i].thd * 0.726;
+                jointState[i].load = -friClient->latest_measured_joint_torque[i];
             }
         }
     }
