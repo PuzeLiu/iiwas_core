@@ -88,6 +88,7 @@ namespace feedforward_controllers {
 		pinocchio::Data pinoData;
 		std::vector<double> desired_torque_;
 		std::vector<double> pid_torque_;
+		std::vector<double> id_torque_;
 		bool calculatedTorque;
 
 		/**
@@ -119,6 +120,7 @@ namespace feedforward_controllers {
 		pinoData = pinocchio::Data(pinoModel);
 		desired_torque_.resize(pinoModel.nq);
 		pid_torque_.resize(pinoModel.nq);
+		id_torque_.resize(pinoModel.nq);
 		return true;
 	}
 
@@ -257,12 +259,17 @@ namespace feedforward_controllers {
 		}
 		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
 		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
-		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration
+		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
 //		                         + pinoJointVelocity.cwiseSign() * pinoModel.friction
+//		                         + pinoJointVelocity * pinoModel.damping;
+
+		pinocchio::rnea(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity, pinoJointAcceleration);
+		Eigen::VectorXd idTorque = pinoData.tau + pinoJointVelocity.cwiseSign() * pinoModel.friction
 		                         + pinoJointVelocity * pinoModel.damping;
 
 		for (unsigned int i = 0; i < JointTrajectoryController::joint_names_.size(); ++i) {
 			desired_torque_[i] = ffTerm[i];
+			id_torque_[i] = idTorque[i];
 			pid_torque_[i] = JointTrajectoryController::joints_[i].getCommand();
 			JointTrajectoryController::joints_[i].setCommand(JointTrajectoryController::joints_[i].getCommand() + ffTerm[i]);
 		}
@@ -289,6 +296,7 @@ namespace feedforward_controllers {
 				state_publisher_->msg_.desired.effort        = desired_torque_;
 				state_publisher_->msg_.actual.positions      = current_state_.position;
 				state_publisher_->msg_.actual.velocities     = current_state_.velocity;
+				state_publisher_->msg_.actual.effort         = id_torque_;
 				state_publisher_->msg_.error.positions       = state_error_.position;
 				state_publisher_->msg_.error.velocities      = state_error_.velocity;
 				state_publisher_->msg_.error.effort          = pid_torque_;
