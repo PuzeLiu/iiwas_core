@@ -18,11 +18,11 @@ if __name__ == '__main__':
     cmdPub = rospy.Publisher(topic_name + "joint_" + type_name + "_trajectory_controller/command", JointTrajectory, queue_size=1)
     rospy.sleep(2.0)
 
-    t_final = 1.5
-    goal = np.pi / 4
+    t_final = 1
+    goal = -np.pi / 6
     period = 8
 
-    joint_id = 0
+    joint_id = 3
 
     traj = JointTrajectory()
 
@@ -60,8 +60,10 @@ if __name__ == '__main__':
 
     del traj.points[0]
 
-    while True:
+    while not rospy.is_shutdown():
         traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
         cmdPub.publish(traj)
         rospy.sleep(period * t_final)
         # break
+
+    exit(0)
