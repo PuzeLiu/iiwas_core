@@ -30,6 +30,7 @@
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
 #include <joint_trajectory_controller/joint_trajectory_controller.h>
+#include <spline/spline.h>
 
 namespace feedforward_controllers {
 
@@ -194,14 +195,34 @@ namespace feedforward_controllers {
 	template<class SegmentImpl>
 	trajectory_msgs::JointTrajectory::ConstPtr
 	FeedForwardJointTrajectoryController<SegmentImpl>::cubicSplineInterpolate(const JointTrajectoryConstPtr &msg) {
-		trajectory_msgs::JointTrajectory cubicSpline;
-		if (!msg->points.empty()){
-			if (!msg->points[0].velocities.empty()){
-				ROS_INFO_STREAM("ReInterpolate");
-				return boost::make_shared<trajectory_msgs::JointTrajectory const>(cubicSpline);
+		if (msg->points.empty() || msg->points.size() < 2){
+			return msg;
+		}
+		if (msg->points[0].velocities.empty() || !msg->points[0].accelerations.empty()){
+			ROS_DEBUG_STREAM("Desired trajectory is linear or quintic, skip the spline interpolation");
+			return msg;
+		}
+
+		trajectory_msgs::JointTrajectory cubicSpline = *msg;
+		int n = msg->points.size();
+		std::vector<Scalar> x(n);
+		std::vector<Scalar> y(n);
+
+		for (int i = 0; i < msg->points[0].positions.size(); ++i) {
+			for (int j = 0; j < n; ++j) {
+				x[j] = msg->points[j].time_from_start.toSec();
+				y[j] = msg->points[j].positions[i];
+			}
+
+			tk::spline spline(x, y, tk::spline::cspline, false,
+			                  tk::spline::first_deriv, 0.0,
+			                  tk::spline::first_deriv, 0.0);
+
+			for (int j = 0; j < n; ++j) {
+				cubicSpline.points[j].velocities[i] = spline.deriv(1, x[j]);
 			}
 		}
-		return msg;
+		return boost::make_shared<trajectory_msgs::JointTrajectory const>(cubicSpline);
 	}
 }
 
