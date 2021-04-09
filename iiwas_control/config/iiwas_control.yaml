@@ -49,13 +49,13 @@ iiwa_front:
 
 #  gazebo_ros_control:
 #    pid_gains:
-#      F_joint_1: {p: 600,  i: 0, d: 0.1,  i_clamp: 320, antiwindup: true}
-#      F_joint_2: {p: 3500, i: 0, d: 10,   i_clamp: 320, antiwindup: true}
-#      F_joint_3: {p: 500,  i: 0, d: 0.25, i_clamp: 176, antiwindup: true}
-#      F_joint_4: {p: 1000, i: 0, d: 80,   i_clamp: 176, antiwindup: true}
-#      F_joint_5: {p: 200,  i: 0, d: 3.0,  i_clamp: 110, antiwindup: true}
-#      F_joint_6: {p: 400,  i: 0, d: 4.0,  i_clamp: 40,  antiwindup: true}
-#      F_joint_7: {p: 250,  i: 0, d: 1.0,  i_clamp: 40,  antiwindup: true}
+#      F_joint_1: { p: 1000,  i: 0.0, d: 10,  i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      F_joint_2: { p: 2000, i: 0.0, d: 20,   i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      F_joint_3: { p: 500,  i: 0.0, d: 5.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      F_joint_4: { p: 800, i: 0.0, d: 20,   i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      F_joint_5: { p: 500,  i: 0.0, d: 3.0,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+#      F_joint_6: { p: 300,  i: 0.0, d: 4.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+#      F_joint_7: { p: 300,  i: 0.0, d: 1.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
 
   joint_feedforward_trajectory_controller:
     type: feedforward_controllers/JointTrajectoryController
@@ -79,7 +79,7 @@ iiwa_front:
       F_joint_1: { p: 1000,  i: 0.0, d: 10,  i_clamp: 320, antiwindup: true } # Parameter for simulation
       F_joint_2: { p: 2000, i: 0.0, d: 200,   i_clamp: 320, antiwindup: true } # Parameter for simulation
       F_joint_3: { p: 500,  i: 0.0, d: 5.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
-      F_joint_4: { p: 500, i: 0.0, d: 20,   i_clamp: 176, antiwindup: true } # Parameter for simulation
+      F_joint_4: { p: 800, i: 0.0, d: 20,   i_clamp: 176, antiwindup: true } # Parameter for simulation
       F_joint_5: { p: 500,  i: 0.0, d: 3.0,  i_clamp: 110, antiwindup: true } # Parameter for simulation
       F_joint_6: { p: 300,  i: 0.0, d: 4.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
       F_joint_7: { p: 300,  i: 0.0, d: 1.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation

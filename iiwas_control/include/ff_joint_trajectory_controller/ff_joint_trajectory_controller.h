@@ -112,9 +112,11 @@ namespace feedforward_controllers {
 			return false;
 
 		std::string description_xml;
-		if (!root_nh.getParam("robot_description", description_xml)) {
-			ROS_ERROR_STREAM("Did not find the " << root_nh.getNamespace() << "robot_description");
-			return false;
+		if (!root_nh.getParam("iiwa_only_description", description_xml)) {
+			if (!root_nh.getParam("robot_description", description_xml)) {
+				ROS_ERROR_STREAM("Did not find the " << root_nh.getNamespace() << "robot_description");
+				return false;
+			}
 		}
 
 		pinocchio::urdf::buildModelFromXML(description_xml, pinoModel);
