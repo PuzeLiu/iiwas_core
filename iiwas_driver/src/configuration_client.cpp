@@ -21,7 +21,8 @@
  * SOFTWARE.
  */
 
-#include "configuration_client.h"
+#include "iiwas_driver/configuration_client.h"
+
 #include <iostream>
 #include <boost/timer/timer.hpp>
 #include <boost/bind.hpp>

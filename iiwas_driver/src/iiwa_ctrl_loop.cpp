@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-#include <iiwa_ctrl_loop.h>
+#include "iiwas_driver/iiwa_ctrl_loop.h"
 
 namespace iiwa_hw{
     ControlLoop::ControlLoop(int coreId)

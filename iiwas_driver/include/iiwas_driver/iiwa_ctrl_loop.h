@@ -25,7 +25,7 @@
 #define _IIWA_CTRL_LOOP_H
 
 
-#include <iiwa_hw_interface.h>
+#include "iiwas_driver/iiwa_hw_interface.h"
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 

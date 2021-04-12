@@ -28,7 +28,7 @@
 #include <boost/asio.hpp>
 
 
-#include "iiwa_ros.h"
+#include "iiwas_driver/iiwa_ros.h"
 
 
 class ConfigurationClient {

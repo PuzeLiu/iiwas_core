@@ -37,13 +37,14 @@
 #include <joint_limits_interface/joint_limits_rosparam.h>
 #include <joint_limits_interface/joint_limits_urdf.h>
 
-#include <iiwa_ros.h>
 #include <urdf/model.h>
 
-#include <fri_client.hpp>
-#include <configuration_client.h>
 #include <iiwa_fri_client/friUdpConnection.h>
 #include <iiwa_fri_client/friClientApplication.h>
+
+#include "iiwas_driver/iiwa_ros.h"
+#include "iiwas_driver/fri_client.hpp"
+#include "iiwas_driver/configuration_client.h"
 
 
 const int DEFAULT_CONTROL_FREQUENCY = 1000;  // Hz

@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-#include "configuration_manager.h"
+#include "iiwas_driver/configuration_manager.h"
 
 #include <iiwa_fri_client/friLBRState.h>
 

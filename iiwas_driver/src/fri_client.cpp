@@ -24,8 +24,9 @@
 #include <cstring>
 #include <cstdio>
 #include <cmath>
-#include "fri_client.hpp"
 #include <iostream>
+
+#include "iiwas_driver/fri_client.hpp"
 
 using namespace KUKA::FRI;
 

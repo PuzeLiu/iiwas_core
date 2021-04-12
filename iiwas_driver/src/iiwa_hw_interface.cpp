@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-#include <iiwa_hw_interface.h>
+#include "iiwas_driver/iiwa_hw_interface.h"
 
 using namespace KUKA::FRI;
 
