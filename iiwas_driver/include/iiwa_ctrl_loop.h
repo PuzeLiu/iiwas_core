@@ -30,7 +30,6 @@
 #include <boost/bind.hpp>
 
 namespace iiwa_hw {
-    static const double BILLION = 1000000000.0;
 
     class ControlLoop
     {
