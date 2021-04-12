@@ -38,17 +38,17 @@ def read_bag(bag, joint_id):
     return np.array(position), np.array(velocity), np.array(acceleration), np.array(effort)
 
 if __name__ == '__main__':
-    file = "2021-03-23-18-32-14"
-    bag = rosbag.Bag(os.path.join("/home/puze/Desktop/real_trajectory/feedforward", file + ".bag"))
+    file = "2021-04-09-13-16-17"
+    bag = rosbag.Bag(os.path.join("/home/puze/air_hockey_record", file + ".bag"))
 
-    pos, vel, acc, torque = read_bag(bag, joint_id=5)
+    pos, vel, acc, torque = read_bag(bag, joint_id=3)
 
     fig, axes = plt.subplots(3)
     t = np.linspace(0, 8, 8000)
-    axes[0].plot(t, pos[:, 0], label="desired_pos")
-    axes[0].plot(t, pos[:, 1], label="actual_pos")
-    axes[1].plot(t, vel[:, 0], label="desired_vel")
-    axes[1].plot(t, vel[:, 1], label="actual_vel")
+    axes[0].scatter(t, pos[:, 0], label="desired_pos", s=1)
+    axes[0].scatter(t, pos[:, 1], label="actual_pos", s=1)
+    axes[1].scatter(t, vel[:, 0], label="desired_vel", s=1)
+    axes[1].scatter(t, vel[:, 1], label="actual_vel", s=1)
     axes[2].scatter(t, acc[:, 0], label="desired_acc", s=1)
     # axes[2].plot(acc[:, 1], label="actual_acc")
     axes[0].legend()

@@ -5,8 +5,7 @@
     <arg name="gui" default="true"/>
     <arg name="paused" default="false"/>
     <arg name="physics" default="ode" />
-    
-<!--    <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>-->
+
     <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
     <arg name="controller_type" default="joint_feedforward_trajectory_controller"/>
 

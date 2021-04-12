@@ -35,8 +35,15 @@ namespace iiwas_gazebo {
 	                                       std::vector<transmission_interface::TransmissionInfo> transmissions) {
 		if (!DefaultRobotHWSim::initSim(robot_namespace, model_nh, parent_model, urdf_model, transmissions))
 			return false;
+		urdf::Model iiwa_urdf_model;
 
-		auto model_ptr = boost::make_shared<urdf::ModelInterface>(*urdf_model);
+		std::string urdf_iiwa;
+		if(model_nh.getParam("iiwa_only_description", urdf_iiwa)){
+			iiwa_urdf_model.initParamWithNodeHandle("iiwa_only_description", model_nh);
+		} else {
+			iiwa_urdf_model = *urdf_model;
+		}
+		auto model_ptr = boost::make_shared<urdf::ModelInterface>(iiwa_urdf_model);
 		pinocchio::urdf::buildModel(model_ptr, pinoModel, false);
 		pinoData = pinocchio::Data(pinoModel);
 		pinoJointPosition.resize(pinoModel.nq);
@@ -44,7 +51,7 @@ namespace iiwas_gazebo {
 		pinoJointEffort.resize(pinoModel.nq);
 		pinoJointPosition.setZero();
 		pinoJointVelocity.setZero();
-		pinoJointVelocity.setZero();
+		pinoJointEffort.setZero();
 
 		return true;
 	}
@@ -68,14 +75,17 @@ namespace iiwas_gazebo {
 			joint_velocity_[j] = sim_joints_[j]->GetVelocity(0);
 			joint_effort_[j] = sim_joints_[j]->GetForce((unsigned int) (0));
 
+			double alpha = 0.27;
 			pinoJointPosition[j] = joint_position_[j];
-			pinoJointVelocity[j] = joint_velocity_[j];
+			pinoJointVelocity[j] = joint_velocity_[j] * alpha + pinoJointVelocity[j] * (1- alpha);
 			pinoJointEffort[j] = joint_effort_[j];
 		}
 	}
 
 	void GravityCompensationHWSim::writeSim(ros::Time time, ros::Duration period) {
 		pinocchio::computeGeneralizedGravity(pinoModel, pinoData, pinoJointPosition);
+		pinocchio::computeCoriolisMatrix(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity);
+		Eigen::VectorXd compensationTerm = pinoData.C * pinoJointVelocity + pinoData.g;
 
 		// If the E-stop is active, joints controlled by position commands will maintain their positions.
 		if (e_stop_active_) {
@@ -99,7 +109,7 @@ namespace iiwas_gazebo {
 			switch (joint_control_methods_[j]) {
 				case EFFORT: {
 					const double effort_limit = joint_effort_limits_[j];
-					const double effort = e_stop_active_ ? 0 : clamp(joint_effort_command_[j] + pinoData.g[j],
+					const double effort = e_stop_active_ ? 0 : clamp(joint_effort_command_[j] + compensationTerm[j],
 					                                                 -effort_limit,
 					                                                 effort_limit);
 					sim_joints_[j]->SetForce(0, effort);
@@ -137,7 +147,7 @@ namespace iiwas_gazebo {
 					}
 
 					const double effort_limit = joint_effort_limits_[j];
-					const double effort = clamp(pid_controllers_[j].computeCommand(error, period) + pinoData.g[j],
+					const double effort = clamp(pid_controllers_[j].computeCommand(error, period) + compensationTerm[j],
 					                            -effort_limit, effort_limit);
 					sim_joints_[j]->SetForce(0, effort);
 				}
@@ -154,7 +164,7 @@ namespace iiwas_gazebo {
 					else
 						error = joint_velocity_command_[j] - joint_velocity_[j];
 					const double effort_limit = joint_effort_limits_[j];
-					const double effort = clamp(pid_controllers_[j].computeCommand(error, period) + pinoData.g[j],
+					const double effort = clamp(pid_controllers_[j].computeCommand(error, period) + compensationTerm[j],
 					                            -effort_limit, effort_limit);
 					sim_joints_[j]->SetForce(0, effort);
 					break;
