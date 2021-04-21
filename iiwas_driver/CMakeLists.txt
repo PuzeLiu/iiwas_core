@@ -22,16 +22,16 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-set(HEADERS include/configuration_manager.h
-			include/iiwa_hw_interface.h
-		    include/iiwa_ctrl_loop.h
+set(HEADERS include/iiwas_driver/configuration_manager.h
+						include/iiwas_driver/iiwa_hw_interface.h
+						include/iiwas_driver/iiwa_ctrl_loop.h
 )
 set(SOURCES src/configuration_client.cpp
             src/fri_client.cpp
             src/iiwas_driver_node.cpp
             src/iiwa_hw_interface.cpp
-	        src/iiwa_ctrl_loop.cpp
-	        src/configuration_manager.cpp
+	        	src/iiwa_ctrl_loop.cpp
+	        	src/configuration_manager.cpp
 )
 
 include_directories(
