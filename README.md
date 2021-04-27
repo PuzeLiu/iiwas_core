@@ -1,6 +1,11 @@
 ## Installation 
+Make sure you have installed ROS and create a new catkin workspace. 
+Additionally, to the full desktop version of ROS, the following ROS packages are needed:
+_joint-trajectory-controller, pinocchio_
 
-Clone the repository into your catkin workspace. Do not forget to also clone the [IIWAS FRI Client](https://git.ias.informatik.tu-darmstadt.de/ros/iiwas/iiwa_fri_client) into the catkin workspace. After that you can build the project. Note that the first build will probably fail because of some complicated dependencies between the core and the FRI package. However simply running **catkin_make** once again will work.
+Clone the repository into the src folder of your catkin workspace. Do not forget to also clone the [IIWAS FRI Client](https://git.ias.informatik.tu-darmstadt.de/ros/iiwas/iiwa_fri_client) into the catkin workspace. 
+After that you can build the project with **catkin_make**. (Note that the first build will probably fail because of some complicated dependencies between the core and the FRI package. However simply running **catkin_make** once again will work.)
+Before continuing add your workspace to the ROS_PACKAGE_PATH by sourcing new devel/setup.*sh file (in the bashrc).
 
 You should do above procedure on both fermat and lovelace, since lovelace is the real_time computer on which the actual control will later run. On the fermat computer, you simply need the packages to have access to the launch files.
 
