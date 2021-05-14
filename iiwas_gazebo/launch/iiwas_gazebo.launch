@@ -11,6 +11,7 @@
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
+    <arg name="simulation" default="true" />
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
@@ -35,6 +36,7 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
         <arg name="back_controllers" value="$(arg controller_type)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
     <group ns="iiwas_frame">
