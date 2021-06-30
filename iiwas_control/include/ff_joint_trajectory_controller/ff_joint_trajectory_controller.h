@@ -38,7 +38,8 @@ namespace feedforward_controllers {
 
 	template<class SegmentImpl>
 	class FeedForwardJointTrajectoryController :
-			public joint_trajectory_controller::JointTrajectoryController<SegmentImpl, hardware_interface::EffortJointInterface> {
+			public joint_trajectory_controller::JointTrajectoryController
+			<SegmentImpl, hardware_interface::EffortJointInterface> {
 	protected:
 		typedef hardware_interface::EffortJointInterface EffortJointInterface;
 		typedef joint_trajectory_controller::JointTrajectoryController<SegmentImpl, EffortJointInterface>
@@ -95,8 +96,8 @@ namespace feedforward_controllers {
 
 		/**
 		 * \brief Publish current controller state at a throttled frequency.
-		 * \note This method is realtime-safe and is meant to be called from \ref update, as it shares data with it without
-		 * any locking.
+		 * \note This method is realtime-safe and is meant to be called from \ref update,
+		 * as it shares data with it without any locking.
 		 */
 		virtual void publishState(const ros::Time &time);
 
@@ -143,7 +144,7 @@ namespace feedforward_controllers {
 		TimeData time_data;
 		time_data.time   = time;                                     // Cache current time
 		time_data.period = period;                                   // Cache current control period
-		time_data.uptime = old_time_data_.uptime + period; // Update controller uptime
+		time_data.uptime = old_time_data_.uptime + period;           // Update controller uptime
 		time_data_.writeFromNonRT(time_data); // TODO: Grrr, we need a lock-free data structure here!
 
 		// NOTE: It is very important to execute the two above code blocks in the specified sequence: first get current
@@ -159,12 +160,14 @@ namespace feedforward_controllers {
 		// Update current state and state error
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i)
 		{
-			typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.uptime.toSec(), desired_joint_state_);
+			typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i],
+                                                                            time_data.uptime.toSec(),
+                                                                            desired_joint_state_);
 			if (curr_traj[i].end() == segment_it)
 			{
 				// Non-realtime safe, but should never happen under normal operation
-				ROS_ERROR_NAMED(name_,
-				                "Unexpected error: No trajectory defined at current time. Please contact the package maintainer.");
+				ROS_ERROR_NAMED(name_, "Unexpected error: No trajectory defined at current time. "
+                                       "Please contact the package maintainer.");
 				return;
 			}
 
@@ -181,7 +184,8 @@ namespace feedforward_controllers {
 				if (time_data.uptime.toSec() < segment_it->endTime())
 				{
 					// Currently executing a segment: check path tolerances
-					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>& joint_tolerances = segment_it->getTolerances();
+					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>&
+					        joint_tolerances = segment_it->getTolerances();
 					if (!checkStateTolerancePerJoint(state_joint_error_, joint_tolerances.state_tolerance))
 					{
 						if (verbose_)
@@ -199,14 +203,17 @@ namespace feedforward_controllers {
 				else if (segment_it == --curr_traj[i].end())
 				{
 					if (verbose_)
-						ROS_DEBUG_STREAM_THROTTLE_NAMED(1,name_,"Finished executing last segment, checking goal tolerances");
+						ROS_DEBUG_STREAM_THROTTLE_NAMED(1,name_,"Finished executing last segment, "
+                                                                "checking goal tolerances");
 
 					// Controller uptime
 					const ros::Time uptime = time_data_.readFromRT()->uptime;
 
 					// Checks that we have ended inside the goal tolerances
-					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>& tolerances = segment_it->getTolerances();
-					const bool inside_goal_tolerances = checkStateTolerancePerJoint(state_joint_error_, tolerances.goal_state_tolerance);
+					const joint_trajectory_controller::SegmentTolerancesPerJoint<Scalar>&
+					        tolerances = segment_it->getTolerances();
+					const bool inside_goal_tolerances = checkStateTolerancePerJoint(state_joint_error_,
+                                                                                    tolerances.goal_state_tolerance);
 
 					if (inside_goal_tolerances)
 					{
@@ -225,7 +232,8 @@ namespace feedforward_controllers {
 							checkStateTolerancePerJoint(state_joint_error_, tolerances.goal_state_tolerance, true);
 						}
 
-						rt_segment_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
+						rt_segment_goal->preallocated_result_->error_code =
+						        control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
 						rt_segment_goal->setAborted(rt_segment_goal->preallocated_result_);
 						rt_active_goal_.reset();
 						successful_joint_traj_.reset();
@@ -238,7 +246,8 @@ namespace feedforward_controllers {
 		RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
 		if (current_active_goal && successful_joint_traj_.count() == JointTrajectoryController::getNumberOfJoints())
 		{
-			current_active_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
+			current_active_goal->preallocated_result_->error_code =
+			        control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
 			current_active_goal->setSucceeded(current_active_goal->preallocated_result_);
 			current_active_goal.reset(); // do not publish feedback
 			rt_active_goal_.reset();
@@ -261,14 +270,15 @@ namespace feedforward_controllers {
 			pinoJointAcceleration[j] = JointTrajectoryController::desired_state_.acceleration[j];
 		}
 		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
-		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
+		pinoData.M.triangularView<Eigen::StrictlyLower>() =
+		        pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
 
 		pinocchio::rnea(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity, pinoJointAcceleration);
 		Eigen::VectorXd idTorque = pinoData.tau + pinoModel.friction.cwiseProduct(pinoJointVelocity.cwiseSign())
 		                           + pinoModel.damping.cwiseProduct(pinoJointVelocity);
 
-		double command_i = 0;
+		double command_i;
 		for (unsigned int i = 0; i < JointTrajectoryController::joint_names_.size(); ++i) {
 			desired_torque_[i] = ffTerm[i];
 			id_torque_[i] = idTorque[i];
@@ -307,7 +317,8 @@ namespace feedforward_controllers {
 	template<class SegmentImpl>
 	void FeedForwardJointTrajectoryController<SegmentImpl>::trajectoryCommandCB(const JointTrajectoryConstPtr &msg) {
 		trajectory_msgs::JointTrajectory::ConstPtr cubicSplineTrajectory = cubicSplineInterpolate(msg);
-		const bool update_ok = JointTrajectoryController::updateTrajectoryCommand(cubicSplineTrajectory, RealtimeGoalHandlePtr());
+		const bool update_ok = JointTrajectoryController::updateTrajectoryCommand(cubicSplineTrajectory,
+                                                                                  RealtimeGoalHandlePtr());
 		if (update_ok) { JointTrajectoryController::preemptActiveGoal(); }
 	}
 
