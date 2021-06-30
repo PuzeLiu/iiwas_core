@@ -32,14 +32,14 @@
         </node>
     </group>
 
-    <group ns="iiwa_front" if="$(arg use_front)">
+    <group ns="iiwa_front" if="$(arg use_front_iiwa)">
         <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
             <param name="publish_frequency" type="double" value="50.0"/>
         </node>
     </group>
 
-    <group ns="iiwa_back" if="$(arg use_back)">
+    <group ns="iiwa_back" if="$(arg use_front_iiwa)">
         <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
             <param name="publish_frequency" type="double" value="50.0"/>
