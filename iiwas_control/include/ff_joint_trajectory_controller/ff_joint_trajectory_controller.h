@@ -297,7 +297,7 @@ namespace feedforward_controllers {
 			if (state_publisher_ && state_publisher_->trylock()) {
 				last_state_publish_time_ += state_publisher_period_;
 
-				state_publisher_->msg_.header.stamp = time;
+				state_publisher_->msg_.header.stamp = time_data_.readFromRT()->time;
 				state_publisher_->msg_.desired.positions = desired_state_.position;
 				state_publisher_->msg_.desired.velocities = desired_state_.velocity;
 				state_publisher_->msg_.desired.accelerations = desired_state_.acceleration;
