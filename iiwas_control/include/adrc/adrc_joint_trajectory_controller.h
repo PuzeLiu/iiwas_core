@@ -478,9 +478,9 @@ namespace adrc_controllers {
 //		}
 
 		// ADRC_DEBUG: Generate and send commands
-		int adrc_joint = 4;
-		double Kp[7] = {1500., 3000, 1000, 1500, 800, 500, 500};
-		double Kd[7] = {20., 50, 10, 20, 3, 5, 0.5};
+		int adrc_joint = 6;
+		double Kp[7] = {2800., 2500, 2000, 1500, 1500, 1200, 800};
+		double Kd[7] = {220., 120, 50, 40, 15, 10, 15};
 		double u = 0.;
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 

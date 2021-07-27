@@ -88,7 +88,7 @@ iiwa_front:
       F_joint_4: { b: 5, omega_c: 50., k: 40, u_max: 176}
       F_joint_5: { b: 18, omega_c: 35., k: 120, u_max: 110}
       F_joint_6: { b: 10, omega_c: 50., k: 20, u_max: 40}
-      F_joint_7: { b: 20, omega_c: 25, k: 200, u_max: 40}
+      F_joint_7: { b: 20, omega_c: 50, k: 20, u_max: 40}
 
 
 iiwa_back:

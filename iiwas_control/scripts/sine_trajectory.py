@@ -23,7 +23,7 @@ if __name__ == '__main__':
     goal = -np.pi / 6
     period = 8
 
-    joint_id = 3
+    joint_id = 6
 
     traj = JointTrajectory()
 
