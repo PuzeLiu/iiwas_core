@@ -21,9 +21,9 @@ if __name__ == '__main__':
 
     t_final = 1
     goal = -np.pi / 6
-    period = 8
+    period = 4
 
-    joint_id = 6
+    joint_id = 4
 
     traj = JointTrajectory()
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     traj.joint_names.append(joint_prefix + "_joint_6")
     traj.joint_names.append(joint_prefix + "_joint_7")
 
-    init_position = [0, 0, 0, 0, 0., 0, 0.]
+    init_position = [0, 0, 0, 0., 0., 0*np.pi/6, 0.]
     traj_point_goal = JointTrajectoryPoint()
     traj_point_goal.positions = init_position
     traj_point_goal.velocities = [0., 0., 0., 0., 0., 0., 0.]
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     rospy.sleep(3.0)
 
     traj.points.clear()
-    for i in np.linspace(0, period * t_final, int(period * t_final * 100)+1):
+    for i in np.linspace(0, 4 * period * t_final, int(4 * period * t_final * 100)+1):
         traj_point = JointTrajectoryPoint()
 
         traj_point.positions = init_position.copy()
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
         cmdPub.publish(traj)
-        rospy.sleep(period * t_final)
+        rospy.sleep(4 * period * t_final)
         # break
 
     exit(0)
