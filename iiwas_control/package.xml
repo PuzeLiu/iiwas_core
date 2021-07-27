@@ -28,7 +28,8 @@
   <exec_depend>controller_interface</exec_depend>
 
   <export>
-    <controller_interface plugin="${prefix}/ros_control_plugins.xml"/>
+    <controller_interface plugin="${prefix}/ff_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/adrc_controller_plugins.xml"/>
   </export>
 
 </package>

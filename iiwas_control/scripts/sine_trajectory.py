@@ -6,16 +6,17 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rosbag
 
 if __name__ == '__main__':
-    # type_name = 'position'
-    # type_name = 'torque'
-    type_name = 'feedforward'
+    # type_name = 'joint_position'
+    # type_name = 'joint_torque'
+    # type_name = 'joint_feedforward'
+    type_name = 'adrc'
     use_front = True
 
     topic_name = '/iiwa_front/' if use_front else '/iiwa_back/'
     joint_prefix = 'F' if use_front else 'B'
 
     rospy.init_node("sine_command", anonymous=True)
-    cmdPub = rospy.Publisher(topic_name + "joint_" + type_name + "_trajectory_controller/command", JointTrajectory, queue_size=1)
+    cmdPub = rospy.Publisher(topic_name + type_name + "_trajectory_controller/command", JointTrajectory, queue_size=1)
     rospy.sleep(2.0)
 
     t_final = 1
