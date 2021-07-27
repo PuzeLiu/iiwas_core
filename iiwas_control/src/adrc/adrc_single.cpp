@@ -24,16 +24,17 @@
 #include <cmath>
 #include "adrc/adrc_single.h"
 
-void adrc_controllers::ADRCGains::setParam(double b, double omega_c, double k) {
+void adrc_controllers::ADRCGains::setParam(double b, double omega_c, double omega_o, double k) {
 	b_ = b;
 	omega_c_ = omega_c;
+	omega_o_ = omega_o;
 	k_ = k;
 
-	double omega_o = 4 * omega_c;
-	Kp_ = pow(omega_c, 2);
-	Kd_ = 2 * omega_c;
-	beta1_ = 3 * omega_o;
-	beta2_ = 3 * pow(omega_o, 2);
+
+	Kp_ = pow(omega_c_, 2);
+	Kd_ = 2 * omega_c_;
+	beta1_ = 3 * omega_o_;
+	beta2_ = 3 * pow(omega_o_, 2);
 	beta3_ = k * beta2_;
 }
 
@@ -42,13 +43,13 @@ adrc_controllers::ADRCJoint::ADRCJoint(const adrc_controllers::ADRCJoint &source
 	adrc_buffer_ = source.adrc_buffer_;
 }
 
-adrc_controllers::ADRCJoint::ADRCJoint(double b, double omega_c, double k) :
+adrc_controllers::ADRCJoint::ADRCJoint(double b, double omega_c, double omega_o, double k) :
 dynamic_reconfig_initialized_(false), h(0.001) {
-	setGains(b, omega_c, k);
+	setGains(b, omega_c, omega_o, k);
 }
 
-void adrc_controllers::ADRCJoint::setGains(double b, double omega_c, double k) {
-	ADRCGains gains(b, omega_c, k);
+void adrc_controllers::ADRCJoint::setGains(double b, double omega_c, double omega_o, double k) {
+	ADRCGains gains(b, omega_c, omega_o, k);
 	setGains(gains);
 }
 
@@ -57,11 +58,12 @@ void adrc_controllers::ADRCJoint::setGains(const adrc_controllers::ADRCGains &ga
 	updateDynamicReconfig(gains);
 }
 
-void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &k, double &Kp, double &Kd, double &beta_1,
+void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &omega_o, double &k, double &Kp, double &Kd, double &beta_1,
                                            double &beta_2, double &beta_3) {
 	ADRCGains gains = *adrc_buffer_.readFromNonRT();
 	b = gains.b_;
 	omega_c = gains.omega_c_;
+	omega_o = gains.omega_o_;
 	k = gains.k_;
 	Kp = gains.Kp_;
 	Kd = gains.Kd_;
@@ -105,7 +107,7 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 	ros::NodeHandle nh(joint_nh);
 
 	h = time_step;
-	double b, omega_c, k;
+	double b, omega_c, omega_o, k;
 	if (!nh.getParam("b", b)){
 		ROS_ERROR("No b specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
@@ -114,12 +116,16 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 		ROS_ERROR("No omega_c specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
+	if (!nh.getParam("omega_o", omega_o)){
+		ROS_ERROR("No omega_o specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
+		return false;
+	}
 	if (!nh.getParam("k", k)){
 		ROS_ERROR("No k specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
 
-	setGains(b, omega_c, k);
+	setGains(b, omega_c, omega_o, k);
 	initDynamicReconfig(nh);
 
 	return true;
@@ -139,6 +145,7 @@ void adrc_controllers::ADRCJoint::updateDynamicReconfig(adrc_controllers::ADRCGa
 	iiwas_control::ParametersConfig config;
 	config.b = gains.b_;
 	config.omega_c = gains.omega_c_;
+	config.omega_o = gains.omega_o_;
 	config.k = gains.k_;
 
 	updateDynamicReconfig(config);
@@ -154,7 +161,7 @@ void adrc_controllers::ADRCJoint::updateDynamicReconfig(iiwas_control::Parameter
 }
 
 void adrc_controllers::ADRCJoint::dynamicReconfigCallback(iiwas_control::ParametersConfig &config, uint32_t) {
-	setGains(config.b, config.omega_c, config.k);
+	setGains(config.b, config.omega_c, config.omega_o, config.k);
 }
 
 

@@ -36,11 +36,11 @@ namespace adrc_controllers{
 	struct ADRCGains{
 		ADRCGains(){};
 
-		ADRCGains(double b, double omega_c, double k){
-			setParam(b, omega_c, k);
+		ADRCGains(double b, double omega_c, double omega_o, double k){
+			setParam(b, omega_c, omega_o, k);
 		}
 
-		void setParam(double b, double omega_c, double k);
+		void setParam(double b, double omega_c, double omega_o, double k);
 
 		double Kp_;
 		double Kd_;
@@ -49,6 +49,7 @@ namespace adrc_controllers{
 		double beta2_;
 		double beta3_;
 		double omega_c_;
+		double omega_o_;
 		double k_;
 	};
 
@@ -56,12 +57,12 @@ namespace adrc_controllers{
 	public:
 		ADRCJoint(const ADRCJoint &source);
 
-		ADRCJoint(double b=1.0, double omega_c=10.0, double k=1.0);
+		ADRCJoint(double b=4.0, double omega_c=50.0, double omega_o=200.0, double k=60.0);
 
-		void setGains(double b, double omega_c, double k);
+		void setGains(double b, double omega_c, double omega_o, double k);
 		void setGains(const ADRCGains &gains);
 
-		void getGains(double &b, double &omega_c, double &k, double &Kp, double &Kd,
+		void getGains(double &b, double &omega_c, double &omega_o, double &k, double &Kp, double &Kd,
 					  double &beta_1, double &beta_2, double &beta_3);
 
 		bool init(const ros::NodeHandle& joint_nh, double h);

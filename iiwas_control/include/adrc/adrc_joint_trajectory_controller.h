@@ -478,7 +478,7 @@ namespace adrc_controllers {
 //		}
 
 		// ADRC_DEBUG: Generate and send commands
-		int adrc_joint = 6;
+		int adrc_joint = 4;
 		double Kp[7] = {2800., 2500, 2000, 1500, 1500, 1200, 800};
 		double Kd[7] = {220., 120, 50, 40, 15, 10, 15};
 		double u = 0.;
