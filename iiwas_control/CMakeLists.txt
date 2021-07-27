@@ -10,10 +10,16 @@ find_package(catkin REQUIRED COMPONENTS
     hardware_interface
     controller_manager
     controller_interface
+    dynamic_reconfigure
     )
 
 find_package(pinocchio REQUIRED)
 find_package(Eigen3 REQUIRED)
+
+generate_dynamic_reconfigure_options(
+    cfg/Parameters.cfg
+)
+
 
 catkin_package(
     INCLUDE_DIRS include
@@ -38,9 +44,16 @@ add_executable(iiwas_dynamics_example
     )
 add_library(ff_joint_trajectory_controller
     src/ff_joint_trajectory_controller.cpp)
+add_library(adrc_joint_trajectory_controller
+    src/adrc/adrc_joint_trajectory_controller.cpp
+    src/adrc/adrc_single.cpp)
+
+# make sure configure headers are built before any node using them
+add_dependencies(adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
 
 target_compile_definitions(iiwas_dynamics_example PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 
 target_link_libraries(iiwas_dynamics_example
     ${catkin_LIBRARIES}
@@ -48,6 +61,11 @@ target_link_libraries(iiwas_dynamics_example
     )
 
 target_link_libraries(ff_joint_trajectory_controller
+    ${catkin_LIBRARIES}
+    pinocchio::pinocchio
+    )
+
+target_link_libraries(adrc_joint_trajectory_controller
     ${catkin_LIBRARIES}
     pinocchio::pinocchio
     )

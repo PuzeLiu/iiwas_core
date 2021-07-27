@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<library path="lib/libadrc_joint_trajectory_controller">
+    <class name="adrc_controllers/JointTrajectoryController"
+           type="adrc_controllers::JointTrajectoryController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            Active Disturbance Rejection Controller
+        </description>
+    </class>
+</library>

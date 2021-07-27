@@ -35,7 +35,6 @@ iiwa_front:
       F_joint_7: { p: 800.0,  i: 15.0, d: 15.0,  i_clamp: 40,  antiwindup: true }
     state_publish_rate: 1000
 
-
   gazebo_ros_control:
     pid_gains:
       F_joint_1: { p: 1500, i: 0.0, d: 20.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
@@ -65,6 +64,26 @@ iiwa_front:
       F_joint_6: { p: 500,  i: 0.0, d: 5.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
       F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
     state_publish_rate: 1000
+
+  adrc_trajectory_controller:
+    type: adrc_controllers/JointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+    parameters:
+      F_joint_1: { b: 1.5, omega_c: 55., k: 10, u_max: 320}
+      F_joint_2: { b: 1.0, omega_c: 100., k: 20, u_max: 320}
+      F_joint_3: { b: 6, omega_c: 50., k: 40, u_max: 176}
+      F_joint_4: { b: 5, omega_c: 50., k: 40, u_max: 176}
+      F_joint_5: { b: 18, omega_c: 35., k: 120, u_max: 110}
+      F_joint_6: { b: 10, omega_c: 50., k: 20, u_max: 40}
+      F_joint_7: { b: 20, omega_c: 25, k: 200, u_max: 40}
 
 
 iiwa_back:
@@ -104,7 +123,6 @@ iiwa_back:
       B_joint_7: { p: 800.0,  i: 15.0, d: 15.0,  i_clamp: 40,  antiwindup: true }
     state_publish_rate: 1000
 
-
   gazebo_ros_control:
     pid_gains:
       B_joint_1: { p: 1500, i: 0.0, d: 20.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
@@ -134,3 +152,23 @@ iiwa_back:
       B_joint_6: { p: 500,  i: 0.0, d: 5.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
       B_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
     state_publish_rate: 1000
+
+  adrc_trajectory_controller:
+    type: adrc_controllers/JointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+    parameters:
+      B_joint_1: { b: 1.5, omega_c: 55., k: 10, u_max: 320}
+      B_joint_2: { b: 1.0, omega_c: 100., k: 20, u_max: 320}
+      B_joint_3: { b: 6, omega_c: 50., k: 40, u_max: 176}
+      B_joint_4: { b: 5, omega_c: 50., k: 40, u_max: 176}
+      B_joint_5: { b: 18, omega_c: 35., k: 120, u_max: 110}
+      B_joint_6: { b: 10, omega_c: 50., k: 20, u_max: 40}
+      B_joint_7: { b: 20, omega_c: 25, k: 200, u_max: 40}
