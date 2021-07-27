@@ -93,8 +93,6 @@ namespace feedforward_controllers {
 		std::vector<double> desired_torque_;
 		std::vector<double> pid_torque_;
 		std::vector<double> id_torque_;
-		std::vector<double> v_s_;       // Stribeck velocity to define the region
-        std::vector<double> f_s_;       // Stiction Max
 
 		/**
 		 * \brief Publish current controller state at a throttled frequency.
@@ -131,12 +129,6 @@ namespace feedforward_controllers {
 		pid_torque_.resize(pinoModel.nq);
 		id_torque_.resize(pinoModel.nq);
 
-        v_s_.resize(pinoModel.nq);
-        f_s_.resize(pinoModel.nq);
-        for (int i = 0; i < pinoModel.nq; ++i) {
-            f_s_[i] = 2;
-            v_s_[i] = 0.05;
-        }
 		return true;
 	}
 
@@ -282,17 +274,6 @@ namespace feedforward_controllers {
 		pinoData.M.triangularView<Eigen::StrictlyLower>() =
 		        pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 		Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
-
-		double des_v;
-        Eigen::VectorXd frictionCompensation(pinoModel.nq);
-        for (int j = 0; j < JointTrajectoryController::desired_state_.position.size(); ++j) {
-            des_v = JointTrajectoryController::desired_state_.velocity[j];
-            double f_c = pinoModel.friction[j];
-            frictionCompensation[j] = copysign(f_c + (f_s_[j] - f_c) * exp(-pow((des_v / v_s_[j]), 2)),
-                                               des_v) + pinoModel.damping[j] * pinoJointVelocity[j];
-            ROS_INFO_STREAM(frictionCompensation[j]);
-//            ffTerm[j] += frictionCompensation[j];
-        }
 
 		pinocchio::rnea(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity, pinoJointAcceleration);
 		Eigen::VectorXd idTorque = pinoData.tau + pinoModel.friction.cwiseProduct(pinoJointVelocity.cwiseSign())
