@@ -77,13 +77,13 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     parameters:
-      F_joint_1: { b: 1.5, omega_c: 55., k: 10, u_max: 320}
-      F_joint_2: { b: 1.0, omega_c: 100., k: 20, u_max: 320}
-      F_joint_3: { b: 6, omega_c: 50., k: 40, u_max: 176}
-      F_joint_4: { b: 5, omega_c: 50., k: 40, u_max: 176}
-      F_joint_5: { b: 18, omega_c: 35., k: 120, u_max: 110}
-      F_joint_6: { b: 10, omega_c: 50., k: 20, u_max: 40}
-      F_joint_7: { b: 20, omega_c: 25, k: 200, u_max: 40}
+      F_joint_1: { b: 8.0,  omega_c: 100., omega_o: 500, k: 1000, u_max: 160}
+      F_joint_2: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 300, u_max: 160}
+      F_joint_3: { b: 5.0,  omega_c: 100., omega_o: 400, k: 600, u_max: 90}
+      F_joint_4: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 200, u_max: 90}
+      F_joint_5: { b: 0.5,  omega_c: 100., omega_o: 400, k: 400, u_max: 60}
+      F_joint_6: { b: 0.4,  omega_c: 50.,  omega_o: 200, k: 100, u_max: 20}
+      F_joint_7: { b: 0.25, omega_c: 100., omega_o: 400, k: 300, u_max: 20}
 
 
 iiwa_back:
@@ -165,10 +165,10 @@ iiwa_back:
       - B_joint_6
       - B_joint_7
     parameters:
-      B_joint_1: { b: 1.5, omega_c: 55., k: 10, u_max: 320}
-      B_joint_2: { b: 1.0, omega_c: 100., k: 20, u_max: 320}
-      B_joint_3: { b: 6, omega_c: 50., k: 40, u_max: 176}
-      B_joint_4: { b: 5, omega_c: 50., k: 40, u_max: 176}
-      B_joint_5: { b: 18, omega_c: 35., k: 120, u_max: 110}
-      B_joint_6: { b: 10, omega_c: 50., k: 20, u_max: 40}
-      B_joint_7: { b: 20, omega_c: 25, k: 200, u_max: 40}
+      B_joint_1: { b: 8.0,  omega_c: 100., omega_o: 500, k: 1000, u_max: 160}
+      B_joint_2: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 300, u_max: 160}
+      B_joint_3: { b: 5.0,  omega_c: 100., omega_o: 400, k: 600, u_max: 90}
+      B_joint_4: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 200, u_max: 90}
+      B_joint_5: { b: 0.5,  omega_c: 100., omega_o: 400, k: 400, u_max: 60}
+      B_joint_6: { b: 0.4,  omega_c: 50.,  omega_o: 200, k: 100, u_max: 20}
+      B_joint_7: { b: 0.25, omega_c: 100., omega_o: 400, k: 300, u_max: 20}

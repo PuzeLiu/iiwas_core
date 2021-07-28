@@ -85,21 +85,18 @@ double adrc_controllers::ADRCJoint::starting() {
 	return starting(0.);
 }
 
-double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r) {
+double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r, double inertia) {
 	ADRCGains gains = *adrc_buffer_.readFromNonRT();
 
 	x_d = x_r;
-	double e = z1 - y;
+	double e = y - z1;
+	double b = gains.b_ / inertia;
 
-	double fe = e;
-	double fe_1 = e;
+	z1 += h * (z2 + gains.beta1_ * e);
+	z2 += h * (z3 + b * u_old + gains.beta2_ * e);
+	z3 += h * (gains.beta3_ * e);
 
-	z1 += h * (z2 - gains.beta1_ * e);
-	z2 += h * (z3 + gains.b_ * u_old - gains.beta2_ * fe);
-	z3 -= h * (gains.beta3_ * fe_1);
-
-	u_old = gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3 / gains.b_;
-
+	u_old = (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / b;
 	return u_old;
 }
 

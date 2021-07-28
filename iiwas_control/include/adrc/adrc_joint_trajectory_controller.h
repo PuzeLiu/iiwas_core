@@ -478,16 +478,15 @@ namespace adrc_controllers {
 //		}
 
 		// ADRC_DEBUG: Generate and send commands
-		int adrc_joint = 4;
-		double Kp[7] = {2800., 2500, 2000, 1500, 1500, 1200, 800};
-		double Kd[7] = {220., 120, 50, 40, 15, 10, 15};
+		int adrc_joint = 0;
+		double Kp[7] = {1500., 3000, 1000, 1500, 800, 500, 500};
+		double Kd[7] = {20., 50, 10, 20, 3, 5, 0.5};
 		double u = 0.;
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-
 			if (i!=adrc_joint){
 				u = Kp[i] * (desired_state_.position[i] - current_state_.position[i]) + Kd[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
 			} else {
-				u = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i]);
+				u = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i], pinoData.M(i, i));
 			}
 			u = boost::algorithm::clamp(u, -u_max_[i], u_max_[i]);
 			joints_[i].setCommand(u + u_ff[i]);
