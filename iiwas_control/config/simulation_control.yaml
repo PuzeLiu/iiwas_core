@@ -77,7 +77,7 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     parameters:
-      F_joint_1: { b: 8.0,  omega_c: 100., omega_o: 500, k: 1000, u_max: 160}
+      F_joint_1: { b: 9.0,  omega_c: 70.,  omega_o: 300, k: 800, u_max: 160}
       F_joint_2: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 300, u_max: 160}
       F_joint_3: { b: 5.0,  omega_c: 100., omega_o: 400, k: 600, u_max: 90}
       F_joint_4: { b: 3.0,  omega_c: 50.,  omega_o: 200, k: 200, u_max: 90}
