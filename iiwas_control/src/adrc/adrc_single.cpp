@@ -30,12 +30,11 @@ void adrc_controllers::ADRCGains::setParam(double b, double omega_c, double omeg
 	omega_o_ = omega_o;
 	k_ = k;
 
-
 	Kp_ = pow(omega_c_, 2);
 	Kd_ = 2 * omega_c_;
 	beta1_ = 3 * omega_o_;
 	beta2_ = 3 * pow(omega_o_, 2);
-	beta3_ = k * beta2_;
+	beta3_ = pow(omega_o_, 3);
 }
 
 adrc_controllers::ADRCJoint::ADRCJoint(const adrc_controllers::ADRCJoint &source):dynamic_reconfig_initialized_(false),
@@ -85,12 +84,12 @@ double adrc_controllers::ADRCJoint::starting() {
 	return starting(0.);
 }
 
-double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r, double inertia) {
+double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r, double I_inv) {
 	ADRCGains gains = *adrc_buffer_.readFromNonRT();
 
 	x_d = x_r;
 	double e = y - z1;
-	double b = gains.b_ / inertia;
+	double b = gains.b_;
 
 	z1 += h * (z2 + gains.beta1_ * e);
 	z2 += h * (z3 + b * u_old + gains.beta2_ * e);

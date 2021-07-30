@@ -71,7 +71,7 @@ namespace adrc_controllers{
 
 		double starting();
 
-		double update(double y, double x_r, double v_r, double inertia);
+		double update(double y, double x_r, double v_r, double I_inv);
 
 		void initDynamicReconfig(ros::NodeHandle &node);
 

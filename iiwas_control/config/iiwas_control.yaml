@@ -82,13 +82,13 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     parameters:
-      F_joint_1: { b: 1.5, omega_c: 35., omega_o: 140, k: 50, u_max: 160}
-      F_joint_2: { b: 1.0, omega_c: 30., omega_o: 120, k: 40, u_max: 160}
-      F_joint_3: { b: 6, omega_c: 50., omega_o: 200, k: 60, u_max: 90}
-      F_joint_4: { b: 5, omega_c: 50., omega_o: 200, k: 60, u_max: 90}
-      F_joint_5: { b: 4, omega_c: 30., omega_o: 120, k: 40, u_max: 50}
-      F_joint_6: { b: 14, omega_c: 50., omega_o: 200, k: 120, u_max: 20}
-      F_joint_7: { b: 12, omega_c: 50, omega_o: 200, k: 120, u_max: 20}
+      F_joint_1: { b: 0.3, omega_c: 50., omega_o: 70, k: 100, u_max: 90}
+      F_joint_2: { b: 0.3, omega_c: 50., omega_o: 100, k: 100, u_max: 90}
+      F_joint_3: { b: 1.0, omega_c: 50., omega_o: 100, k: 100, u_max: 50}
+      F_joint_4: { b: 1.0, omega_c: 50., omega_o: 150, k: 100, u_max: 50}
+      F_joint_5: { b: 3.0, omega_c: 50., omega_o: 180, k: 100, u_max: 40}
+      F_joint_6: { b: 5.0, omega_c: 50., omega_o: 180, k: 100, u_max: 20}
+      F_joint_7: { b: 6.0, omega_c: 50., omega_o: 200, k: 100, u_max: 20}
 
 
 iiwa_back:
