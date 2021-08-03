@@ -500,7 +500,7 @@ namespace adrc_controllers {
 		setActionFeedback();
 
 		// Update time data
-		publishState(time_data.uptime);
+		publishState(time_data.time);
 	}
 
 	template<class SegmentImpl>
