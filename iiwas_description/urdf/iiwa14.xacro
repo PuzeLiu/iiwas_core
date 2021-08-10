@@ -72,8 +72,8 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.24150"  friction="0.31909"/> &lt;!&ndash; ETH &ndash;&gt;-->
-      <dynamics damping="0.330320"  friction="0.384477"/>
+      <dynamics damping="0.24150"  friction="0.31909"/> <!-- ETH -->
+<!--      <dynamics damping="0.330320"  friction="0.384477"/>-->
     </joint>
 
     <link name="${robot_name}_link_1">
@@ -124,8 +124,8 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.37328"  friction="0.18130"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.212160"  friction="0.496333"/>
+      <dynamics damping="0.37328"  friction="0.18130"/> <!-- ETH -->
+<!--        <dynamics damping="0.212160"  friction="0.496333"/>-->
     </joint>
 
     <link name="${robot_name}_link_2">
@@ -175,8 +175,8 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.11025"  friction="0.07302"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.100000"  friction="0.173951"/>
+      <dynamics damping="0.11025"  friction="0.07302"/> <!-- ETH -->
+<!--        <dynamics damping="0.100000"  friction="0.173951"/>-->
     </joint>
 
     <link name="${robot_name}_link_3">
@@ -227,8 +227,8 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.10000"  friction="0.17671"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.219041"  friction="0.375100"/>
+      <dynamics damping="0.10000"  friction="0.17671"/> <!-- ETH -->
+<!--        <dynamics damping="0.219041"  friction="0.375100"/>-->
     </joint>
 
     <link name="${robot_name}_link_4">
@@ -278,8 +278,8 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.10000"  friction="0.03463"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.185923"  friction="0.481099"/>
+      <dynamics damping="0.10000"  friction="0.03463"/> <!-- ETH -->
+<!--        <dynamics damping="0.185923"  friction="0.481099"/>-->
     </joint>
 
     <link name="${robot_name}_link_5">
@@ -329,8 +329,8 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.12484"  friction="0.13391"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.100000"  friction="0.196149"/>
+      <dynamics damping="0.12484"  friction="0.13391"/> <!-- ETH -->
+<!--        <dynamics damping="0.100000"  friction="0.196149"/>-->
     </joint>
 
     <link name="${robot_name}_link_6">
@@ -381,8 +381,8 @@
                          soft_upper_limit="${173 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-<!--      <dynamics damping="0.10000"  friction="0.08710"/> &lt;!&ndash; ETH &ndash;&gt;-->
-        <dynamics damping="0.100000"  friction="0.299238"/>
+      <dynamics damping="0.10000"  friction="0.08710"/> <!-- ETH -->
+<!--        <dynamics damping="0.100000"  friction="0.05"/>-->
     </joint>
 
     <link name="${robot_name}_link_7">

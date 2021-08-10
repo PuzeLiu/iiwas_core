@@ -110,6 +110,9 @@ namespace adrc_controllers {
 		virtual void update(const ros::Time &time, const ros::Duration &period);
 
 	protected:
+		void setCommand(Eigen::MatrixXd m_inv, Eigen::VectorXd u_ff);
+
+	protected:
 		pinocchio::Model pinoModel;
 		pinocchio::Data pinoData;
 		typedef std::shared_ptr<ADRCJoint> ADRCJointPtr;
@@ -465,38 +468,7 @@ namespace adrc_controllers {
 		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 		Eigen::VectorXd u_ff = pinoData.M * pinoJointAcceleration;
 
-//		// ADRC: Generate and send commands
-//		double u = 0.;
-//		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-//			u = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i]);
-//			u = boost::algorithm::clamp(u, -u_max_[i], u_max_[i]);
-//			joints_[i].setCommand(u + u_ff[i]);
-//
-//			u_adrc_[i] = u;
-//			u_ff_[i] = u_ff[i];
-//			u_[i] = u + u_ff[i];
-//		}
-
-		Eigen::MatrixXd m_inv = pinoData.M.inverse();
-		// ADRC_DEBUG: Generate and send commands
-		int adrc_joint = 0;
-		double Kp[7] = {2800., 2500, 2000, 1500, 1500, 1000, 800};
-		double Kd[7] = {220., 120, 50, 40, 15, 10, 15};
-		double u = 0.;
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-			if (i!=adrc_joint){
-				u = Kp[i] * (desired_state_.position[i] - current_state_.position[i]) + Kd[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
-			} else {
-				double m_inv_i = boost::algorithm::clamp(m_inv(i, i), 0, 200);
-				u = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i], m_inv_i);
-			}
-			u = boost::algorithm::clamp(u, -u_max_[i], u_max_[i]);
-			joints_[i].setCommand(u + u_ff[i]);
-
-			u_adrc_[i] = u;
-			u_ff_[i] = u_ff[i];
-			u_[i] = u + u_ff[i];
-		}
+		setCommand(pinoData.M, u_ff);
 		setActionFeedback();
 
 		// Update time data
@@ -632,6 +604,35 @@ namespace adrc_controllers {
 		resp.acceleration = response_point.acceleration;
 
 		return true;
+	}
+
+	template<class SegmentImpl>
+	void ADRCJointTrajectoryController<SegmentImpl>::setCommand(Eigen::MatrixXd M, Eigen::VectorXd u_ff) {
+		int adrc_joint = 3;
+
+		Eigen::VectorXd a;
+		a.resize(JointTrajectoryController::getNumberOfJoints());
+		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
+			a[i] = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i]);
+			if (i!=adrc_joint){
+				a[i] = 0;
+			}
+		}
+		Eigen::VectorXd u = M * a;
+
+		double Kp[7] = {1000., 1000, 500, 800, 800, 300, 400};
+		double Kd[7] = {50., 50, 10, 10, 6, 5, 0.3};
+		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
+			if (i!=adrc_joint){
+				u[i] = Kp[i] * (desired_state_.position[i] - current_state_.position[i]) + Kd[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
+			}
+			u[i] = boost::algorithm::clamp(u[i], -u_max_[i], u_max_[i]);
+			joints_[i].setCommand(u[i] + u_ff[i]);
+
+			u_adrc_[i] = u[i];
+			u_ff_[i] = u_ff[i];
+			u_[i] = u[i] + u_ff[i];
+		}
 	}
 }
 
