@@ -23,7 +23,7 @@ if __name__ == '__main__':
     goal = np.pi / 6
     period = 4
 
-    joint_id = 3
+    joint_id = 5
 
     traj = JointTrajectory()
 
@@ -61,10 +61,10 @@ if __name__ == '__main__':
 
     del traj.points[0]
 
-    while not rospy.is_shutdown():
-        traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
-        cmdPub.publish(traj)
-        rospy.sleep(4 * period * t_final)
+    # while not rospy.is_shutdown():
+    traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
+    cmdPub.publish(traj)
+    rospy.sleep(4 * period * t_final)
         # break
 
-    exit(0)
+    # exit(0)

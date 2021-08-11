@@ -608,7 +608,7 @@ namespace adrc_controllers {
 
 	template<class SegmentImpl>
 	void ADRCJointTrajectoryController<SegmentImpl>::setCommand(Eigen::MatrixXd M, Eigen::VectorXd u_ff) {
-		int adrc_joint = 3;
+		int adrc_joint = 5;
 
 		Eigen::VectorXd a;
 		a.resize(JointTrajectoryController::getNumberOfJoints());
@@ -618,10 +618,10 @@ namespace adrc_controllers {
 				a[i] = 0;
 			}
 		}
-		Eigen::VectorXd u = M * a;
-
-		double Kp[7] = {1000., 1000, 500, 800, 800, 300, 400};
-		double Kd[7] = {50., 50, 10, 10, 6, 5, 0.3};
+//		Eigen::VectorXd u = M * a;
+		Eigen::VectorXd u = a;
+		double Kp[7] = {2800.0, 2500, 2000, 1500, 1500, 1200, 800};
+		double Kd[7] = {220., 120., 50., 40., 15., 10., 15.};
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 			if (i!=adrc_joint){
 				u[i] = Kp[i] * (desired_state_.position[i] - current_state_.position[i]) + Kd[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
