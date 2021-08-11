@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include "adrc/adrc_single.h"
+#include <boost/algorithm/clamp.hpp>
 
 void adrc_controllers::ADRCGains::setParam(double b, double omega_c, double omega_o) {
 	b_ = b;
@@ -56,8 +57,8 @@ void adrc_controllers::ADRCJoint::setGains(const adrc_controllers::ADRCGains &ga
 	updateDynamicReconfig(gains);
 }
 
-void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &omega_o, double &Kp, double &Kd, double &beta_1,
-                                           double &beta_2, double &beta_3) {
+void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &omega_o, double &Kp, double &Kd,
+										   double &beta_1, double &beta_2, double &beta_3) {
 	ADRCGains gains = *adrc_buffer_.readFromNonRT();
 	b = gains.b_;
 	omega_c = gains.omega_c_;
@@ -93,7 +94,8 @@ double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r) {
 	z2 += h * (z3 + b * u_old + gains.beta2_ * e);
 	z3 += h * (gains.beta3_ * e);
 
-	u_old = (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / b;
+	u_old = (gains.Kp_ * (x_r - y) + gains.Kd_ * (v_r - z2) - z3) / b;
+	u_old = boost::algorithm::clamp(u_old, -u_max, u_max);
 	return u_old;
 }
 
@@ -112,6 +114,10 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 	}
 	if (!nh.getParam("omega_o", omega_o)){
 		ROS_ERROR("No omega_o specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
+		return false;
+	}
+	if (!nh.getParam("u_max", u_max)){
+		ROS_ERROR("No u_max specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
 

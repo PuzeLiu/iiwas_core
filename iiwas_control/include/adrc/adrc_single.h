@@ -82,7 +82,7 @@ namespace adrc_controllers{
 
 	public:
 		double z1, z2, z3;
-		double x_d, u_old, h;
+		double x_d, u_old, h, u_max;
 
 	protected:
 		realtime_tools::RealtimeBuffer<ADRCGains> adrc_buffer_;

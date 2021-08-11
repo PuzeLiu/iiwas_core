@@ -117,7 +117,7 @@ namespace adrc_controllers {
 		pinocchio::Data pinoData;
 		typedef std::shared_ptr<ADRCJoint> ADRCJointPtr;
 		std::vector<ADRCJointPtr> adrcs_;
-		std::vector<double> u_ff_, u_adrc_, u_, u_max_;
+		std::vector<double> u_ff_, u_adrc_, u_, u_max_, estimation_error_, disturbance_, velocity_error_;
 
 		/**
 		 * \brief Publish current controller state at a throttled frequency.
@@ -308,6 +308,9 @@ namespace adrc_controllers {
 		u_.resize(JointTrajectoryController::getNumberOfJoints());
 		u_ff_.resize(JointTrajectoryController::getNumberOfJoints());
 		u_adrc_.resize(JointTrajectoryController::getNumberOfJoints());
+		estimation_error_.resize(JointTrajectoryController::getNumberOfJoints());
+		disturbance_.resize(JointTrajectoryController::getNumberOfJoints());
+		velocity_error_.resize(JointTrajectoryController::getNumberOfJoints());
 		return true;
 	}
 
@@ -489,8 +492,10 @@ namespace adrc_controllers {
 				state_publisher_->msg_.actual.positions = current_state_.position;
 				state_publisher_->msg_.actual.velocities = current_state_.velocity;
 				state_publisher_->msg_.actual.effort = u_;
+				state_publisher_->msg_.actual.accelerations = disturbance_;
 				state_publisher_->msg_.error.positions = state_error_.position;
 				state_publisher_->msg_.error.velocities = state_error_.velocity;
+				state_publisher_->msg_.error.accelerations = estimation_error_;
 				state_publisher_->msg_.error.effort = u_adrc_;
 
 				state_publisher_->unlockAndPublish();
@@ -610,16 +615,19 @@ namespace adrc_controllers {
 	void ADRCJointTrajectoryController<SegmentImpl>::setCommand(Eigen::MatrixXd M, Eigen::VectorXd u_ff) {
 		int adrc_joint = 5;
 
-		Eigen::VectorXd a;
+		Eigen::VectorXd a, u;
 		a.resize(JointTrajectoryController::getNumberOfJoints());
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 			a[i] = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i], desired_state_.velocity[i]);
+			estimation_error_[i] = adrcs_[i]->z1 - current_state_.position[i];
+			velocity_error_[i] = adrcs_[i]->z2 - desired_state_.velocity[i];
+			disturbance_[i] = adrcs_[i]->z3;
 			if (i!=adrc_joint){
 				a[i] = 0;
 			}
 		}
 //		Eigen::VectorXd u = M * a;
-		Eigen::VectorXd u = a;
+		u = a;
 		double Kp[7] = {2800.0, 2500, 2000, 1500, 1500, 1200, 800};
 		double Kd[7] = {220., 120., 50., 40., 15., 10., 15.};
 		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
@@ -631,7 +639,7 @@ namespace adrc_controllers {
 
 			u_adrc_[i] = u[i];
 			u_ff_[i] = u_ff[i];
-			u_[i] = u[i] + u_ff[i];
+			u_[i] = u[i];
 		}
 	}
 }
