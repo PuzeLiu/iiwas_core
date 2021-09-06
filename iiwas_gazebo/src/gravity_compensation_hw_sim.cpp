@@ -83,9 +83,8 @@ namespace iiwas_gazebo {
 	}
 
 	void GravityCompensationHWSim::writeSim(ros::Time time, ros::Duration period) {
-		pinocchio::computeGeneralizedGravity(pinoModel, pinoData, pinoJointPosition);
-		pinocchio::computeCoriolisMatrix(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity);
-		Eigen::VectorXd compensationTerm = pinoData.C * pinoJointVelocity + pinoData.g;
+		pinocchio::nonLinearEffects(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity);
+		Eigen::VectorXd compensationTerm = pinoData.nle;
 
 		// If the E-stop is active, joints controlled by position commands will maintain their positions.
 		if (e_stop_active_) {
