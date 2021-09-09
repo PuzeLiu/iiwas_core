@@ -1,5 +1,0 @@
-float64[] stiffness
-float64[] damping
----
-bool success
-string msg

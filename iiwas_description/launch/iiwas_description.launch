@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch> 
+    <arg name="use_front_iiwa" default="true"/>
+    <arg name="use_back_iiwa" default="true"/>
+    
     <arg name="front_xyz" default="0.190 0.813 0.03"/>
     <arg name="front_rpy" default="0 0 0"/>
 
@@ -13,17 +16,21 @@
                command="$(find xacro)/xacro '$(find iiwas_description)/urdf/iiwas_frame.urdf.xacro'"/>
     </group>
 
-    <include file="$(find iiwas_description)/launch/iiwa_single_description.launch" ns="iiwa_front">
-        <arg name="robot_name" value="F"/>
-        <arg name="base_xyz" value="$(arg front_xyz)"/>
-        <arg name="base_rpy" value="$(arg front_rpy)"/>
-        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
-    </include>
+    <group ns="iiwa_front" if="$(arg use_front_iiwa)">
+        <include file="$(find iiwas_description)/launch/iiwa_single_description.launch">
+            <arg name="robot_name" value="F"/>
+            <arg name="base_xyz" value="$(arg front_xyz)"/>
+            <arg name="base_rpy" value="$(arg front_rpy)"/>
+            <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+        </include>
+    </group>
 
-    <include file="$(find iiwas_description)/launch/iiwa_single_description.launch" ns="iiwa_back">
-        <arg name="robot_name" value="B"/>
-        <arg name="base_xyz" value="$(arg back_xyz)"/>
-        <arg name="base_rpy" value="$(arg back_rpy)"/>
-        <arg name="hardware_interface" value="$(arg hardware_interface)"/>
-    </include>
+    <group ns="iiwa_back" if="$(arg use_back_iiwa)">
+        <include file="$(find iiwas_description)/launch/iiwa_single_description.launch">
+            <arg name="robot_name" value="B"/>
+            <arg name="base_xyz" value="$(arg back_xyz)"/>
+            <arg name="base_rpy" value="$(arg back_rpy)"/>
+            <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+        </include>
+    </group>
 </launch>

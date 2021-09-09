@@ -29,7 +29,6 @@
 
   <export>
     <controller_interface plugin="${prefix}/ff_controller_plugins.xml"/>
-    <controller_interface plugin="${prefix}/adrc_controller_plugins.xml"/>
   </export>
 
 </package>

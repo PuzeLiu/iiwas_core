@@ -1,5 +1,0 @@
-# Option: 1-4
-int16 state
----
-bool success
-string msg

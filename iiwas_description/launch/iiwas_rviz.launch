@@ -2,25 +2,25 @@
 <launch>
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
-    <arg name="use_gripper" default="true"/>
 
-    <arg name="world_iiwa_f_x" default="0.190"/>
-    <arg name="world_iiwa_f_y" default="0.813"/>
-    <arg name="world_iiwa_f_z" default="0.0"/>
-    <arg name="world_iiwa_f_rpy" default="0 0 0"/>
+    <arg name="front_xyz" default="0.190 0.813 0.03"/>
+    <arg name="front_rpy" default="0 0 0"/>
 
-    <arg name="world_iiwa_b_x" default="3.198"/>
-    <arg name="world_iiwa_b_y" default="0.813"/>
-    <arg name="world_iiwa_b_z" default="0.0"/>
-    <arg name="world_iiwa_b_rpy" default="0 0 0"/>
+    <arg name="back_xyz" default="3.198 0.813 0.03"/>
+    <arg name="back_rpy" default="0 0 3.14159265359"/>
+    
 
     <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
 
     <!-- Description -->
-    <include file="iiwas_description.launch">
-        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)"/>
-        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)"/>
+    <include file="$(find iiwas_description)/launch/iiwas_description.launch">
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+        <arg name="use_front_iiwa" default="$(arg use_front_iiwa)"/>
+        <arg name="use_back_iiwa" default="$(arg use_back_iiwa)"/>
+        <arg name="front_xyz" value="$(arg front_xyz)"/>
+        <arg name="front_rpy" value="$(arg front_rpy)"/>
+        <arg name="back_xyz" value="$(arg back_xyz)"/>
+        <arg name="back_rpy" value="$(arg back_rpy)"/>
     </include>
 
     <node name="rviz" pkg="rviz" type="rviz"
@@ -39,7 +39,7 @@
         </node>
     </group>
 
-    <group ns="iiwa_back" if="$(arg use_front_iiwa)">
+    <group ns="iiwa_back" if="$(arg use_back_iiwa)">
         <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
             <param name="publish_frequency" type="double" value="50.0"/>

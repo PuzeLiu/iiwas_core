@@ -6,15 +6,16 @@
     <arg name="paused" default="false"/>
     <arg name="physics" default="ode" />
 
-    <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
-    <arg name="controller_type" default="adrc_trajectory_controller"/>
+    <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
+    <arg name="controller_type" default="joint_position_trajectory_controller"/>
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
-    <arg name="simulation" default="true" />
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
+        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
+        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
     </include>
 
@@ -36,7 +37,6 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
         <arg name="back_controllers" value="$(arg controller_type)"/>
-        <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
     <group ns="iiwas_frame">
