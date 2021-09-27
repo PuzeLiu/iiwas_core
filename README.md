@@ -1,3 +1,6 @@
+* Unfortunately, we can not provide the code of KUKA FRI and iiwas_driver package for real robot usage.
+If you want to use real robot, please contact KUKA for the package.
+
 ## Prerequisite 
 Make sure you have installed ROS and create a new catkin workspace. 
 Additionally, to the full desktop version of ROS, the following ROS packages are needed:
