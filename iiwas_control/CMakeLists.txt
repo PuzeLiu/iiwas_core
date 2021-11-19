@@ -85,3 +85,7 @@ install(DIRECTORY config
     PATTERN ".svn" EXCLUDE
     )
 
+install(DIRECTORY include
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
