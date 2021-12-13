@@ -6,8 +6,8 @@
     <arg name="paused" default="false"/>
     <arg name="physics" default="ode" />
 
-    <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
-    <arg name="controller_type" default="joint_position_trajectory_controller"/>
+    <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
+    <arg name="controller_type" default="adrc_trajectory_controller"/>
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
@@ -37,7 +37,8 @@
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
-        <arg name="back_controllers" value="$(arg controller_type)"/>
+<!--        <arg name="back_controllers" value="$(arg controller_type)"/>-->
+        <arg name="back_controllers" value="joint_feedforward_trajectory_controller"/>
         <arg name="simulation" value="$(arg simulation)"/>
     </include>
 

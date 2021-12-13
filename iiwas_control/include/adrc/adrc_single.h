@@ -64,7 +64,7 @@ namespace adrc_controllers{
 		void getGains(double &b, double &omega_c, double &omega_o, double &Kp, double &Kd,
 					  double &beta_1, double &beta_2, double &beta_3);
 
-		bool init(const ros::NodeHandle& joint_nh, double h);
+		bool init(const ros::NodeHandle& joint_nh, double h, double qLow, double qHigh, double vMax);
 
 		double starting(double x);
 
@@ -81,19 +81,19 @@ namespace adrc_controllers{
 
 
 	public:
-		double z1, z2, z3;
-		double x_d, u_old, h, u_max;
+		double z1, z2, z3, error;
+		double qLow, qHigh, vMax, uOld, h, uMax;
 
 	protected:
-		realtime_tools::RealtimeBuffer<ADRCGains> adrc_buffer_;
+		realtime_tools::RealtimeBuffer<ADRCGains> adrcBuffer_;
 
 		// Dynamics reconfigure
-		bool dynamic_reconfig_initialized_;
+		bool dynamicReconfigInitialized_;
 		typedef dynamic_reconfigure::Server<iiwas_control::ParametersConfig> DynamicReconfigServer;
-		boost::shared_ptr<DynamicReconfigServer> param_reconfig_server_;
-		DynamicReconfigServer::CallbackType param_reconfig_callback_;
+		boost::shared_ptr<DynamicReconfigServer> paramReconfigServer_;
+		DynamicReconfigServer::CallbackType paramReconfigCallback_;
 
-		boost::recursive_mutex param_reconfig_mutex_;
+		boost::recursive_mutex paramReconfigMutex_;
 	};
 }
 #endif //ADRC_EXTENDED_STATE_OBSERVER_H

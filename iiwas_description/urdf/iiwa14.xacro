@@ -13,7 +13,8 @@
   <xacro:property name="safety_controller_k_vel" value="10" />
   <xacro:property name="joint_damping" value="0.5" />
 
-  <xacro:macro name="iiwa14" params="parent hardware_interface robot_name *origin">
+
+  <xacro:macro name="iiwa14" params="parent hardware_interface robot_name dynamics_parameter *origin">
 
     <!--joint between {parent} and link_0-->
     <joint name="${parent}_${robot_name}_base_joint" type="fixed">
@@ -24,15 +25,10 @@
 
     <link name="${robot_name}_link_0">
       <inertial>
-        <!--  Fixed
-        <origin xyz="-0.1 0 0.07" rpy="0 0 0"/>
+        <!--  Fixed -->
+        <origin xyz="-0.0 0 0.0" rpy="0 0 0"/>
         <mass value="5"/>
         <inertia ixx="0.05"  ixy="0"  ixz="0" iyy="0.06" iyz="0" izz="0.03" />
-        -->
-        <!-- CAD -->
-        <mass value="5.476713"/>
-        <origin xyz="-0.012882 -0.000000 0.071517" rpy="0 0 0"/>
-        <inertia ixx="2.4243e-02"  ixy="2.0000e-08"  iyy="3.0840e-02" ixz="6.7180e-04" iyz="-1.9000e-07" izz="3.3475e-02"/>
       </inertial>
 
       <visual>
@@ -72,30 +68,42 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH
-      <dynamics damping="0.24150"  friction="0.31909"/>
-      -->
-      <!-- Identified -->
-      <dynamics damping="0.351210"  friction="0.375046"/>
+
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.24150"  friction="0.31909"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+        <dynamics damping="0.290458" friction="0.378214"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_1">
       <inertial>
-        <!-- ETH
-        <origin xyz="-0.003508 0.001602 -0.03139" rpy="0 0 0"/>
-        <mass value="3.947808"/>
-        <inertia ixx="0.004554"  ixy="0.00000"  ixz="-0.00000" iyy="0.00454" iyz="0.00001" izz="0.00029" />
-        -->
-        <!-- CAD -->
-        <mass value="4.100238"/>
-        <origin xyz="0.000004 -0.033790 0.122349" rpy="0 0 0"/>
-        <inertia ixx="3.2869e-02" ixy="-4.3000e-07" iyy="3.3168e-02"
-                 ixz="9.4000e-07" iyz="4.8970e-03" izz="1.2274e-02"/>
-        <!-- Identified
-        <mass value="4.897254"/>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-        <inertia ixx="0.000979" ixy="0.0" ixz="0.0" iyy="0.000979" iyz="0.0" izz="0.000945"/>
-         -->
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
+          <origin xyz="-0.003508 0.001602 -0.03139" rpy="0 0 0"/>
+          <mass value="3.947808"/>
+          <inertia ixx="0.004554"  ixy="0.00000"  ixz="-0.00000" iyy="0.00454" iyz="0.00001" izz="0.00029" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="4.100238"/>
+          <origin xyz="0.000004 -0.033790 0.122349" rpy="0 0 0"/>
+          <inertia ixx="3.2869e-02" ixy="-4.3000e-07" iyy="3.3168e-02"
+                   ixz="9.4000e-07" iyz="4.8970e-03" izz="1.2274e-02"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 1 -->
+          <mass value="3.854820"/>
+          <origin value="-0.098492 0.000000 0.069462" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.055704" ixy="0.000000" ixz="0.000356"
+                   iyy="0.056488" iyz="0.000000" izz="0.001462"/>
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -127,32 +135,41 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.37328"  friction="0.18130"/>
-       
-      <!-- Identified 
-      <dynamics damping="0.523418"  friction="0.351184"/> 
-      -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.37328"  friction="0.18130"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+        <dynamics damping="0.465142" friction="0.372973"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_2">
       <inertial>
-        <!-- ETH
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
           <mass value="4.502752"/>
           <origin xyz="-0.007671 0.166693  -0.003551" rpy="0 0 0"/>
           <inertia ixx="0.00032"  ixy="0.00000"  ixz="0.000007" iyy="0.000100" iyz="-0.000003" izz="0.000419" />
-        -->
-        <!-- CAD -->
-        <mass value="3.943457"/>
-        <origin xyz="0.000285 0.058872 0.041961" rpy="0 0 0"/>
-        <inertia ixx="3.0495e-02" ixy="-3.2800e-05" iyy="1.0969e-02"
-                 ixz="2.2370e-05" iyz="4.8615e-03" izz="3.0330e-02"/>
-        
-        <!-- Identified
-        <mass value="4.900332"/>
-        <origin xyz="-0.025248 -0.010544 0.000262" rpy="0 0 0"/>
-        <inertia ixx="0.035650" ixy="-0.010500" ixz="-0.000436" iyy="0.004302" iyz="-0.001409" izz="0.038893"/>
-         -->
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="3.943457"/>
+          <origin xyz="0.000285 0.058872 0.041961" rpy="0 0 0"/>
+          <inertia ixx="3.0495e-02" ixy="-3.2800e-05" iyy="1.0969e-02"
+                   ixz="2.2370e-05" iyz="4.8615e-03" izz="3.0330e-02"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 2 -->
+          <mass value="5.773797"/>
+          <origin value="-0.000687 -0.029334 0.119974" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.025239" ixy="0.003213" ixz="-0.000263"
+                   iyy="0.003716" iyz="0.001421" izz="0.023538"/>
+        </xacro:if>
       </inertial>
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -183,32 +200,41 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.11025"  friction="0.07302"/>
-      
-      <!-- Identified
-      <dynamics damping="0.119085"  friction="0.160143"/>
-       -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.11025"  friction="0.07302"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+        <dynamics damping="0.031758" friction="0.213255"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_3">
       <inertial>
-        <!-- ETH
-        <mass value="2.455197"/>
-        <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/>
-        <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />
-        -->
-        <!-- CAD -->
-        <mass value="4"/>
-        <origin xyz="0.000002 0.029546 0.126448" rpy="0 0 0"/>
-        <inertia ixx="3.1546e-02" ixy="-3.6628e-07" iyy="2.9954e-02"
-                 ixz="-3.9154e-07" iyz="-6.1227e-03" izz="9.5594e-03"/>
-        
-        <!-- Identified
-        <mass value="4.832825"/>
-        <origin xyz="0.000148 -0.000314 -0.075932" rpy="0 0 0"/>
-        <inertia ixx="0.021144" ixy="0.000039" ixz="0.002510" iyy="0.021421" iyz="-0.000051" izz="0.001376"/>
-         -->
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
+          <mass value="2.455197"/>
+          <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/>
+          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="4"/>
+          <origin xyz="0.000002 0.029546 0.126448" rpy="0 0 0"/>
+          <inertia ixx="3.1546e-02" ixy="-3.6628e-07" iyy="2.9954e-02"
+                   ixz="-3.9154e-07" iyz="-6.1227e-03" izz="9.5594e-03"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 3 -->
+          <mass value="5.953188"/>
+          <origin value="0.000160 0.063306 0.043455" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.016829" ixy="0.000286" ixz="0.000417"
+                   iyy="0.011761" iyz="-0.005257" izz="0.006149"/>
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -240,32 +266,41 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.10000"  friction="0.17671"/>
-      
-      <!-- Identified
-      <dynamics damping="0.501218"  friction="0.206359"/>
-       -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.10000"  friction="0.17671"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+		<dynamics damping="0.170443" friction="0.327965"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_4">
       <inertial>
-          <!-- ETH
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
           <mass value="2.611550"/>
           <origin xyz="0.000196 -0.052679 0.038182" rpy="0 0 0"/>
           <inertia ixx="0.038444"  ixy="0.000880"  ixz="-0.001120" iyy="0.011437" iyz="-0.001113" izz=" 0.049880" />
-          -->
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
           <!-- CAD -->
           <mass value="4"/>
           <origin xyz="-0.000000 0.067480 0.034254" rpy="0 0 0"/>
           <inertia ixx="2.5087e-02" ixy="-4.3896e-08" iyy="8.9416e-03"
-                   ixz="-1.3169e-07" iyz="4.1448e-03" izz="2.3916e-02" />
-          
-          <!-- Identified 
-          <mass value="4.598291"/>
-          <origin xyz="0.006656 0.022481 0.004435" rpy="0 0 0"/>
-          <inertia ixx="0.020475" ixy="0.013639" ixz="-0.00164" iyy="0.011166" iyz="0.002343" izz="0.029962"/>
-          -->
+                 ixz="-1.3169e-07" iyz="4.1448e-03" izz="2.3916e-02" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 4 -->
+          <mass value="3.448720"/>
+          <origin value="-0.000066 0.028782 0.116070" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.019103" ixy="0.000081" ixz="-0.000175"
+                   iyy="0.016046" iyz="0.001274" izz="0.003551"/>
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -297,32 +332,41 @@
                          soft_upper_limit="${168 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.10000"  friction="0.03463"/>
-       
-      <!-- Identified
-      <dynamics damping="0.189856"  friction="0.478257"/>
-       -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.10000"  friction="0.03463"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+        <dynamics damping="0.058755" friction="0.536120"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_5">
       <inertial>
-        <!-- ETH
-        <mass value="3.410009"/>
-        <origin xyz="0.000054  -0.002367 -0.21134" rpy="0 0 0"/>
-        <inertia ixx="0.002769"  ixy="-0.000008"  ixz="0.000006" iyy="0.002842" iyz="-0.000001" izz="0.000117" />
-        -->
-        <!-- CAD -->
-        <mass value="3.2"/>
-        <origin xyz="0.000125 0.021388 0.075417" rpy="0 0 0"/>
-        <inertia ixx="1.9009e-02" ixy="3.3348e-06" iyy="1.6414e-02"
-                 ixz="2.9559e-06" iyz="-5.8267e-03" izz="8.4231e-03" />
-        
-        <!-- Identified
-        <mass value="3.873134"/>
-        <origin xyz="0.001058 0.011481 -0.028845" rpy="0 0 0"/>
-        <inertia ixx="0.020982" ixy="0.000060" ixz="-0.000591" iyy="0.020954" iyz="0.000769" izz="0.001127"/>
-         -->
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
+          <mass value="3.410009"/>
+          <origin xyz="0.000054  -0.002367 -0.21134" rpy="0 0 0"/>
+          <inertia ixx="0.002769"  ixy="-0.000008"  ixz="0.000006" iyy="0.002842" iyz="-0.000001" izz="0.000117" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="3.2"/>
+          <origin xyz="0.000125 0.021388 0.075417" rpy="0 0 0"/>
+          <inertia ixx="1.9009e-02" ixy="3.3348e-06" iyy="1.6414e-02"
+                   ixz="2.9559e-06" iyz="-5.8267e-03" izz="8.4231e-03" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 5 -->
+          <mass value="4.007168"/>
+          <origin value="-0.000036 0.065820 0.034909" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.009814" ixy="-0.000066" ixz="-0.000189"
+                   iyy="0.008728" iyz="-0.001553" izz="0.001388"/>
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -354,32 +398,41 @@
                          soft_upper_limit="${118 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.12484"  friction="0.13391"/>
-      
-      <!-- Identified
-      <dynamics damping="0.012774"  friction="0.227769"/>
-       -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.12484"  friction="0.13391"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+		<dynamics damping="0.009696" friction="0.212718"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_6">
       <inertial>
-        <!-- ETH
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
         <mass value="3.387949"/>
         <origin xyz="0.000492  0.020190  -0.027496" rpy="0 0 0"/>
         <inertia ixx="0.000500"  ixy="-0.000050"  ixz="-0.000024" iyy="0.002809" iyz="-0.000041" izz="0.002315" />
-        -->
-        <!-- CAD -->
-        <mass value="2.2"/>
-        <origin xyz="-0.000000 0.002431 -0.001270" rpy="0 0 0"/>
-        <inertia ixx="6.1583e-03" ixy="3.4928e-08" iyy="4.4451e-03"
-                 ixz="-1.9792e-07" iyz="3.2555e-04" izz="5.7995e-03" />
-        
-        <!-- Identified
-        <mass value="2.556927"/>
-        <origin xyz="0.000874 0.039185 -0.011065" rpy="0 0 0"/>
-        <inertia ixx="0.001284" ixy="0.000057" ixz="-0.000029" iyy="0.001036" iyz="0.000121" izz="0.001177"/>
-         -->
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="2.2"/>
+          <origin xyz="-0.000000 0.002431 -0.001270" rpy="0 0 0"/>
+          <inertia ixx="6.1583e-03" ixy="3.4928e-08" iyy="4.4451e-03"
+                   ixz="-1.9792e-07" iyz="3.2555e-04" izz="5.7995e-03" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 6 -->
+          <mass value="2.415840"/>
+          <origin value="0.000723 0.019241 0.073756" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.002321" ixy="0.000637" ixz="0.000045"
+                   iyy="0.000980" iyz="-0.000262" izz="0.002200"/>
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -411,32 +464,41 @@
                          soft_upper_limit="${173 * PI / 180}"
                          k_position="${safety_controller_k_pos}"
                          k_velocity="${safety_controller_k_vel}"/>
-      <!-- ETH -->
-      <dynamics damping="0.10000"  friction="0.08710"/>
-      
-      <!-- Identified
-      <dynamics damping="0.000129"  friction="0.335576"/>
-       -->
+      <xacro:if value="${dynamics_parameter == 'eth'}">
+        <!-- ETH -->
+        <dynamics damping="0.10000"  friction="0.08710"/>
+      </xacro:if>
+
+      <xacro:unless value="${dynamics_parameter == 'eth'}">
+        <!-- Identified -->
+		<dynamics damping="0.001000" friction="0.337016"/>
+      </xacro:unless>
     </joint>
 
     <link name="${robot_name}_link_7">
       <inertial>
-        <!-- ETH
-        <mass value="0.354321"/>
-        <origin xyz="-0.034656 -0.023242 0.07138" rpy="0 0 0"/>
-        <inertia ixx="0.007946"  ixy="0.000221"  ixz="-0.000294" iyy=" 0.010889" iyz="-0.000294" izz="0.002944" />
-        -->
-        <!-- CAD -->
-        <mass value="0.4"/>
-        <origin xyz="0.000540 0.000569 0.026582" rpy="0 0 0"/>
-        <inertia ixx="3.5211e-04" ixy="-1.4790e-07" iyy="3.5066e-04"
-                 ixz="4.7514e-06" iyz="-7.8574e-07" izz="4.3803e-04" />
-        
-        <!-- Identified
-        <mass value="1.554398"/>
-        <origin xyz="-0.000052 -0.000260 -0.067768" rpy="0 0 0"/>
-        <inertia ixx="0.000939" ixy="0.000007" ixz="-0.000015" iyy="0.000936" iyz="0.000008" izz="0.001009"/>
-         -->
+        <xacro:if value="${dynamics_parameter == 'eth'}">
+          <!-- ETH -->
+          <mass value="0.354321"/>
+          <origin xyz="-0.034656 -0.023242 0.07138" rpy="0 0 0"/>
+          <inertia ixx="0.007946"  ixy="0.000221"  ixz="-0.000294" iyy=" 0.010889" iyz="-0.000294" izz="0.002944" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'cad'}">
+          <!-- CAD -->
+          <mass value="0.4"/>
+          <origin xyz="0.000540 0.000569 0.026582" rpy="0 0 0"/>
+          <inertia ixx="3.5211e-04" ixy="-1.4790e-07" iyy="3.5066e-04"
+                   ixz="4.7514e-06" iyz="-7.8574e-07" izz="4.3803e-04" />
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'identified'}">
+          <!-- Identified Joint 7 -->
+          <mass value="1.107339"/>
+          <origin value="0.001207 0.001384 -0.000630" rpy="0.0 0.0 0.0"/>
+          <inertia ixx="0.000765" ixy="0.000276" ixz="-0.000333"
+                   iyy="0.001042" iyz="0.000211" izz="0.000818"/>
+        </xacro:if>
       </inertial>
 
       <visual>

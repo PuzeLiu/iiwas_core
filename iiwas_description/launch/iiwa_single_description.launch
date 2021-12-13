@@ -5,10 +5,18 @@
     <arg name="base_xyz" default="0 0 0"/>
     <arg name="base_rpy" default="0 0 0"/>
     <arg name="hardware_interface" default="PositionJointInterface"/>
+    <arg name="dynamics_parameter" default="identified"/>
 
     <arg name="iiwa_urdf" default="$(find iiwas_description)/robots/iiwa.urdf.xacro"/>
 
     <param name="robot_description"
            command="$(find xacro)/xacro '$(arg iiwa_urdf)' robot_name:='$(arg robot_name)' parent:='$(arg parent)'
-           base_xyz:='$(arg base_xyz)' base_rpy:='$(arg base_rpy)' hardware_interface:='$(arg hardware_interface)'"/>
+           base_xyz:='$(arg base_xyz)' base_rpy:='$(arg base_rpy)' hardware_interface:='$(arg hardware_interface)'
+           dynamics_parameter:='cad'"
+    />
+
+<!--    <param name="iiwa_only_description"-->
+<!--           command="$(find xacro)/xacro '$(arg iiwa_urdf)' robot_name:='$(arg robot_name)' parent:='$(arg parent)'-->
+<!--           base_xyz:='$(arg base_xyz)' base_rpy:='$(arg base_rpy)' hardware_interface:='$(arg hardware_interface)'-->
+<!--           dynamics_parameter:='$(arg dynamics_parameter)'"/>-->
 </launch>

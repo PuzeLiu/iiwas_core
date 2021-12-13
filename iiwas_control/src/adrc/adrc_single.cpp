@@ -37,13 +37,13 @@ void adrc_controllers::ADRCGains::setParam(double b, double omega_c, double omeg
 	beta3_ = pow(omega_o_, 3);
 }
 
-adrc_controllers::ADRCJoint::ADRCJoint(const adrc_controllers::ADRCJoint &source):dynamic_reconfig_initialized_(false),
-	h(0.001) {
-	adrc_buffer_ = source.adrc_buffer_;
+adrc_controllers::ADRCJoint::ADRCJoint(const adrc_controllers::ADRCJoint &source): dynamicReconfigInitialized_(false),
+                                                                                   h(0.001) {
+	adrcBuffer_ = source.adrcBuffer_;
 }
 
 adrc_controllers::ADRCJoint::ADRCJoint(double b, double omega_c, double omega_o) :
-dynamic_reconfig_initialized_(false), h(0.001) {
+		dynamicReconfigInitialized_(false), h(0.001) {
 	setGains(b, omega_c, omega_o);
 }
 
@@ -53,13 +53,13 @@ void adrc_controllers::ADRCJoint::setGains(double b, double omega_c, double omeg
 }
 
 void adrc_controllers::ADRCJoint::setGains(const adrc_controllers::ADRCGains &gains) {
-	adrc_buffer_.writeFromNonRT(gains);
+	adrcBuffer_.writeFromNonRT(gains);
 	updateDynamicReconfig(gains);
 }
 
 void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &omega_o, double &Kp, double &Kd,
 										   double &beta_1, double &beta_2, double &beta_3) {
-	ADRCGains gains = *adrc_buffer_.readFromNonRT();
+	ADRCGains gains = *adrcBuffer_.readFromNonRT();
 	b = gains.b_;
 	omega_c = gains.omega_c_;
 	omega_o = gains.omega_o_;
@@ -71,11 +71,11 @@ void adrc_controllers::ADRCJoint::getGains(double &b, double &omega_c, double &o
 }
 
 double adrc_controllers::ADRCJoint::starting(double x) {
-	x_d = x;
 	z1 = x;
 	z2 = 0.;
 	z3 = 0.;
-	u_old = 0.;
+	error = 0.;
+	uOld = 0.;
 	return 0;
 }
 
@@ -84,25 +84,30 @@ double adrc_controllers::ADRCJoint::starting() {
 }
 
 double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r) {
-	ADRCGains gains = *adrc_buffer_.readFromNonRT();
+	ADRCGains gains = *adrcBuffer_.readFromNonRT();
 
-	x_d = x_r;
-	double e = y - z1;
-	double b = gains.b_;
+	error = y - z1;
 
-	z1 += h * (z2 + gains.beta1_ * e);
-	z2 += h * (z3 + b * u_old + gains.beta2_ * e);
-	z3 += h * (gains.beta3_ * e);
+	z1 += h * (z2 + gains.beta1_ * error);
+	z2 += h * (z3 + gains.b_ * uOld + gains.beta2_ * error);
+	z3 += h * (gains.beta3_ * error);
 
-	u_old = (gains.Kp_ * (x_r - y) + gains.Kd_ * (v_r - z2) - z3) / b;
-	u_old = boost::algorithm::clamp(u_old, -u_max, u_max);
-	return u_old;
+	z1 = boost::algorithm::clamp(z1, qLow, qHigh);
+	z2 = boost::algorithm::clamp(z2, -vMax, vMax);
+    z3 = boost::algorithm::clamp(z3, -vMax / h, vMax / h);
+	uOld = (gains.Kp_ * (x_r - y) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
+	uOld = boost::algorithm::clamp(uOld, -uMax, uMax);
+	return uOld;
 }
 
-bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double time_step) {
+bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double timeStep,
+									   double low, double high, double v_max) {
 	ros::NodeHandle nh(joint_nh);
 
-	h = time_step;
+	h = timeStep;
+	qLow = low;
+	qHigh = high;
+	vMax = v_max;
 	double b, omega_c, omega_o, k;
 	if (!nh.getParam("b", b)){
 		ROS_ERROR("No b specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
@@ -116,8 +121,8 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 		ROS_ERROR("No omega_o specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
-	if (!nh.getParam("u_max", u_max)){
-		ROS_ERROR("No u_max specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
+	if (!nh.getParam("u_max", uMax)){
+		ROS_ERROR("No uMax specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
 
@@ -128,15 +133,15 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 }
 
 void adrc_controllers::ADRCJoint::initDynamicReconfig(ros::NodeHandle &node) {
-	param_reconfig_server_.reset(new DynamicReconfigServer(param_reconfig_mutex_, node));
-	dynamic_reconfig_initialized_ = true;
+	paramReconfigServer_.reset(new DynamicReconfigServer(paramReconfigMutex_, node));
+	dynamicReconfigInitialized_ = true;
 
-	param_reconfig_callback_ = boost::bind(&adrc_controllers::ADRCJoint::dynamicReconfigCallback, this, _1, _2);
-	param_reconfig_server_->setCallback(param_reconfig_callback_);
+	paramReconfigCallback_ = boost::bind(&adrc_controllers::ADRCJoint::dynamicReconfigCallback, this, _1, _2);
+	paramReconfigServer_->setCallback(paramReconfigCallback_);
 }
 
 void adrc_controllers::ADRCJoint::updateDynamicReconfig(adrc_controllers::ADRCGains gains) {
-	if(!dynamic_reconfig_initialized_)
+	if(!dynamicReconfigInitialized_)
 		return;
 	iiwas_control::ParametersConfig config;
 	config.b = gains.b_;
@@ -147,12 +152,12 @@ void adrc_controllers::ADRCJoint::updateDynamicReconfig(adrc_controllers::ADRCGa
 }
 
 void adrc_controllers::ADRCJoint::updateDynamicReconfig(iiwas_control::ParametersConfig config) {
-	if(!dynamic_reconfig_initialized_)
+	if(!dynamicReconfigInitialized_)
 		return;
 
-	param_reconfig_mutex_.lock();
-	param_reconfig_server_->updateConfig(config);
-	param_reconfig_mutex_.unlock();
+	paramReconfigMutex_.lock();
+	paramReconfigServer_->updateConfig(config);
+	paramReconfigMutex_.unlock();
 }
 
 void adrc_controllers::ADRCJoint::dynamicReconfigCallback(iiwas_control::ParametersConfig &config, uint32_t) {
