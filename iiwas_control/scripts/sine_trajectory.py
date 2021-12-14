@@ -65,6 +65,6 @@ if __name__ == '__main__':
         traj.header.stamp = rospy.Time.now() + rospy.Duration(0.1)
         cmdPub.publish(traj)
         rospy.sleep(4 * period * t_final)
-        # break
+        break
 
     # exit(0)

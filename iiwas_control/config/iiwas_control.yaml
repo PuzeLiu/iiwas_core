@@ -82,22 +82,21 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     parameters:
-      F_joint_1: { b: 0.25, omega_c: 30., omega_o: 75, u_max: 160, u_stiction: 0., vs: 0.01}
-      F_joint_2: { b: 0.2, omega_c: 30., omega_o: 75, u_max: 160, u_stiction: 0.0, vs: 0.05}
-      F_joint_3: { b: 1.1, omega_c: 50., omega_o: 75, u_max: 90, u_stiction: 0.2, vs: 0.05}
-      F_joint_4: { b: 1.0, omega_c: 50., omega_o: 150, u_max: 90, u_stiction: 0.5, vs: 0.05}
-      F_joint_5: { b: 3.0, omega_c: 50., omega_o: 180, u_max: 60, u_stiction: 0.5, vs: 0.05}
-      F_joint_6: { b: 5.0, omega_c: 50., omega_o: 180, u_max: 20, u_stiction: 0.6, vs: 0.05}
-      F_joint_7: { b: 6.0, omega_c: 50., omega_o: 200, u_max: 20, u_stiction: 0.4, vs: 0.05}
+      F_joint_1: { b: 1.0, omega_c: 50.,  omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0 } # Parameter of Inertia Compatible
+      F_joint_2: { b: 1.0, omega_c: 50.,  omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0 }
+      F_joint_3: { b: 1.0, omega_c: 50., omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0 }
+      F_joint_4: { b: 1.0, omega_c: 50., omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0 }
+      F_joint_5: { b: 1.0, omega_c: 50., omega_o: 50., u_max: 100000, u_stiction: 0., vs: 0.0 }
+      F_joint_6: { b: 1.0, omega_c: 50., omega_o: 50., u_max: 100000, u_stiction: 0., vs: 0.0 }
+      F_joint_7: { b: 1.0, omega_c: 100., omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0 }
 
-#      # Inertia Compliant
-#      F_joint_1: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 160 }
-#      F_joint_2: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 160 }
-#      F_joint_3: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 90 }
-#      F_joint_4: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 90 }
-#      F_joint_5: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 60 }
-#      F_joint_6: { b: 0.06, omega_c: 100., omega_o: 180, u_max: 20 }
-#      F_joint_7: { b: 0.1, omega_c: 100., omega_o: 100, u_max: 20 }
+#      F_joint_1: { b: 0.25, omega_c: 30., omega_o: 75, u_max: 160, u_stiction: 0., vs: 0.01}
+#      F_joint_2: { b: 0.2, omega_c: 30., omega_o: 75, u_max: 160, u_stiction: 0.0, vs: 0.05}
+#      F_joint_3: { b: 1.1, omega_c: 50., omega_o: 75, u_max: 90, u_stiction: 0.2, vs: 0.05}
+#      F_joint_4: { b: 1.0, omega_c: 50., omega_o: 150, u_max: 90, u_stiction: 0.5, vs: 0.05}
+#      F_joint_5: { b: 3.0, omega_c: 50., omega_o: 180, u_max: 60, u_stiction: 0.5, vs: 0.05}
+#      F_joint_6: { b: 5.0, omega_c: 50., omega_o: 180, u_max: 20, u_stiction: 0.6, vs: 0.05}
+#      F_joint_7: { b: 6.0, omega_c: 50., omega_o: 200, u_max: 20, u_stiction: 0.4, vs: 0.05}
 
 
 iiwa_back:

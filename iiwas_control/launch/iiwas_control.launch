@@ -12,7 +12,7 @@
 
     <group ns="iiwa_front" if="$(arg use_front_iiwa)">
         <!-- load the controllers -->
-        <node name="controller_spawner" pkg="controller_manager" type="controller_manager" output="screen"
+        <node name="spawner" pkg="controller_manager" type="controller_manager" output="screen"
         	args="spawn joint_state_controller $(arg front_controllers)"/>
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
@@ -31,7 +31,7 @@
 
     <group ns="iiwa_back" if="$(arg use_back_iiwa)">
         <!-- load the controllers -->
-        <node name="controller_spawner" pkg="controller_manager" type="controller_manager" output="screen"
+        <node name="spawner" pkg="controller_manager" type="controller_manager" output="screen"
               args="spawn joint_state_controller $(arg back_controllers)"/>
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">

@@ -333,6 +333,7 @@ namespace adrc_controllers {
 			if (!safe_controller_nh.getParam("d", Kd_safe[j])){
 				ROS_ERROR("No d gain for safe controller.  Namespace: %s", safe_controller_nh.getNamespace().c_str());
 			}
+            ROS_ERROR_STREAM_NAMED(name_, "Joint: "<< j << "  P Gain: " << Kp_safe[j] << " D Gain" << Kd_safe[j]);
 			Kp_safe[j] = Kp_safe[j];
 			Kd_safe[j] = Kd_safe[j];
 		}
@@ -717,10 +718,11 @@ namespace adrc_controllers {
 			Eigen::VectorXd diagOffset(7);
 			Eigen::MatrixXd M = pinoData.M;
 			diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.005;
+//            diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.01;
 //			diagOffset << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 			u = (M + diagOffset.asDiagonal().toDenseMatrix()) * u_joint;
 
-			int test_id = 0;
+			int test_id = 6;
 			for (int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
 				joints_[i].setCommand(u[i] + u_ff_[i]);
