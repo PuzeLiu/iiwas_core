@@ -35,18 +35,18 @@ iiwa_front:
       F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
     state_publish_rate: 1000
 
-  #  Comment this specification, the robot will directly set the position in simulator.
-  #  The error in the log is not a problematic.
-  #####################################################################################
-  gazebo_ros_control:
-    pid_gains:
-      F_joint_1: { p: 2000, i: 0.0, d: 5.0,  i_clamp: 320, antiwindup: true } # Parameter for simulation
-      F_joint_2: { p: 3000, i: 0.0, d: 50.0, i_clamp: 320, antiwindup: true } # Parameter for simulation
-      F_joint_3: { p: 800,  i: 0.0, d: 3.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
-      F_joint_4: { p: 1500, i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
-      F_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
-      F_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
-      F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+#  #  Comment this specification, the robot will directly set the position in simulator.
+#  #  The error in the log is not a problematic.
+#  #####################################################################################
+#  gazebo_ros_control:
+#    pid_gains:
+#      F_joint_1: { p: 2000, i: 0.0, d: 5.0,  i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      F_joint_2: { p: 3000, i: 0.0, d: 50.0, i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      F_joint_3: { p: 800,  i: 0.0, d: 3.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      F_joint_4: { p: 1500, i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      F_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+#      F_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+#      F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
 
   joint_feedforward_trajectory_controller:
     type: feedforward_controllers/JointTrajectoryController
@@ -135,18 +135,18 @@ iiwa_back:
       B_joint_7: { p: 800.0,  i: 15.0, d: 15.0,  i_clamp: 40,  antiwindup: true }
     state_publish_rate: 1000
 
-#  Comment this specification, the robot will directly set the position in simulator.
-#  The error in the log is not a problematic.
-#####################################################################################
-  gazebo_ros_control:
-    pid_gains:
-      B_joint_1: { p: 2000, i: 0.0, d: 5.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
-      B_joint_2: { p: 3000, i: 0.0, d: 50.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
-      B_joint_3: { p: 800,  i: 0.0, d: 3.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
-      B_joint_4: { p: 1500,  i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
-      B_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
-      B_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
-      B_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+##  Comment this specification, the robot will directly set the position in simulator.
+##  The error in the log is not a problematic.
+######################################################################################
+#  gazebo_ros_control:
+#    pid_gains:
+#      B_joint_1: { p: 2000, i: 0.0, d: 5.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      B_joint_2: { p: 3000, i: 0.0, d: 50.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
+#      B_joint_3: { p: 800,  i: 0.0, d: 3.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      B_joint_4: { p: 1500,  i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+#      B_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+#      B_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+#      B_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
 
   joint_feedforward_trajectory_controller:
     type: feedforward_controllers/JointTrajectoryController
