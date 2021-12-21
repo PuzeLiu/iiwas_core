@@ -94,8 +94,8 @@ double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r) {
 
 	z1 = boost::algorithm::clamp(z1, qLow, qHigh);
 	z2 = boost::algorithm::clamp(z2, -vMax, vMax);
-    z3 = boost::algorithm::clamp(z3, -vMax / h, vMax / h);
-	uOld = (gains.Kp_ * (x_r - y) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
+    z3 = boost::algorithm::clamp(z3, -10 * vMax / h, 10 * vMax / h);
+	uOld = (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
 	uOld = boost::algorithm::clamp(uOld, -uMax, uMax);
 	return uOld;
 }

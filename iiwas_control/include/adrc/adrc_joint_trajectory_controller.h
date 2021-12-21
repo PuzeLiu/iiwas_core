@@ -126,6 +126,7 @@ namespace adrc_controllers {
 		std::vector<double> estimation_error_, disturbance_, velocity_error_;
 
 		std::vector<double> Kp_safe, Kd_safe, qStop;
+		Eigen::VectorXd diagOffset_;
 		bool isSafe;
 
 		/**
@@ -306,6 +307,7 @@ namespace adrc_controllers {
 		vs_.resize(JointTrajectoryController::getNumberOfJoints());
 		Kp_safe.resize(JointTrajectoryController::getNumberOfJoints());
 		Kd_safe.resize(JointTrajectoryController::getNumberOfJoints());
+		diagOffset_.resize(JointTrajectoryController::getNumberOfJoints());
 		for (unsigned int j = 0; j < joint_names_.size(); ++j) {
 			// Node handle to PID gains
 			ros::NodeHandle joint_nh(controller_nh, std::string("parameters/") + joints_[j].getName());
@@ -325,6 +327,9 @@ namespace adrc_controllers {
 			if (!joint_nh.getParam("vs", vs_[j])){
 				ROS_ERROR("No vs specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
 			}
+			if (!joint_nh.getParam("diag_offset", diagOffset_[j])){
+				ROS_ERROR("No diag_offset specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
+			}
 
 			ros::NodeHandle safe_controller_nh(root_nh, "joint_torque_trajectory_controller/gains/" + joints_[j].getName());
 			if (!safe_controller_nh.getParam("p", Kp_safe[j])){
@@ -333,7 +338,7 @@ namespace adrc_controllers {
 			if (!safe_controller_nh.getParam("d", Kd_safe[j])){
 				ROS_ERROR("No d gain for safe controller.  Namespace: %s", safe_controller_nh.getNamespace().c_str());
 			}
-            ROS_ERROR_STREAM_NAMED(name_, "Joint: "<< j << "  P Gain: " << Kp_safe[j] << " D Gain" << Kd_safe[j]);
+
 			Kp_safe[j] = Kp_safe[j];
 			Kd_safe[j] = Kd_safe[j];
 		}
@@ -681,7 +686,8 @@ namespace adrc_controllers {
 		// Inerita Compatible ADRC
 		Eigen::VectorXd pinoJointPosition(pinoModel.nq);
 
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
+		int test_id = 0;
+		for (unsigned int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 			u_joint[i] = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i],
 									 desired_state_.velocity[i]);
 
@@ -697,10 +703,10 @@ namespace adrc_controllers {
 		// Check if the error is too big that potentially cause instability
 		if (isSafe) {
 			for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-				if (state_error_.position[i] > 0.2 || state_error_.position[i] < -0.2) {
+				if (state_error_.position[i] > 0.05 || state_error_.position[i] < -0.05) {
 					ROS_ERROR_STREAM(
 						name_ << " Joint " << i + 1 << " has detected tracking errors: " << state_error_.position[i]
-							  << " bigger than 0.2, start the safe mode");
+							  << " bigger than 0.05, start the safe mode");
 					isSafe = false;
 					for (int j = 0; j < JointTrajectoryController::getNumberOfJoints(); ++j) {
 						qStop[j] = current_state_.position[j];
@@ -715,14 +721,10 @@ namespace adrc_controllers {
 			pinoData.M.triangularView<Eigen::StrictlyLower>() =
 				pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 
-			Eigen::VectorXd diagOffset(7);
 			Eigen::MatrixXd M = pinoData.M;
-			diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.005;
-//            diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.01;
-//			diagOffset << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-			u = (M + diagOffset.asDiagonal().toDenseMatrix()) * u_joint;
+//			diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.005;
+			u = M.diagonal().cwiseMax(diagOffset_).template cwiseProduct(u_joint);
 
-			int test_id = 6;
 			for (int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
 				joints_[i].setCommand(u[i] + u_ff_[i]);
