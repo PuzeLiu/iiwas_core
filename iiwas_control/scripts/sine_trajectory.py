@@ -20,10 +20,11 @@ if __name__ == '__main__':
     rospy.sleep(2.0)
 
     t_final = 1
-    goal = np.pi / 6
-    period = 4
+    init_position = np.array([0., 0., 0., -3., -0., 0., 0.]) * np.pi / 6.
+    goal_position = np.array([2., 0, -0., -0., 0., 0., 0.]) * np.pi / 6.
+    period = 2
 
-    joint_id = 6
+    joint_id = [0]
 
     traj = JointTrajectory()
 
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     traj.joint_names.append(joint_prefix + "_joint_6")
     traj.joint_names.append(joint_prefix + "_joint_7")
 
-    init_position = [0, 0*np.pi/6., 0*np.pi/6., -0*np.pi/6., 0*np.pi/6., 0*np.pi/6, 0.]
+
     traj_point_goal = JointTrajectoryPoint()
     traj_point_goal.positions = init_position
     traj_point_goal.velocities = [0., 0., 0., 0., 0., 0., 0.]
@@ -46,15 +47,21 @@ if __name__ == '__main__':
     rospy.sleep(3.0)
 
     traj.points.clear()
-    for i in np.linspace(0, 4 * period * t_final, int(4 * period * t_final * 100)+1):
+    for i in np.linspace(0, 4 * period * t_final, int(4 * period * t_final * 100) + 1):
         traj_point = JointTrajectoryPoint()
 
         traj_point.positions = init_position.copy()
-        traj_point.positions[joint_id] = -np.cos(np.pi / 2 / t_final * i) * goal + goal
-        traj_point.velocities = [0., 0., 0., 0., 0., 0., 0.]
-        traj_point.velocities[joint_id] = np.pi / 2 / t_final * np.sin(np.pi / 2 / t_final * i) * goal
-        # traj_point.accelerations = [0., 0., 0., 0., 0., 0., 0.]
-        # traj_point.accelerations[joint_id] = (np.pi / 2 / t_final) ** 2 * np.cos(np.pi / 2 / t_final * i) * goal
+        traj_point.velocities = np.zeros(7)
+        # traj_point.accelerations = np.zeros(7)
+
+        for joint_id_i in joint_id:
+            q_0_i = init_position[joint_id_i]
+            q_f_i = goal_position[joint_id_i]
+            omega = np.pi / 2 / t_final
+            traj_point.positions[joint_id_i] = -np.cos(omega * i) * (q_f_i - q_0_i) / 2 + (q_f_i + q_0_i) / 2
+            traj_point.velocities[joint_id_i] = omega * np.sin(omega * i) * (q_f_i - q_0_i) / 2
+            # traj_point.accelerations[joint_id_i] = (omega) ** 2 * np.cos(omega * i) * (q_f_i - q_0_i) / 2
+
         traj_point.time_from_start = rospy.Time(i)
 
         traj.points.append(traj_point)
