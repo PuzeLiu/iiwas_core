@@ -75,7 +75,7 @@ namespace iiwas_gazebo {
 			joint_velocity_[j] = sim_joints_[j]->GetVelocity(0);
 			joint_effort_[j] = sim_joints_[j]->GetForce((unsigned int) (0));
 
-			double alpha = 0.27;
+			double alpha = 1;
 			pinoJointPosition[j] = joint_position_[j];
 			pinoJointVelocity[j] = joint_velocity_[j] * alpha + pinoJointVelocity[j] * (1- alpha);
 			pinoJointEffort[j] = joint_effort_[j];
