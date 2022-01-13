@@ -7,7 +7,7 @@
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
     <arg name="simulation" default="true" />
-    <arg name="model_list" default="['iiwas_frame', 'iiwa_front']"/>
+    <arg name="model_list" default="['iiwas_frame', 'iiwa_front', 'iiwa_back']"/>
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">

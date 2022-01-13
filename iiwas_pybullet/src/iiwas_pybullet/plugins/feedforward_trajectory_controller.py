@@ -26,13 +26,12 @@ class FeedForwardTrajectoryController:
 
         self.command_buffer = list()
 
+        # Load urdf and pinocchio model
         robot_description = rospy.get_param(namespace + '/robot_description', "")
         self.pino_model = pino.buildModelFromXML(robot_description)
         self.pino_data = self.pino_model.createData()
         pino.forwardKinematics(self.pino_model, self.pino_data, np.zeros(self.pino_model.nq))
         pino.updateFramePlacements(self.pino_model, self.pino_data)
-
-        self.control_mode = self.pb.TORQUE_CONTROL
 
         self.joint_indices = np.zeros(self.pino_model.nq)
         self.position_gains = np.zeros(self.pino_model.nq)
@@ -90,7 +89,7 @@ class FeedForwardTrajectoryController:
             self.update_segment_coefficient(point_tmp, point_tmp)
 
     def update_current_state(self):
-        iiwas_states = np.array(self.pb.getJointStates(self.model_id, self.joint_indices))
+        iiwas_states = np.array(self.pb.getJointStates(self.model_id, self.joint_indices), dtype=object)
         self.current_positions = iiwas_states[:, 0].astype(float)
         self.current_velocities = iiwas_states[:, 1].astype(float)
         self.current_effort = iiwas_states[:, 3].astype(float)
