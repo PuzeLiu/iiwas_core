@@ -31,11 +31,8 @@ class FeedForwardTrajectoryController:
         self.command_buffer = list()
 
         # Load urdf and pinocchio model
-        robot_description = rospy.get_param(namespace + '/robot_description', "")
-        self.pino_model = pino.buildModelFromXML(robot_description)
+        self.pino_model = pino.buildModelFromUrdf(model_spec['urdf_file'])
         self.pino_data = self.pino_model.createData()
-        pino.forwardKinematics(self.pino_model, self.pino_data, np.zeros(self.pino_model.nq))
-        pino.updateFramePlacements(self.pino_model, self.pino_data)
 
         self.joint_indices = np.zeros(self.pino_model.nq)
         self.position_gains = np.zeros(self.pino_model.nq)

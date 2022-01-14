@@ -29,6 +29,7 @@
             <param name="publish_frequency" type="double" value="50.0"/>
         </node>
     </group>
+
     <rosparam file="$(find iiwas_pybullet)/config/iiwa.config" command="load" />
 
     <!-- Simulation -->

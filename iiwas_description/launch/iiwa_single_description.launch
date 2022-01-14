@@ -12,8 +12,7 @@
     <param name="robot_description"
            command="$(find xacro)/xacro '$(arg iiwa_urdf)' robot_name:='$(arg robot_name)' parent:='$(arg parent)'
            base_xyz:='$(arg base_xyz)' base_rpy:='$(arg base_rpy)' hardware_interface:='$(arg hardware_interface)'
-           dynamics_parameter:='identified'"
-    />
+           dynamics_parameter:='identified'" />
 
 <!--    <param name="iiwa_only_description"-->
 <!--           command="$(find xacro)/xacro '$(arg iiwa_urdf)' robot_name:='$(arg robot_name)' parent:='$(arg parent)'-->
