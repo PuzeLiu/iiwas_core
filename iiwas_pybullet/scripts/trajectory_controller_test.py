@@ -5,8 +5,8 @@ import rospy
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 if __name__ == '__main__':
-    rospy.init_node("feed_forward_controller_test", anonymous=True)
-    pubilsher = rospy.Publisher("iiwa_front/feedforward_trajectory_controller/command", JointTrajectory, queue_size=1)
+    rospy.init_node("feedforward_controller_test", anonymous=True)
+    pubilsher = rospy.Publisher("iiwa_front/joint_feedforward_trajectory_controller/command", JointTrajectory, queue_size=1)
     time.sleep(1.0)
     msg = JointTrajectory()
     msg.header.stamp = rospy.Time.now()

@@ -6,6 +6,7 @@ import pinocchio as pino
 import rospy
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from control_msgs.msg import JointTrajectoryControllerState
+from iiwas_pybullet.srv import SetGains, SetGainsResponse
 
 
 class FeedForwardTrajectoryController:
@@ -16,13 +17,16 @@ class FeedForwardTrajectoryController:
         self.model_id = model_spec['model_id']
         self.period = rospy.Duration(1 / kargs['publish_rate'])
         # subscribe controller command
-        rospy.Subscriber(namespace + '/feedforward_trajectory_controller/command',
+        rospy.Subscriber(namespace + '/joint_feedforward_trajectory_controller/command',
                          JointTrajectory, self.ff_controller_cb, queue_size=1)
 
         # publish controller message
-        self.state_publisher = rospy.Publisher(namespace + "/feedforward_trajectory_controller/state",
+        self.state_publisher = rospy.Publisher(namespace + "/joint_feedforward_trajectory_controller/state",
                                                JointTrajectoryControllerState, queue_size=5)
         self.state_msg = JointTrajectoryControllerState()
+
+        # Service to set gains
+        rospy.Service(namespace + '/joint_feedforward_trajectory_controller/set_gains', SetGains, self.set_gains_cb)
 
         self.command_buffer = list()
 
@@ -88,6 +92,15 @@ class FeedForwardTrajectoryController:
             point_tmp.accelerations = self.desired_accelerations
             self.update_segment_coefficient(point_tmp, point_tmp)
 
+    def set_gains_cb(self, req):
+        if len(self.position_gains) == len(req.p_gain.data) and len(self.velocity_gains) == len(req.d_gain.data):
+            self.position_gains = np.array(req.p_gain.data)
+            self.velocity_gains = np.array(req.d_gain.data)
+            return SetGainsResponse(success=True)
+        else:
+            rospy.logwarn("Service SetGains is not success as the dimension doesn't match")
+            return SetGainsResponse(success=False)
+
     def update_current_state(self):
         iiwas_states = np.array(self.pb.getJointStates(self.model_id, self.joint_indices), dtype=object)
         self.current_positions = iiwas_states[:, 0].astype(float)
@@ -105,8 +118,7 @@ class FeedForwardTrajectoryController:
         self.error_positions = self.desired_positions - self.current_positions
         self.error_velocities = self.desired_velocities - self.current_velocities
         self.feedforward_command = pino.computeGeneralizedGravity(self.pino_model, self.pino_data, self.current_positions)
-        self.closeloop_command = self.position_gains * self.error_positions + \
-                                 self.velocity_gains * self.error_velocities
+        self.closeloop_command = self.position_gains * self.error_positions + self.velocity_gains * self.error_velocities
         self.command = np.clip(self.closeloop_command + self.feedforward_command,
                                -self.pino_model.effortLimit, self.pino_model.effortLimit)
         self.pb.setJointMotorControlArray(self.model_id, self.joint_indices, controlMode=self.pb.TORQUE_CONTROL,
