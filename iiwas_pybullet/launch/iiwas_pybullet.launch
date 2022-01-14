@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <!-- Arguments -->
-    <arg name="gui" default="false"/>
+    <arg name="pybullet_gui" default="false"/>
     <arg name="paused" default="false"/>
 
     <arg name="use_front_iiwa" default="true"/>
@@ -36,9 +36,9 @@
     <include file="$(find pybullet_ros)/ros/launch/empty_world.launch">
         <arg name="config_file" value="$(find iiwas_pybullet)/config/environment.config" />
         <arg name="environment" default="iiwas_pybullet.plugins.env_plugin" />
-        <arg name="pybullet_gui" default="True" /> <!-- if true pybullet gui will show -->
-        <arg name="pause_simulation" default="False" /> <!-- if true, will boot with paused physics -->
-        <arg name="parallel_plugin_execution" default="false" />
+        <arg name="pybullet_gui" default="$(arg pybullet_gui)" /> <!-- if true pybullet gui will show -->
+        <arg name="pause_simulation" default="$(arg pause_simulation)" /> <!-- if true, will boot with paused physics -->
+        <arg name="parallel_plugin_execution" default="False" />
         <arg name="use_deformable_world" default="False" /> <!-- enable/disable soft body simulation -->
         <arg name="gui_options" default="" />
         <arg name="model_list" value="$(arg model_list)"/>
