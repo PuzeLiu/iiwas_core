@@ -10,12 +10,12 @@ from iiwas_pybullet.srv import SetGains, SetGainsResponse
 
 
 class FeedForwardTrajectoryController:
-    def __init__(self, pybullet, namespace, model_spec, **kargs):
+    def __init__(self, pybullet, namespace, model_spec, **kwargs):
         # get "import pybullet as pb" and store in self.pb
         self.pb = pybullet
         self.namespace = namespace
         self.model_id = model_spec['model_id']
-        self.period = rospy.Duration(1 / kargs['publish_rate'])
+        self.period = rospy.Duration(1 / kwargs['publish_rate'])
         # subscribe controller command
         rospy.Subscriber(namespace + '/joint_feedforward_trajectory_controller/command',
                          JointTrajectory, self.ff_controller_cb, queue_size=1)
@@ -33,39 +33,43 @@ class FeedForwardTrajectoryController:
         # Load urdf and pinocchio model
         self.pino_model = pino.buildModelFromUrdf(model_spec['urdf_file'])
         self.pino_data = self.pino_model.createData()
+        self.pino_positions = np.zeros(self.pino_model.nq)  # Value used to calculate gravity
+        self.pino_indices = list()
 
-        self.joint_indices = np.zeros(self.pino_model.nq)
-        self.position_gains = np.zeros(self.pino_model.nq)
-        self.velocity_gains = np.zeros(self.pino_model.nq)
-        self.current_positions = np.zeros(self.pino_model.nq)
-        self.current_velocities = np.zeros(self.pino_model.nq)
-        self.current_effort = np.zeros(self.pino_model.nq)
-        self.desired_positions = np.zeros(self.pino_model.nq)
-        self.desired_velocities = np.zeros(self.pino_model.nq)
-        self.desired_accelerations = np.zeros(self.pino_model.nq)
-        self.error_positions = np.zeros(self.pino_model.nq)
-        self.error_velocities = np.zeros(self.pino_model.nq)
-        self.feedforward_command = np.zeros(self.pino_model.nq)
-        self.closeloop_command = np.zeros(self.pino_model.nq)
-        self.command = np.zeros(self.pino_model.nq)
-        for i, joint_name in enumerate(model_spec['joint_map']):
+        self.n_joints = len(kwargs['gains'])
+        self.joint_indices = np.zeros(self.n_joints)
+        self.position_gains = np.zeros(self.n_joints)
+        self.velocity_gains = np.zeros(self.n_joints)
+        self.current_positions = np.zeros(self.n_joints)
+        self.current_velocities = np.zeros(self.n_joints)
+        self.current_effort = np.zeros(self.n_joints)
+        self.desired_positions = np.zeros(self.n_joints)
+        self.desired_velocities = np.zeros(self.n_joints)
+        self.desired_accelerations = np.zeros(self.n_joints)
+        self.error_positions = np.zeros(self.n_joints)
+        self.error_velocities = np.zeros(self.n_joints)
+        self.feedforward_command = np.zeros(self.n_joints)
+        self.closeloop_command = np.zeros(self.n_joints)
+        self.command = np.zeros(self.n_joints)
+        for i, joint_name in enumerate(kwargs['gains']):
             self.state_msg.joint_names.append(joint_name)
             self.joint_indices[i] = model_spec['joint_map'][joint_name][1]
-            self.position_gains[i] = kargs['gains'][joint_name]['p']
-            self.velocity_gains[i] = kargs['gains'][joint_name]['d']
+            self.position_gains[i] = kwargs['gains'][joint_name]['p']
+            self.velocity_gains[i] = kwargs['gains'][joint_name]['d']
             self.pb.setJointMotorControl2(*model_spec['joint_map'][joint_name], controlMode=self.pb.VELOCITY_CONTROL, force=0.)
+            self.pino_indices.append(self.get_pino_index(joint_name))
 
         self.update_current_state()
         self.sim_time = rospy.Time.from_sec(0.)
 
         self.segment_start_point = JointTrajectoryPoint()
         self.segment_start_point.positions = self.current_positions
-        self.segment_start_point.velocities = np.zeros(self.pino_model.nq)
-        self.segment_start_point.accelerations = np.zeros(self.pino_model.nq)
+        self.segment_start_point.velocities = np.zeros(self.n_joints)
+        self.segment_start_point.accelerations = np.zeros(self.n_joints)
         self.segment_start_point.time_from_start = self.sim_time
         self.segment_hold_point = copy.deepcopy(self.segment_start_point)
 
-        self.segment_coefficient = np.zeros((self.pino_model.nq, 6))
+        self.segment_coefficient = np.zeros((self.n_joints, 6))
         self.segment_duration = 0.
         self.update_segment_coefficient(self.segment_start_point, self.segment_hold_point)
         self.next_update_time = self.sim_time + self.period
@@ -79,30 +83,12 @@ class FeedForwardTrajectoryController:
         self.publish_state()
         self.next_update_time = self.sim_time + self.period
 
-    def ff_controller_cb(self, msg):
-        if not self.convert_trajectory_msg(msg):
-            self.sample(self.next_update_time)
-            self.command_buffer.clear()
-            point_tmp = copy.deepcopy(msg.points[0])
-            point_tmp.positions = self.desired_positions
-            point_tmp.velocities = self.desired_velocities
-            point_tmp.accelerations = self.desired_accelerations
-            self.update_segment_coefficient(point_tmp, point_tmp)
-
-    def set_gains_cb(self, req):
-        if len(self.position_gains) == len(req.p_gain.data) and len(self.velocity_gains) == len(req.d_gain.data):
-            self.position_gains = np.array(req.p_gain.data)
-            self.velocity_gains = np.array(req.d_gain.data)
-            return SetGainsResponse(success=True)
-        else:
-            rospy.logwarn("Service SetGains is not success as the dimension doesn't match")
-            return SetGainsResponse(success=False)
-
     def update_current_state(self):
         iiwas_states = np.array(self.pb.getJointStates(self.model_id, self.joint_indices), dtype=object)
         self.current_positions = iiwas_states[:, 0].astype(float)
         self.current_velocities = iiwas_states[:, 1].astype(float)
         self.current_effort = iiwas_states[:, 3].astype(float)
+        self.pino_positions[self.pino_indices] = self.current_positions
 
     def update_desired_state(self):
         if len(self.command_buffer) < 1:
@@ -114,10 +100,11 @@ class FeedForwardTrajectoryController:
     def apply_command(self):
         self.error_positions = self.desired_positions - self.current_positions
         self.error_velocities = self.desired_velocities - self.current_velocities
-        self.feedforward_command = pino.computeGeneralizedGravity(self.pino_model, self.pino_data, self.current_positions)
+        self.feedforward_command = pino.computeGeneralizedGravity(self.pino_model, self.pino_data, self.pino_positions)[self.pino_indices]
         self.closeloop_command = self.position_gains * self.error_positions + self.velocity_gains * self.error_velocities
         self.command = np.clip(self.closeloop_command + self.feedforward_command,
-                               -self.pino_model.effortLimit, self.pino_model.effortLimit)
+                               -self.pino_model.effortLimit[self.pino_indices],
+                               self.pino_model.effortLimit[self.pino_indices])
         self.pb.setJointMotorControlArray(self.model_id, self.joint_indices, controlMode=self.pb.TORQUE_CONTROL,
                                           forces=self.command)
 
@@ -137,6 +124,14 @@ class FeedForwardTrajectoryController:
             self.state_publisher.publish(self.state_msg)
             self.next_publish_time = self.sim_time + self.period
 
+    def sample(self, time):
+        t = (time - self.segment_start_point.time_from_start).to_sec()
+        t = np.clip(t, 0., self.segment_duration)
+        t_power = np.array([t**i for i in range(6)])
+        self.desired_positions = self.segment_coefficient @ t_power
+        self.desired_velocities = self.segment_coefficient[:, 1:] @ np.diag([1., 2., 3., 4., 5.]) @ t_power[:-1]
+        self.desired_accelerations = self.segment_coefficient[:, 2:] @ np.diag([2., 6., 12., 20.]) @ t_power[:-2]
+
     def update_segment(self, time):
         if time >= self.command_buffer[0].time_from_start:
             self.segment_start_point = self.command_buffer.pop(0)
@@ -147,14 +142,6 @@ class FeedForwardTrajectoryController:
             else:
                 self.update_segment_coefficient(self.segment_start_point, self.command_buffer[0])
                 self.sample(time)
-
-    def sample(self, time):
-        t = (time - self.segment_start_point.time_from_start).to_sec()
-        t = np.clip(t, 0., self.segment_duration)
-        t_power = np.array([t**i for i in range(6)])
-        self.desired_positions = self.segment_coefficient @ t_power
-        self.desired_velocities = self.segment_coefficient[:, 1:] @ np.diag([1., 2., 3., 4., 5.]) @ t_power[:-1]
-        self.desired_accelerations = self.segment_coefficient[:, 2:] @ np.diag([2., 6., 12., 20.]) @ t_power[:-2]
 
     def update_segment_coefficient(self, start_point, stop_point):
         self.segment_duration = (stop_point.time_from_start - start_point.time_from_start).to_sec()
@@ -208,6 +195,25 @@ class FeedForwardTrajectoryController:
                                                          stop_point.velocities) * self.segment_duration) / \
                                                  (2 * self.segment_duration ** 5)
 
+    def ff_controller_cb(self, msg):
+        if not self.convert_trajectory_msg(msg):
+            self.sample(self.next_update_time)
+            self.command_buffer.clear()
+            point_tmp = copy.deepcopy(msg.points[0])
+            point_tmp.positions = self.desired_positions
+            point_tmp.velocities = self.desired_velocities
+            point_tmp.accelerations = self.desired_accelerations
+            self.update_segment_coefficient(point_tmp, point_tmp)
+
+    def set_gains_cb(self, req):
+        if len(self.position_gains) == len(req.p_gain.data) and len(self.velocity_gains) == len(req.d_gain.data):
+            self.position_gains = np.array(req.p_gain.data)
+            self.velocity_gains = np.array(req.d_gain.data)
+            return SetGainsResponse(success=True)
+        else:
+            rospy.logwarn("Service SetGains is not success as the dimension doesn't match")
+            return SetGainsResponse(success=False)
+
     def convert_trajectory_msg(self, msg):
         self.command_buffer.clear()
 
@@ -220,7 +226,7 @@ class FeedForwardTrajectoryController:
             return False
 
         if msg.joint_names != self.state_msg.joint_names:
-            rospy.logerr("Cannot create trajectory from message. It does not contain the expected joints.")
+            rospy.logerr("Cannot create trajectory from message. Received message names does not match sending names.")
             return False
 
         msg_start_time = self.next_update_time if msg.header.stamp.is_zero() else msg.header.stamp
@@ -271,3 +277,10 @@ class FeedForwardTrajectoryController:
             if point.time_from_start > msg.points[i + 1].time_from_start:
                 return False
         return True
+
+    def get_pino_index(self, joint_name):
+        for i, pino_name in enumerate(self.pino_model.names):
+            if pino_name == joint_name:
+                return self.pino_model.joints[i].idx_q
+        raise ValueError("Did not find {} in pinocchio model".format(joint_name))
+
