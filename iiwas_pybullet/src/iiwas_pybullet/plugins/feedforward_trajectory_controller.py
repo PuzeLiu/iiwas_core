@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import copy
+import numpy as np
 import pinocchio as pino
 import rospy
-from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from control_msgs.msg import JointTrajectoryControllerState
 from iiwas_pybullet.srv import SetGains, SetGainsResponse
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
 class FeedForwardTrajectoryController:
@@ -56,7 +56,8 @@ class FeedForwardTrajectoryController:
             self.joint_indices[i] = model_spec['joint_map'][joint_name][1]
             self.position_gains[i] = kwargs['gains'][joint_name]['p']
             self.velocity_gains[i] = kwargs['gains'][joint_name]['d']
-            self.pb.setJointMotorControl2(*model_spec['joint_map'][joint_name], controlMode=self.pb.VELOCITY_CONTROL, force=0.)
+            self.pb.setJointMotorControl2(*model_spec['joint_map'][joint_name],
+                                          controlMode=self.pb.VELOCITY_CONTROL, force=0.)
             self.pino_indices.append(self.get_pino_index(joint_name))
 
         self.update_current_state()
@@ -100,8 +101,11 @@ class FeedForwardTrajectoryController:
     def apply_command(self):
         self.error_positions = self.desired_positions - self.current_positions
         self.error_velocities = self.desired_velocities - self.current_velocities
-        self.feedforward_command = pino.computeGeneralizedGravity(self.pino_model, self.pino_data, self.pino_positions)[self.pino_indices]
-        self.closeloop_command = self.position_gains * self.error_positions + self.velocity_gains * self.error_velocities
+        self.feedforward_command = pino.computeGeneralizedGravity(self.pino_model, self.pino_data,
+                                                                  self.pino_positions)[self.pino_indices]
+
+        self.closeloop_command = self.position_gains * self.error_positions + \
+                                 self.velocity_gains * self.error_velocities
         self.command = np.clip(self.closeloop_command + self.feedforward_command,
                                -self.pino_model.effortLimit[self.pino_indices],
                                self.pino_model.effortLimit[self.pino_indices])
@@ -127,7 +131,7 @@ class FeedForwardTrajectoryController:
     def sample(self, time):
         t = (time - self.segment_start_point.time_from_start).to_sec()
         t = np.clip(t, 0., self.segment_duration)
-        t_power = np.array([t**i for i in range(6)])
+        t_power = np.array([t ** i for i in range(6)])
         self.desired_positions = self.segment_coefficient @ t_power
         self.desired_velocities = self.segment_coefficient[:, 1:] @ np.diag([1., 2., 3., 4., 5.]) @ t_power[:-1]
         self.desired_accelerations = self.segment_coefficient[:, 2:] @ np.diag([2., 6., 12., 20.]) @ t_power[:-2]
@@ -166,10 +170,11 @@ class FeedForwardTrajectoryController:
             if self.segment_duration > 0.:
                 self.segment_coefficient[:, 2] = (-3.0 * (start_point.positions - stop_point.positions) -
                                                   (2.0 * start_point.velocities +
-                                                  stop_point.velocities) * self.segment_duration) / (self.segment_duration ** 2)
+                                                   stop_point.velocities) * self.segment_duration) / \
+                                                 (self.segment_duration ** 2)
                 self.segment_coefficient[:, 3] = (2.0 * (start_point.positions - stop_point.positions) +
-                                                  (start_point.velocities +
-                                                   stop_point.velocities) * self.segment_duration) / (self.segment_duration ** 3)
+                                                  (start_point.velocities + stop_point.velocities) *
+                                                  self.segment_duration) / (self.segment_duration ** 3)
         # Quintic Interpolation
         else:
             self.segment_coefficient[:, 0] = start_point.positions
@@ -283,4 +288,3 @@ class FeedForwardTrajectoryController:
             if pino_name == joint_name:
                 return self.pino_model.joints[i].idx_q
         raise ValueError("Did not find {} in pinocchio model".format(joint_name))
-
