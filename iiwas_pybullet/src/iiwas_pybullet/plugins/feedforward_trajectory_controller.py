@@ -204,7 +204,7 @@ class FeedForwardTrajectoryController:
         if not self.convert_trajectory_msg(msg):
             self.sample(self.next_update_time)
             self.command_buffer.clear()
-            point_tmp = copy.deepcopy(msg.points[0])
+            point_tmp = copy.deepcopy(self.segment_start_point)
             point_tmp.positions = self.desired_positions
             point_tmp.velocities = self.desired_velocities
             point_tmp.accelerations = self.desired_accelerations
