@@ -83,9 +83,9 @@ iiwa_front:
       - F_joint_7
     parameters:
       F_joint_1: { b: 1.0, omega_c: 25.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 2.5 } # Parameter of Inertia Compatible
-      F_joint_2: { b: 1.0, omega_c: 25.,  omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
-      F_joint_3: { b: 1.0, omega_c: 40., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 1.0 }
-      F_joint_4: { b: 1.0, omega_c: 40., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_2: { b: 1.0, omega_c: 30.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_3: { b: 1.0, omega_c: 30., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 1.0 }
+      F_joint_4: { b: 1.0, omega_c: 45., omega_o: 130, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
       F_joint_5: { b: 1.0, omega_c: 80., omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.5 }
       F_joint_6: { b: 1.0, omega_c: 80., omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.2 }
       F_joint_7: { b: 1.0, omega_c: 80., omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.1 }
@@ -183,10 +183,10 @@ iiwa_back:
       - B_joint_6
       - B_joint_7
     parameters:
-      B_joint_1: { b: 0.3, omega_c: 50., omega_o: 70, u_max: 90}
-      B_joint_2: { b: 0.3, omega_c: 50., omega_o: 100, u_max: 90}
-      B_joint_3: { b: 1.1, omega_c: 50., omega_o: 75, u_max: 50}
-      B_joint_4: { b: 1.0, omega_c: 50., omega_o: 150, u_max: 50}
-      B_joint_5: { b: 3.0, omega_c: 50., omega_o: 180, u_max: 40}
-      B_joint_6: { b: 5.0, omega_c: 50., omega_o: 180, u_max: 20}
-      B_joint_7: { b: 6.0, omega_c: 50., omega_o: 200, u_max: 20}
+      B_joint_1: { b: 1.0, omega_c: 25.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 2.5 } # Parameter of Inertia Compatible
+      B_joint_2: { b: 1.0, omega_c: 30.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_3: { b: 1.0, omega_c: 30., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 1.0 }
+      B_joint_4: { b: 1.0, omega_c: 45., omega_o: 130, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_5: { b: 1.0, omega_c: 50., omega_o: 130., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.5 }
+      B_joint_6: { b: 1.0, omega_c: 50., omega_o: 130., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.25 }
+      B_joint_7: { b: 1.0, omega_c: 60., omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.2 }
