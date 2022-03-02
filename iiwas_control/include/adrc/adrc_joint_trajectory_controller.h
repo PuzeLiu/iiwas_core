@@ -320,23 +320,29 @@ namespace adrc_controllers {
 			}
 			if (!joint_nh.getParam("u_max", u_max_[j])){
 				ROS_ERROR("No u_max specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
+				return false;
 			}
 			if (!joint_nh.getParam("u_stiction", u_stiction_[j])){
 				ROS_ERROR("No u_stiction specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
+				return false;
 			}
 			if (!joint_nh.getParam("vs", vs_[j])){
 				ROS_ERROR("No vs specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
+				return false;
 			}
 			if (!joint_nh.getParam("diag_offset", diagOffset_[j])){
 				ROS_ERROR("No diag_offset specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
+				return false;
 			}
 
 			ros::NodeHandle safe_controller_nh(root_nh, "joint_torque_trajectory_controller/gains/" + joints_[j].getName());
 			if (!safe_controller_nh.getParam("p", Kp_safe[j])){
 				ROS_ERROR("No p gain for safe controller.  Namespace: %s", safe_controller_nh.getNamespace().c_str());
+				return false;
 			}
 			if (!safe_controller_nh.getParam("d", Kd_safe[j])){
 				ROS_ERROR("No d gain for safe controller.  Namespace: %s", safe_controller_nh.getNamespace().c_str());
+				return false;
 			}
 
 			Kp_safe[j] = Kp_safe[j];
