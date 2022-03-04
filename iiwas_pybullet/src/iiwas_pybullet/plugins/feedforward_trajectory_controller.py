@@ -34,6 +34,8 @@ class FeedForwardTrajectoryController:
         self.pino_model = pino.buildModelFromUrdf(model_spec['urdf_file'])
         self.pino_data = self.pino_model.createData()
         self.pino_positions = np.zeros(self.pino_model.nq)  # Value used to calculate gravity
+        self.pino_velocities = np.zeros(self.pino_model.nq)  # Value used to calculate non-linear effect
+        self.pino_accelerations = np.zeros(self.pino_model.nq)  # Value used to calculate feedforward term
         self.pino_indices = list()
 
         self.n_joints = len(kwargs['gains'])
@@ -90,6 +92,7 @@ class FeedForwardTrajectoryController:
         self.current_velocities = iiwas_states[:, 1].astype(float)
         self.current_effort = iiwas_states[:, 3].astype(float)
         self.pino_positions[self.pino_indices] = self.current_positions
+        self.pino_velocities[self.pino_indices] = self.current_velocities
 
     def update_desired_state(self):
         if len(self.command_buffer) < 1:
