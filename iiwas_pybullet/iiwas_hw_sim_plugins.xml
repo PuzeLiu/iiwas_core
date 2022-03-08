@@ -1,0 +1,10 @@
+<library path="lib/libiiwas_pybullet_gravity_compensation_hw_sim">
+    <class name="iiwas_pybullet/GravityCompensationHWSim"
+           type="iiwas_pybullet::GravityCompensationHWSim"
+           base_class_type="ros_control_interface::RobotHWSim">
+        <description>
+            A robot simulation interface which inherits the default gazebo interface and includes a gravity compensation
+            term.
+        </description>
+    </class>
+</library>

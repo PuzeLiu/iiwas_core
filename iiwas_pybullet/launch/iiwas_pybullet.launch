@@ -6,6 +6,8 @@
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
+    <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
+    <arg name="controller_type" default="joint_feedforward_trajectory_controller"/>
     <arg name="simulation" default="true" />
     <arg name="model_list" default="['iiwas_frame', 'iiwa_front', 'iiwa_back']"/>
 
@@ -13,22 +15,11 @@
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
+        <arg name="hardware_interface" value="$(arg hardware_interface)" />
     </include>
 
     <node name="rviz" pkg="rviz" type="rviz"
           args="-d $(find iiwas_description)/config/iiwas_two_separate.rviz"/>
-
-    <group ns="iiwa_front">
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-            <param name="publish_frequency" type="double" value="50.0"/>
-        </node>
-    </group>
-
-    <group ns="iiwa_back">
-        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-            <param name="publish_frequency" type="double" value="50.0"/>
-        </node>
-    </group>
 
     <rosparam file="$(find iiwas_pybullet)/config/iiwa.config" command="load" />
 
@@ -42,6 +33,15 @@
         <arg name="use_deformable_world" default="False" /> <!-- enable/disable soft body simulation -->
         <arg name="gui_options" default="" />
         <arg name="model_list" value="$(arg model_list)"/>
+    </include>
+
+    <!-- Controllers -->
+    <include file="$(find iiwas_control)/launch/iiwas_control.launch">
+        <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
+        <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
+        <arg name="front_controllers" value="$(arg controller_type)"/>
+        <arg name="back_controllers" value="$(arg controller_type)"/>
+        <arg name="simulation" value="$(arg simulation)"/>
     </include>
 
 
