@@ -7,6 +7,15 @@ Clone the repository into the src folder of your catkin workspace. Do not forget
 After that you can build the project with **catkin_make**. (Note that the first build will probably fail because of some complicated dependencies between the core and the FRI package. However simply running **catkin_make** once again will work.)
 Before continuing add your workspace to the ROS_PACKAGE_PATH by sourcing new devel/setup.*sh file (in the bashrc).
 
+### pybullet_ros
+iiwas_pybullet package is used to use **pybullet** together with **ros_control** and **hardware_interface** as Gazebo simulator has some weired issues on the torque controller. If you don't want to use this package, you could put a **CATKIN_IGNORE** in the **iiwas_pybullet** package using following:
+
+```console
+touch iiwas_pybullet/CATKIN_IGNORE
+```
+
+If you want to use the pybullet as simulator, you could clone [pybullet_ros](https://github.com/PuzeLiu/pybullet_ros) into your catkin_workspace.
+
 You should do above procedure on both fermat and lovelace, since lovelace is the real_time computer on which the actual control will later run. On the fermat computer, you simply need the packages to have access to the launch files.
 
 ## Usage
