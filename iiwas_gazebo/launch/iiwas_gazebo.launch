@@ -38,7 +38,7 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
         <arg name="back_controllers" value="$(arg controller_type)"/>
-        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="control_config" value="$(find iiwas_gazebo)/config/control.yaml"/>
     </include>
 
     <group ns="iiwas_frame">

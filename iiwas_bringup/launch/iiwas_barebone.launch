@@ -31,5 +31,6 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg front_controllers)"/>
         <arg name="back_controllers" value="$(arg back_controllers)"/>
+        <arg name="control_config" value="$(find iiwas_control)/config/iiwas_control.yaml"/>
     </include>
 </launch>

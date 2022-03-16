@@ -1,0 +1,204 @@
+iiwa_front:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 1000  # in Hz
+
+  joint_position_trajectory_controller:
+    type: position_controllers/JointTrajectoryController
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+    state_publish_rate: 1000
+
+  joint_torque_trajectory_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+    gains:
+      F_joint_1: { p: 2000, i: 0.0, d: 5.0,  i_clamp: 320, antiwindup: true } # Parameter for simulation
+      F_joint_2: { p: 3000, i: 0.0, d: 50.0, i_clamp: 320, antiwindup: true } # Parameter for simulation
+      F_joint_3: { p: 800,  i: 0.0, d: 3.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
+      F_joint_4: { p: 1500, i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+      F_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+      F_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+      F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+    state_publish_rate: 1000
+
+  #  #  Comment this specification, the robot will directly set the position in simulator.
+  #  #  The error in the log is not a problematic.
+  #  #####################################################################################
+  #  gazebo_ros_control:
+  #    pid_gains:
+  #      F_joint_1: { p: 2000, i: 0.0, d: 5.0,  i_clamp: 320, antiwindup: true } # Parameter for simulation
+  #      F_joint_2: { p: 3000, i: 0.0, d: 50.0, i_clamp: 320, antiwindup: true } # Parameter for simulation
+  #      F_joint_3: { p: 800,  i: 0.0, d: 3.0,  i_clamp: 176, antiwindup: true } # Parameter for simulation
+  #      F_joint_4: { p: 1500, i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+  #      F_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+  #      F_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+  #      F_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+
+  joint_feedforward_trajectory_controller:
+    type: feedforward_controllers/JointTrajectoryController
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+    gains:
+      F_joint_1: { p: 2500, i: 10.0, d: 3.0,  i_clamp: 320, antiwindup: true }  # Parameter for simulation
+      F_joint_2: { p: 3000, i: 10.0, d: 20.0, i_clamp: 320, antiwindup: true }  # Parameter for simulation
+      F_joint_3: { p: 800, i: 10.0, d: 3.0,  i_clamp: 176, antiwindup: true }  # Parameter for simulation
+      F_joint_4: { p: 1000,  i: 10.0, d: 10.0,  i_clamp: 176, antiwindup: true }  # Parameter for simulation
+      F_joint_5: { p: 200,  i: 5.0,  d: 1.0, i_clamp: 110, antiwindup: true }  # Parameter for simulation
+      F_joint_6: { p: 120,  i: 1.0,  d: 0.5,  i_clamp: 40,  antiwindup: true }  # Parameter for simulation
+      F_joint_7: { p: 100,  i: 1.0,  d: 0.01, i_clamp: 40,  antiwindup: true }  # Parameter for simulation
+
+    state_publish_rate: 1000
+
+  adrc_trajectory_controller:
+    type: adrc_controllers/JointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+      #    centralize: false
+      #    parameters:
+      #      F_joint_1: { b: 1.0, omega_c: 30., omega_o: 30, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 1.0} # 0.12 } # Parameter of Inertia Compatible
+      #      F_joint_2: { b: 1.0, omega_c: 50., omega_o: 20.,  u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0} # 0.0 }
+      #      F_joint_3: { b: 1.0, omega_c: 80., omega_o: 80,  u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0} # 0.08 }
+      #      F_joint_4: { b: 1.0, omega_c: 60., omega_o: 150,  u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      #      F_joint_5: { b: 1.0, omega_c: 80., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0} # 0.01 }
+      #      F_joint_6: { b: 1.0, omega_c: 70., omega_o: 300., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0} # 0.04 }
+      #      F_joint_7: { b: 1.0, omega_c: 100., omega_o: 300., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+
+      # True Inertia Centralized Version
+    centralize: true
+    parameters:
+      F_joint_1: { b: 1.0, omega_c: 50., omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+
+
+iiwa_back:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 1000  # in Hz
+
+  joint_position_trajectory_controller:
+    type: position_controllers/JointTrajectoryController
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+    state_publish_rate: 1000
+
+  joint_torque_trajectory_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+    gains:
+      B_joint_1: { p: 2800.0, i: 80.0, d: 100.0, i_clamp: 320, antiwindup: true }
+      B_joint_2: { p: 3500.0, i: 20.0, d: 80.0,  i_clamp: 320, antiwindup: true }
+      B_joint_3: { p: 2800.0, i: 50.0, d: 40.0,  i_clamp: 176, antiwindup: true }
+      B_joint_4: { p: 1500.0, i: 10.0, d: 25.0,  i_clamp: 176, antiwindup: true }
+      B_joint_5: { p: 1800.0, i: 10.0, d: 30.0,  i_clamp: 110, antiwindup: true }
+      B_joint_6: { p: 1200.0, i: 15.0, d: 15.0,  i_clamp: 40,  antiwindup: true }
+      B_joint_7: { p: 800.0,  i: 15.0, d: 15.0,  i_clamp: 40,  antiwindup: true }
+    state_publish_rate: 1000
+
+  ##  Comment this specification, the robot will directly set the position in simulator.
+  ##  The error in the log is not a problematic.
+  ######################################################################################
+  #  gazebo_ros_control:
+  #    pid_gains:
+  #      B_joint_1: { p: 2000, i: 0.0, d: 5.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
+  #      B_joint_2: { p: 3000, i: 0.0, d: 50.0,   i_clamp: 320, antiwindup: true } # Parameter for simulation
+  #      B_joint_3: { p: 800,  i: 0.0, d: 3.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+  #      B_joint_4: { p: 1500,  i: 0.0, d: 20.0, i_clamp: 176, antiwindup: true } # Parameter for simulation
+  #      B_joint_5: { p: 600,  i: 0.0, d: 1.5,  i_clamp: 110, antiwindup: true } # Parameter for simulation
+  #      B_joint_6: { p: 400,  i: 0.0, d: 6.0,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+  #      B_joint_7: { p: 500,  i: 0.0, d: 0.5,  i_clamp: 40,  antiwindup: true } # Parameter for simulation
+
+  joint_feedforward_trajectory_controller:
+    type: feedforward_controllers/JointTrajectoryController
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+    gains:
+      B_joint_1: { p: 1000, i: 10.0, d: 5.0,   i_clamp: 320, antiwindup: true }  # Parameter for simulation
+      B_joint_2: { p: 1500, i: 10.0, d: 50.0,  i_clamp: 320, antiwindup: true }  # Parameter for simulation
+      B_joint_3: { p: 400,  i: 10.0, d: 3.0,   i_clamp: 176, antiwindup: true }  # Parameter for simulation
+      B_joint_4: { p: 600,  i: 10.0, d: 10.0,  i_clamp: 176, antiwindup: true }  # Parameter for simulation
+      B_joint_5: { p: 350,  i: 5.0,  d: 0.15,  i_clamp: 110, antiwindup: true }  # Parameter for simulation
+      B_joint_6: { p: 400,  i: 1.0,  d: 1.5,   i_clamp: 40,  antiwindup: true }  # Parameter for simulation
+      B_joint_7: { p: 350,  i: 1.0,  d: 0.005, i_clamp: 40,  antiwindup: true }  # Parameter for simulation
+    state_publish_rate: 1000
+
+  adrc_trajectory_controller:
+    type: adrc_controllers/JointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+      #    centralize: false
+      #    parameters:
+      #      B_joint_1: { b: 1.0, omega_c: 50.,  omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 } # Parameter of Inertia Compatible
+      #      B_joint_2: { b: 1.0, omega_c: 50.,  omega_o: 50, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      #      B_joint_3: { b: 1.0, omega_c: 100., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      #      B_joint_4: { b: 1.0, omega_c: 150., omega_o: 150, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      #      B_joint_5: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      #      B_joint_6: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      #      B_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      # True Inertia Centralized Version
+    centralize: true
+    parameters:
+      B_joint_1: { b: 1.0, omega_c: 100., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}

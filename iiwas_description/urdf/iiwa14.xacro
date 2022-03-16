@@ -10,7 +10,7 @@
 
   <!-- some constants -->
   <xacro:property name="safety_controller_k_pos" value="100" />
-  <xacro:property name="safety_controller_k_vel" value="10" />
+  <xacro:property name="safety_controller_k_vel" value="80" />
   <xacro:property name="joint_damping" value="0.5" />
 
 
@@ -102,7 +102,9 @@
           <mass value="3.854820"/>
           <origin value="-0.098492 0.000000 0.069462" rpy="0.0 0.0 0.0"/>
           <inertia ixx="0.055704" ixy="0.000000" ixz="0.000356"
-                   iyy="0.056488" iyz="0.000000" izz="0.001462"/>
+                   iyy="0.056488" iyz="0.000000" izz="0.02"/>
+<!--          <inertia ixx="0.055704" ixy="0.000000" ixz="0.000356"-->
+<!--                   iyy="0.056488" iyz="0.000000" izz="0.001462"/>-->
         </xacro:if>
       </inertial>
 
@@ -217,7 +219,8 @@
           <!-- ETH -->
           <mass value="2.455197"/>
           <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/>
-          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />
+<!--          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />-->
+          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.01" />
         </xacro:if>
 
         <xacro:if value="${dynamics_parameter == 'cad'}">

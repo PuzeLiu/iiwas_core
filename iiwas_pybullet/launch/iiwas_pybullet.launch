@@ -7,7 +7,7 @@
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
     <arg name="hardware_interface" default="hardware_interface/EffortJointInterface"/>
-    <arg name="controller_type" default="joint_feedforward_trajectory_controller"/>
+    <arg name="controller_type" default="adrc_trajectory_controller"/>
     <arg name="simulation" default="true" />
     <arg name="model_list" default="['iiwas_frame', 'iiwa_front', 'iiwa_back']"/>
 
@@ -41,7 +41,7 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
         <arg name="back_controllers" value="$(arg controller_type)"/>
-        <arg name="simulation" value="$(arg simulation)"/>
+        <arg name="control_config" value="$(find iiwas_pybullet)/config/sim_control.yaml"/>
     </include>
 
 

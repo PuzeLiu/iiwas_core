@@ -127,7 +127,7 @@ namespace adrc_controllers {
 
 		std::vector<double> Kp_safe, Kd_safe, qStop;
 		Eigen::VectorXd diagOffset_;
-		bool isSafe;
+		bool isSafe, isCentralized;
 
 		/**
 		 * \brief Publish current controller state at a throttled frequency.
@@ -308,6 +308,8 @@ namespace adrc_controllers {
 		Kp_safe.resize(JointTrajectoryController::getNumberOfJoints());
 		Kd_safe.resize(JointTrajectoryController::getNumberOfJoints());
 		diagOffset_.resize(JointTrajectoryController::getNumberOfJoints());
+
+		controller_nh.param("centralize", isCentralized, false);
 		for (unsigned int j = 0; j < joint_names_.size(); ++j) {
 			// Node handle to PID gains
 			ros::NodeHandle joint_nh(controller_nh, std::string("parameters/") + joints_[j].getName());
@@ -723,13 +725,17 @@ namespace adrc_controllers {
 		}
 
 		if (isSafe) {
+			// Compute inertia matrix
 			pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
 			pinoData.M.triangularView<Eigen::StrictlyLower>() =
 				pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 
-			Eigen::MatrixXd M = pinoData.M;
-//			diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.005;
-			u = M.diagonal().cwiseMax(diagOffset_).template cwiseProduct(u_joint);
+			if (isCentralized) {
+				u = pinoData.M * u_joint;
+			}
+			else{
+				u = pinoData.M.diagonal().cwiseMax(diagOffset_).template cwiseProduct(u_joint);
+			}
 
 			for (int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
 				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
