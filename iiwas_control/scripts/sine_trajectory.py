@@ -9,8 +9,8 @@ if __name__ == '__main__':
     # type_name = 'joint_position'
     # type_name = 'joint_torque'
     # type_name = 'joint_feedforward'
-    type_name = 'joint_position_impedance'
-    # type_name = 'adrc'
+    # type_name = 'joint_position_impedance'
+    type_name = 'adrc'
     use_front = True
 
     topic_name = '/iiwa_front/' if use_front else '/iiwa_back/'
@@ -21,11 +21,11 @@ if __name__ == '__main__':
     rospy.sleep(2.0)
 
     t_final = 1
-    init_position = np.array([0., 0., -1., -1., 0., 2., 0.]) * np.pi / 6.
-    goal_position = np.array([2., 1., 1., -2., -2., 0., 2.]) * np.pi / 6.
+    init_position = np.array([0., 0., -0., -0., 0., 0., 0.]) * np.pi / 6.
+    goal_position = np.array([2., 1.5, -2., -2., 2., 2, -2.]) * np.pi / 6.
     period = 2
 
-    joint_id = [0, 1, 2, 3, 4, 5, 6]
+    joint_id = [2]
 
     traj = JointTrajectory()
 
