@@ -590,9 +590,9 @@ namespace adrc_controllers {
 				y[j] = msg->points[j].positions[i];
 			}
 
-			tk::spline spline(x, y, tk::spline::cspline, false,
-			                  tk::spline::first_deriv, 0.0,
-			                  tk::spline::first_deriv, 0.0);
+			tk::spline spline(x, y, tk::spline::cspline, true,
+			                  tk::spline::second_deriv, 0.0,
+			                  tk::spline::second_deriv, 0.0);
 
 			for (int j = 0; j < n; ++j) {
 				cubicSpline.points[j].velocities[i] = spline.deriv(1, x[j]);
@@ -728,7 +728,6 @@ namespace adrc_controllers {
 				pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
 
 			Eigen::MatrixXd M = pinoData.M;
-//			diagOffset << 0.2, 0.0, 0.08, 0.0, 0.03, 0.05, 0.005;
 			u = M.diagonal().cwiseMax(diagOffset_).template cwiseProduct(u_joint);
 
 			for (int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
