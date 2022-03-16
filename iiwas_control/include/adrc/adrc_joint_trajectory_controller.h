@@ -592,9 +592,9 @@ namespace adrc_controllers {
 				y[j] = msg->points[j].positions[i];
 			}
 
-			tk::spline spline(x, y, tk::spline::cspline, false,
-			                  tk::spline::first_deriv, 0.0,
-			                  tk::spline::first_deriv, 0.0);
+			tk::spline spline(x, y, tk::spline::cspline, true,
+			                  tk::spline::second_deriv, 0.0,
+			                  tk::spline::second_deriv, 0.0);
 
 			for (int j = 0; j < n; ++j) {
 				cubicSpline.points[j].velocities[i] = spline.deriv(1, x[j]);
