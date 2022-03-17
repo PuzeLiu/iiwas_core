@@ -73,33 +73,33 @@
 <!--      <preserveFixedJoint>1</preserveFixedJoint>-->
 <!--    </gazebo>-->
 
-<!--    <gazebo reference="${robot_name}_joint_1">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_1">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_2">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_2">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_3">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_3">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_4">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_4">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_5">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_5">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_6">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_6">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
-<!--    <gazebo reference="${robot_name}_joint_7">-->
-<!--      <implicitSpringDamper>true</implicitSpringDamper>-->
-<!--    </gazebo>-->
+    <gazebo reference="${robot_name}_joint_7">
+      <implicitSpringDamper>true</implicitSpringDamper>
+    </gazebo>
 
   </xacro:macro>
 
