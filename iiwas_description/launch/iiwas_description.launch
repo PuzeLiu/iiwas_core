@@ -10,6 +10,7 @@
     <arg name="back_rpy" default="0 0 3.14159265359"/>
 
     <arg name="hardware_interface" default="hardware_interface/PositionJointInterface"/>
+    <arg name="dynamics_parameter" default="identified"/>
     
     <group ns="iiwas_frame">
         <param name="robot_description"
@@ -22,6 +23,7 @@
             <arg name="base_xyz" value="$(arg front_xyz)"/>
             <arg name="base_rpy" value="$(arg front_rpy)"/>
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+            <arg name="dynamics_parameter" value="$(arg dynamics_parameter)"/>
         </include>
     </group>
 
@@ -31,6 +33,7 @@
             <arg name="base_xyz" value="$(arg back_xyz)"/>
             <arg name="base_rpy" value="$(arg back_rpy)"/>
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+            <arg name="dynamics_parameter" value="$(arg dynamics_parameter)"/>
         </include>
     </group>
 </launch>

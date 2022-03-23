@@ -111,18 +111,17 @@ namespace adrc_controllers {
 
 	protected:
 		void setCommand();
-
-		void applyInertiaFeedForward();
 		void applyFrictionCompensation();
-
-		void applySingleJointCmd(int joint_index);
 
 	protected:
 		pinocchio::Model pinoModel;
 		pinocchio::Data pinoData;
+		Eigen::VectorXd pinoJointPosition;
+		Eigen::VectorXd uCmd, uADRC, uMax;
+
 		typedef std::shared_ptr<ADRCJoint> ADRCJointPtr;
 		std::vector<ADRCJointPtr> adrcs_;
-		std::vector<double> u_ff_, u_adrc_, u_, u_max_, u_stiction_, vs_;
+		std::vector<double> u_ff_, u_adrc_, u_, u_stiction_, vs_;
 		std::vector<double> estimation_error_, disturbance_, velocity_error_;
 
 		std::vector<double> Kp_safe, Kd_safe, qStop;
@@ -221,7 +220,7 @@ namespace adrc_controllers {
 
 		assert(joints_.size() == angle_wraparound_.size());
 		ROS_DEBUG_STREAM_NAMED(name_, "Initialized controller '" << name_ << "' with:" <<
-		                                                         "\n- Number of joints: " << JointTrajectoryController::getNumberOfJoints() <<
+		                                                         "\n- Number of joints: " << this->getNumberOfJoints() <<
 		                                                         "\n- Hardware interface type: '" << this->getHardwareInterfaceType() << "'" <<
 		                                                         "\n- Trajectory segment type: '" << hardware_interface::internal::demangledTypeName<SegmentImpl>() << "'");
 
@@ -258,9 +257,9 @@ namespace adrc_controllers {
 		desired_joint_state_ = typename Segment::State(1);
 		state_joint_error_   = typename Segment::State(1);
 
-		successful_joint_traj_ = boost::dynamic_bitset<>(JointTrajectoryController::getNumberOfJoints());
+		successful_joint_traj_ = boost::dynamic_bitset<>(this->getNumberOfJoints());
 
-		hold_trajectory_ptr_ = JointTrajectoryController::createHoldTrajectory(n_joints);
+		hold_trajectory_ptr_ = this->createHoldTrajectory(n_joints);
 		assert(joint_names_.size() == hold_trajectory_ptr_->size());
 
 		if (stop_trajectory_duration_ == 0.0)
@@ -297,17 +296,21 @@ namespace adrc_controllers {
 		}
 		pinocchio::urdf::buildModelFromXML(description_xml, pinoModel);
 		pinoData = pinocchio::Data(pinoModel);
+		pinoJointPosition.resize(pinoModel.nq);
+		uADRC.resize(this->getNumberOfJoints());
+		uCmd.resize(this->getNumberOfJoints());
+		uMax.resize(this->getNumberOfJoints());
+		uMax.setZero();
 
 		// Load ADRC controller
 		// The controlling frequency is fixed to 1000Hz(Fixed in the KUKA FRI).
 		double h = 1 / 1000.;
-		adrcs_.resize(JointTrajectoryController::getNumberOfJoints());
-		u_max_.resize(JointTrajectoryController::getNumberOfJoints());
-		u_stiction_.resize(JointTrajectoryController::getNumberOfJoints());
-		vs_.resize(JointTrajectoryController::getNumberOfJoints());
-		Kp_safe.resize(JointTrajectoryController::getNumberOfJoints());
-		Kd_safe.resize(JointTrajectoryController::getNumberOfJoints());
-		diagOffset_.resize(JointTrajectoryController::getNumberOfJoints());
+		adrcs_.resize(this->getNumberOfJoints());
+		u_stiction_.resize(this->getNumberOfJoints());
+		vs_.resize(this->getNumberOfJoints());
+		Kp_safe.resize(this->getNumberOfJoints());
+		Kd_safe.resize(this->getNumberOfJoints());
+		diagOffset_.resize(this->getNumberOfJoints());
 
 		controller_nh.param("centralize", isCentralized, false);
 		for (unsigned int j = 0; j < joint_names_.size(); ++j) {
@@ -320,7 +323,7 @@ namespace adrc_controllers {
 			                     pinoModel.velocityLimit[j])) {
 				return false;
 			}
-			if (!joint_nh.getParam("u_max", u_max_[j])){
+			if (!joint_nh.getParam("u_max", uMax[j])){
 				ROS_ERROR("No u_max specified for ADRC.  Namespace: %s", joint_nh.getNamespace().c_str());
 				return false;
 			}
@@ -353,14 +356,14 @@ namespace adrc_controllers {
 
 
 		isSafe = true;
-		qStop.resize(JointTrajectoryController::getNumberOfJoints());
+		qStop.resize(this->getNumberOfJoints());
 
-		u_.resize(JointTrajectoryController::getNumberOfJoints());
-		u_ff_.resize(JointTrajectoryController::getNumberOfJoints());
-		u_adrc_.resize(JointTrajectoryController::getNumberOfJoints());
-		estimation_error_.resize(JointTrajectoryController::getNumberOfJoints());
-		disturbance_.resize(JointTrajectoryController::getNumberOfJoints());
-		velocity_error_.resize(JointTrajectoryController::getNumberOfJoints());
+		u_.resize(this->getNumberOfJoints());
+		u_ff_.resize(this->getNumberOfJoints());
+		u_adrc_.resize(this->getNumberOfJoints());
+		estimation_error_.resize(this->getNumberOfJoints());
+		disturbance_.resize(this->getNumberOfJoints());
+		velocity_error_.resize(this->getNumberOfJoints());
 		return true;
 	}
 
@@ -373,7 +376,7 @@ namespace adrc_controllers {
 		time_data_.initRT(time_data);
 
 		// Initialize the desired_state with the current state on startup
-		for (unsigned int i = 0; i < joints_.size(); ++i)
+		for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i)
 		{
 			desired_state_.position[i] = joints_[i].getPosition();
 			desired_state_.velocity[i] = joints_[i].getVelocity();
@@ -382,9 +385,11 @@ namespace adrc_controllers {
 			adrcs_[i]->starting(desired_state_.position[i]);
 			joints_[i].setCommand(0.0);
 		}
+		uADRC.setZero();
+		uCmd.setZero();
 
 		// Hold current position
-		JointTrajectoryController::setHoldPosition(time_data.uptime);
+		this->setHoldPosition(time_data.uptime);
 
 		// Initialize last state update time
 		last_state_publish_time_ = time_data.uptime;
@@ -414,10 +419,10 @@ namespace adrc_controllers {
 		// fetch the currently followed trajectory, it has been updated by the non-rt thread with something that starts in the
 		// next control cycle, leaving the current cycle without a valid trajectory.
 
-		JointTrajectoryController::updateStates(time_data.uptime, curr_traj_ptr.get());
+		this->updateStates(time_data.uptime, curr_traj_ptr.get());
 
 		// Update current state and state error
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i)
+		for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i)
 		{
 			typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], time_data.uptime.toSec(), desired_joint_state_);
 			if (curr_traj[i].end() == segment_it)
@@ -496,7 +501,7 @@ namespace adrc_controllers {
 
 		//If there is an active goal and all segments finished successfully then set goal as succeeded
 		RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
-		if (current_active_goal && successful_joint_traj_.count() == JointTrajectoryController::getNumberOfJoints())
+		if (current_active_goal && successful_joint_traj_.count() == this->getNumberOfJoints())
 		{
 			current_active_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
 			current_active_goal->setSucceeded(current_active_goal->preallocated_result_);
@@ -545,8 +550,8 @@ namespace adrc_controllers {
 	template<class SegmentImpl>
 	void ADRCJointTrajectoryController<SegmentImpl>::trajectoryCommandCB(const JointTrajectoryConstPtr &msg) {
 		trajectory_msgs::JointTrajectory::ConstPtr cubicSplineTrajectory = cubicSplineInterpolate(msg);
-		const bool update_ok = JointTrajectoryController::updateTrajectoryCommand(cubicSplineTrajectory, RealtimeGoalHandlePtr());
-		if (update_ok) { JointTrajectoryController::preemptActiveGoal(); }
+		const bool update_ok = this->updateTrajectoryCommand(cubicSplineTrajectory, RealtimeGoalHandlePtr());
+		if (update_ok) { this->preemptActiveGoal(); }
 	}
 
 	template <class SegmentImpl>
@@ -626,7 +631,7 @@ namespace adrc_controllers {
 
 		typename Segment::State response_point = typename Segment::State(joint_names_.size());
 
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i)
+		for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i)
 		{
 			typename Segment::State state;
 			typename TrajectoryPerJoint::const_iterator segment_it = sample(curr_traj[i], sample_time.toSec(), state);
@@ -651,31 +656,8 @@ namespace adrc_controllers {
 	}
 
 	template<class SegmentImpl>
-	void ADRCJointTrajectoryController<SegmentImpl>::applyInertiaFeedForward() {
-		// Feedforward Term
-		// Follow the structure of Figure 4. in "Active Disturbance Rejection Control of Multi-Joint Industrial Robots
-		// Based on Dynamic Feedforward"
-		Eigen::VectorXd pinoJointPosition(pinoModel.nq);
-		Eigen::VectorXd pinoJointVelocity(pinoModel.nq);
-		Eigen::VectorXd pinoJointAcceleration(pinoModel.nq);
-		Eigen::VectorXd u_a(pinoModel.nq);
-		for (int j = 0; j < JointTrajectoryController::desired_state_.position.size(); ++j) {
-			pinoJointPosition[j] = JointTrajectoryController::current_state_.position[j];
-			pinoJointVelocity[j] = JointTrajectoryController::current_state_.velocity[j];
-			pinoJointAcceleration[j] = JointTrajectoryController::desired_state_.acceleration[j];
-		}
-		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
-		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
-		Eigen::VectorXd u_ff = pinoData.M * pinoJointAcceleration;
-
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-			u_ff_[i] = u_ff[i];
-		}
-	}
-
-	template<class SegmentImpl>
 	void ADRCJointTrajectoryController<SegmentImpl>::applyFrictionCompensation() {
-		for (int j = 0; j < JointTrajectoryController::getNumberOfJoints(); ++j)
+		for (int j = 0; j < this->getNumberOfJoints(); ++j)
 		{
 			double v_sign = copysign(1.0, desired_state_.velocity[j]);
 			if (std::abs(desired_state_.velocity[j]) < 1e-5) v_sign = 0.;
@@ -687,36 +669,34 @@ namespace adrc_controllers {
 	template<class SegmentImpl>
 	void ADRCJointTrajectoryController<SegmentImpl>::setCommand()
 	{
-		Eigen::VectorXd u, u_joint;
-		u.resize(JointTrajectoryController::getNumberOfJoints());
-		u_joint.resize(JointTrajectoryController::getNumberOfJoints());
-
-		// Inerita Compatible ADRC
-		Eigen::VectorXd pinoJointPosition(pinoModel.nq);
+		for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i){
+			pinoJointPosition[i] = this->current_state_.position[i];
+		}
+		// Compute inertia matrix
+		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
+		pinoData.M.triangularView<Eigen::StrictlyLower>() =
+			pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
+		Eigen::MatrixXd M_tmp = pinoData.M.block(0, 0, this->getNumberOfJoints(), this->getNumberOfJoints());
 
 		int test_id = 0;
-		for (unsigned int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-			u_joint[i] = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i],
-									 desired_state_.velocity[i]);
-
-			u_adrc_[i] = u_joint[i];
+		for (unsigned int i = test_id; i < this->getNumberOfJoints(); ++i) {
+			uADRC[i] = adrcs_[i]->update(current_state_.position[i], desired_state_.position[i],
+									 desired_state_.velocity[i], uADRC[i]);
+			u_adrc_[i] = uADRC[i];
 			estimation_error_[i] = adrcs_[i]->z1 - current_state_.position[i];
 			velocity_error_[i] = adrcs_[i]->z2 - desired_state_.velocity[i];
 			disturbance_[i] = adrcs_[i]->z3;
-
-			// Inertia Compatible ADRC
-			pinoJointPosition[i] = JointTrajectoryController::current_state_.position[i];
 		}
 
 		// Check if the error is too big that potentially cause instability
 		if (isSafe) {
-			for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
+			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
 				if (state_error_.position[i] > 0.05 || state_error_.position[i] < -0.05) {
 					ROS_ERROR_STREAM(
 						name_ << " Joint " << i + 1 << " has detected tracking errors: " << state_error_.position[i]
 							  << " bigger than 0.05, start the safe mode");
 					isSafe = false;
-					for (int j = 0; j < JointTrajectoryController::getNumberOfJoints(); ++j) {
+					for (int j = 0; j < this->getNumberOfJoints(); ++j) {
 						qStop[j] = current_state_.position[j];
 					}
 					break;
@@ -725,61 +705,38 @@ namespace adrc_controllers {
 		}
 
 		if (isSafe) {
-			// Compute inertia matrix
-			pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
-			pinoData.M.triangularView<Eigen::StrictlyLower>() =
-				pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
-
 			if (isCentralized) {
-				u = pinoData.M * u_joint;
+				uCmd = M_tmp * uADRC;
+				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+				uADRC = M_tmp.inverse() * uCmd;
 			}
 			else{
-				u = pinoData.M.diagonal().cwiseMax(diagOffset_).template cwiseProduct(u_joint);
+				uCmd = M_tmp.diagonal().cwiseMax(diagOffset_).template cwiseProduct(uADRC);
+				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+				uADRC = M_tmp.diagonal().cwiseMax(diagOffset_).cwiseInverse().template cwiseProduct(uCmd);
 			}
 
-			for (int i = test_id; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
-				joints_[i].setCommand(u[i] + u_ff_[i]);
-				u_[i] = u[i] + u_ff_[i];
+			for (int i = test_id; i < this->getNumberOfJoints(); ++i) {
+				u_[i] = uCmd[i] + u_ff_[i];
+				joints_[i].setCommand(u_[i]);
 			}
 
 			// Debug for single joint
 			for (unsigned int i = 0; i < test_id; ++i) {
-				u[i] = Kp_safe[i] * (desired_state_.position[i] - current_state_.position[i]) +
+				uCmd[i] = Kp_safe[i] * (desired_state_.position[i] - current_state_.position[i]) +
 					Kd_safe[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
-				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
-				joints_[i].setCommand(u[i]);
-				u_[i] = u[i] + u_ff_[i];
+				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+				u_[i] = uCmd[i];
+				joints_[i].setCommand(u_[i]);
 			}
 		} else {
-			for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-				u[i] = Kp_safe[i] * (qStop[i] - current_state_.position[i]) +
+			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
+				uCmd[i] = Kp_safe[i] * (qStop[i] - current_state_.position[i]) +
 					Kd_safe[i] * (- current_state_.velocity[i]);
-				u[i] = boost::algorithm::clamp(u[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
-				joints_[i].setCommand(u[i]);
-				u_[i] = u[i];
+				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+				u_[i] = uCmd[i];
+				joints_[i].setCommand(u_[i]);
 			}
-		}
-	}
-
-	template<class SegmentImpl>
-	void ADRCJointTrajectoryController<SegmentImpl>::applySingleJointCmd(int joint_idx) {
-
-		Eigen::VectorXd u;
-		u.resize(JointTrajectoryController::getNumberOfJoints());
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-			u[i] = Kp_safe[i] * (desired_state_.position[i] - current_state_.position[i]) +
-				Kd_safe[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
-		}
-
-		u[joint_idx] = adrcs_[joint_idx]->update(current_state_.position[joint_idx],
-												 desired_state_.position[joint_idx],
-												 desired_state_.velocity[joint_idx]);
-
-		for (unsigned int i = 0; i < JointTrajectoryController::getNumberOfJoints(); ++i) {
-			u[i] = boost::algorithm::clamp(u[i], -u_max_[i], u_max_[i]);
-			joints_[i].setCommand(u[i] + u_ff_[i]);
-			u_[i] = u[i] + u_ff_[i];
 		}
 	}
 }

@@ -70,7 +70,7 @@ namespace adrc_controllers{
 
 		double starting();
 
-		double update(double y, double x_r, double v_r);
+		double update(double y, double x_r, double v_r, double u);
 
 		void initDynamicReconfig(ros::NodeHandle &node);
 
@@ -82,7 +82,7 @@ namespace adrc_controllers{
 
 	public:
 		double z1, z2, z3, error;
-		double qLow, qHigh, vMax, uOld, h, uMax;
+		double qLow, qHigh, vMax, h;
 
 	protected:
 		realtime_tools::RealtimeBuffer<ADRCGains> adrcBuffer_;

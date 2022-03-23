@@ -21,4 +21,13 @@
              ixy="0" iyz="0" ixz="0"/>
   </xacro:macro>
 
+  <!-- Safety controller -->
+  <xacro:macro name="safe_controller" params="safety lower upper k_p k_v">
+    <xacro:if value="${safety}">
+      <safety_controller soft_lower_limit="${lower}"
+                         soft_upper_limit="${upper}"
+                         k_position="${k_p}"
+                         k_velocity="${k_v}"/>
+    </xacro:if>
+  </xacro:macro>
 </robot>

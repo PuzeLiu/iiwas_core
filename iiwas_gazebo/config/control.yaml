@@ -93,13 +93,13 @@ iiwa_front:
       # True Inertia Centralized Version
     centralize: true
     parameters:
-      F_joint_1: { b: 1.0, omega_c: 50., omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      F_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      F_joint_1: { b: 1.0, omega_c: 50., omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      F_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
 
 
 iiwa_back:
@@ -195,10 +195,10 @@ iiwa_back:
       # True Inertia Centralized Version
     centralize: true
     parameters:
-      B_joint_1: { b: 1.0, omega_c: 100., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
-      B_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0}
+      B_joint_1: { b: 1.0, omega_c: 50., omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_3: { b: 1.0, omega_c: 100.,  omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_4: { b: 1.0, omega_c: 60.,  omega_o: 200., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_5: { b: 1.0, omega_c: 100.,  omega_o: 120., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_6: { b: 1.0, omega_c: 75.,  omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_7: { b: 1.0, omega_c: 150., omega_o: 150., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }

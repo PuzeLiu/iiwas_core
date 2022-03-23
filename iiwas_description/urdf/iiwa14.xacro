@@ -8,10 +8,38 @@
   <!-- Include Utilities -->
   <xacro:include filename="$(find iiwas_description)/urdf/utilities.xacro" />
 
+  <!-- some parameters -->
+  <xacro:property name="safety" value="true"/>
+
   <!-- some constants -->
   <xacro:property name="safety_controller_k_pos" value="100" />
   <xacro:property name="safety_controller_k_vel" value="80" />
+  <xacro:property name="safety_percentage" value="0.95"/>
   <xacro:property name="joint_damping" value="0.5" />
+  <!-- joint limits -->
+  <xacro:property name="joint_limit_1" value="170"/>
+  <xacro:property name="joint_limit_2" value="120"/>
+  <xacro:property name="joint_limit_3" value="170"/>
+  <xacro:property name="joint_limit_4" value="120"/>
+  <xacro:property name="joint_limit_5" value="170"/>
+  <xacro:property name="joint_limit_6" value="120"/>
+  <xacro:property name="joint_limit_7" value="175"/>
+  <!-- max torques per joint -->
+  <xacro:property name="max_effort_1" value="320"/>
+  <xacro:property name="max_effort_2" value="320"/>
+  <xacro:property name="max_effort_3" value="176"/>
+  <xacro:property name="max_effort_4" value="176"/>
+  <xacro:property name="max_effort_5" value="110"/>
+  <xacro:property name="max_effort_6" value="40"/>
+  <xacro:property name="max_effort_7" value="40"/>
+  <!-- max velocities per joint -->
+  <xacro:property name="max_velocity_1" value="${85 * PI / 180.}"/>
+  <xacro:property name="max_velocity_2" value="${85 * PI / 180.}"/>
+  <xacro:property name="max_velocity_3" value="${100 * PI / 180.}"/>
+  <xacro:property name="max_velocity_4" value="${75 * PI/ 180.}"/>
+  <xacro:property name="max_velocity_5" value="${130 * PI / 180.}"/>
+  <xacro:property name="max_velocity_6" value="${135 * PI / 180.}"/>
+  <xacro:property name="max_velocity_7" value="${135 * PI / 180.}"/>
 
 
   <xacro:macro name="iiwa14" params="parent hardware_interface robot_name dynamics_parameter *origin">
@@ -62,22 +90,28 @@
       <child link="${robot_name}_link_1"/>
       <origin xyz="0 0 0.1575" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-170 * PI / 180}" upper="${170 * PI / 180}"
-             effort="320" velocity="${85 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-168 * PI / 180}"
-                         soft_upper_limit="${168 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_1 * PI / 180}" upper="${joint_limit_1 * PI / 180}"
+             effort="${max_effort_1}" velocity="${max_velocity_1}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_1 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_1 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
 
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.24150"  friction="0.31909"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
         <dynamics damping="0.290458" friction="0.378214"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_1">
@@ -102,9 +136,14 @@
           <mass value="3.854820"/>
           <origin value="-0.098492 0.000000 0.069462" rpy="0.0 0.0 0.0"/>
           <inertia ixx="0.055704" ixy="0.000000" ixz="0.000356"
-                   iyy="0.056488" iyz="0.000000" izz="0.02"/>
-<!--          <inertia ixx="0.055704" ixy="0.000000" ixz="0.000356"-->
-<!--                   iyy="0.056488" iyz="0.000000" izz="0.001462"/>-->
+                   iyy="0.056488" iyz="0.000000" izz="0.001462"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0 -0.03 0.12" rpy="0 0 0"/>
+          <mass value="4"/>
+          <inertia ixx="0.1"  ixy="0"  ixz="0" iyy="0.09" iyz="0" izz="0.02" />
         </xacro:if>
       </inertial>
 
@@ -131,21 +170,27 @@
       <child link="${robot_name}_link_2"/>
       <origin xyz="0 0 0.2025" rpy="${PI / 2}   0 ${PI}"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-120 * PI / 180}" upper="${120 * PI / 180}"
-             effort="320" velocity="${85 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-118 * PI / 180}"
-                         soft_upper_limit="${118 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_2 * PI / 180}" upper="${joint_limit_2 * PI / 180}"
+             effort="${max_effort_2}" velocity="${max_velocity_2}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_2 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_2 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.37328"  friction="0.18130"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
         <dynamics damping="0.465142" friction="0.372973"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_2">
@@ -172,6 +217,13 @@
           <inertia ixx="0.025239" ixy="0.003213" ixz="-0.000263"
                    iyy="0.003716" iyz="0.001421" izz="0.023538"/>
         </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0.0003 0.059 0.042" rpy="0 0 0"/>
+          <mass value="4"/>
+          <inertia ixx="0.05"  ixy="0"  ixz="0" iyy="0.018" iyz="0" izz="0.044" />
+        </xacro:if>
       </inertial>
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -196,21 +248,27 @@
       <child link="${robot_name}_link_3"/>
       <origin xyz="0 0.2045 0" rpy="${PI / 2} 0 ${PI}"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-170 * PI / 180}" upper="${170 * PI / 180}"
-             effort="176" velocity="${100 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-168 * PI / 180}"
-                         soft_upper_limit="${168 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_3 * PI / 180}" upper="${joint_limit_3 * PI / 180}"
+             effort="${max_effort_3}" velocity="${max_velocity_3}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_3 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_3 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.11025"  friction="0.07302"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
         <dynamics damping="0.1" friction="0.213255"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_3">
@@ -219,8 +277,7 @@
           <!-- ETH -->
           <mass value="2.455197"/>
           <origin xyz="-0.002246 -0.034918 -0.02652" rpy="0 0 0"/>
-<!--          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />-->
-          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.01" />
+          <inertia ixx="0.002233"  ixy="-0.000046"  ixz="0.000068" iyy="0.002191" iyz="0.000072" izz="0.000725" />
         </xacro:if>
 
         <xacro:if value="${dynamics_parameter == 'cad'}">
@@ -237,6 +294,13 @@
           <origin value="0.000160 0.063306 0.043455" rpy="0.0 0.0 0.0"/>
           <inertia ixx="0.016829" ixy="0.000286" ixz="0.000417"
                    iyy="0.011761" iyz="-0.005257" izz="0.006149"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0 0.03 0.13" rpy="0 0 0"/>
+          <mass value="3"/>
+          <inertia ixx="0.08"  ixy="0"  ixz="0" iyy="0.075" iyz="0" izz="0.01" />
         </xacro:if>
       </inertial>
 
@@ -263,21 +327,27 @@
       <child link="${robot_name}_link_4"/>
       <origin xyz="0 0 0.2155" rpy="${PI / 2} 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-120 * PI / 180}" upper="${120 * PI / 180}"
-             effort="176" velocity="${75 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-118 * PI / 180}"
-                         soft_upper_limit="${118 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_4 * PI / 180}" upper="${joint_limit_4 * PI / 180}"
+             effort="${max_effort_4}" velocity="${max_velocity_4}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_4 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_4 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.10000"  friction="0.17671"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
 		<dynamics damping="0.170443" friction="0.327965"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_4">
@@ -304,6 +374,13 @@
           <inertia ixx="0.019103" ixy="0.000081" ixz="-0.000175"
                    iyy="0.016046" iyz="0.001274" izz="0.003551"/>
         </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0 0.067 0.034" rpy="0 0 0"/>
+          <mass value="2.7"/>
+          <inertia ixx="0.03"  ixy="0"  ixz="0" iyy="0.01" iyz="0" izz="0.029" />
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -329,21 +406,27 @@
       <child link="${robot_name}_link_5"/>
       <origin xyz="0 0.1845 0" rpy="${-PI / 2} ${PI} 0"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-170 * PI / 180}" upper="${170 * PI / 180}"
-             effort="110" velocity="${130 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-168 * PI / 180}"
-                         soft_upper_limit="${168 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_5 * PI / 180}" upper="${joint_limit_5 * PI / 180}"
+             effort="${max_effort_5}" velocity="${max_velocity_5}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_5 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_5 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.10000"  friction="0.03463"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
         <dynamics damping="0.1" friction="0.536120"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_5">
@@ -370,6 +453,13 @@
           <inertia ixx="0.009814" ixy="-0.000066" ixz="-0.000189"
                    iyy="0.008728" iyz="-0.001553" izz="0.001388"/>
         </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0.0001 0.021 0.076" rpy="0 0 0"/>
+          <mass value="1.7"/>
+          <inertia ixx="0.02"  ixy="0"  ixz="0" iyy="0.018" iyz="0" izz="0.005" />
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -395,21 +485,27 @@
       <child link="${robot_name}_link_6"/>
       <origin xyz="0 0 0.2155" rpy="${PI / 2} 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-120 * PI / 180}" upper="${120 * PI / 180}"
-             effort="40" velocity="${135 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-118 * PI / 180}"
-                         soft_upper_limit="${118 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_6 * PI / 180}" upper="${joint_limit_6 * PI / 180}"
+             effort="${max_effort_6}" velocity="${max_velocity_6}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_6 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_6 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.12484"  friction="0.13391"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
 		<dynamics damping="0.1" friction="0.212718"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_6">
@@ -436,6 +532,13 @@
           <inertia ixx="0.002321" ixy="0.000637" ixz="0.000045"
                    iyy="0.000980" iyz="-0.000262" izz="0.002200"/>
         </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0 0.0006 0.0004" rpy="0 0 0"/>
+          <mass value="1.8"/>
+          <inertia ixx="0.005"  ixy="0"  ixz="0" iyy="0.0036" iyz="0" izz="0.0047" />
+        </xacro:if>
       </inertial>
 
       <visual>
@@ -461,21 +564,27 @@
       <child link="${robot_name}_link_7"/>
       <origin xyz="0 0.081 0" rpy="${- PI / 2} ${PI} 0"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${-175 * PI / 180}" upper="${175 * PI / 180}"
-             effort="40" velocity="${135 * PI / 180}" />
-      <safety_controller soft_lower_limit="${-173 * PI / 180}"
-                         soft_upper_limit="${173 * PI / 180}"
-                         k_position="${safety_controller_k_pos}"
-                         k_velocity="${safety_controller_k_vel}"/>
+      <limit lower="${-joint_limit_7 * PI / 180}" upper="${joint_limit_7 * PI / 180}"
+             effort="${max_effort_7}" velocity="${max_velocity_7}" />
+      <xacro:safe_controller safety="${safety}"
+                             lower="${-safety_percentage * joint_limit_7 * PI / 180}"
+                             upper="${safety_percentage * joint_limit_7 * PI / 180}"
+                             k_p="${safety_controller_k_pos}"
+                             k_v="${safety_controller_k_vel}"/>
       <xacro:if value="${dynamics_parameter == 'eth'}">
         <!-- ETH -->
         <dynamics damping="0.10000"  friction="0.08710"/>
       </xacro:if>
 
-      <xacro:unless value="${dynamics_parameter == 'eth'}">
+      <xacro:if value="${dynamics_parameter == 'identified'}">
         <!-- Identified -->
 		<dynamics damping="0.1" friction="0.337016"/>
-      </xacro:unless>
+      </xacro:if>
+
+      <xacro:if value="${dynamics_parameter == 'epfl'}">
+        <!-- EPFL -->
+        <dynamics damping="${joint_damping}"/>
+      </xacro:if>
     </joint>
 
     <link name="${robot_name}_link_7">
@@ -501,6 +610,13 @@
           <origin value="0.001207 0.001384 -0.000630" rpy="0.0 0.0 0.0"/>
           <inertia ixx="0.000765" ixy="0.000276" ixz="-0.000333"
                    iyy="0.001042" iyz="0.000211" izz="0.000818"/>
+        </xacro:if>
+
+        <xacro:if value="${dynamics_parameter == 'epfl'}">
+          <!-- EPFL -->
+          <origin xyz="0 0 0.02" rpy="0 0 0"/>
+          <mass value="0.3"/>
+          <inertia ixx="0.001"  ixy="0"  ixz="0" iyy="0.001" iyz="0" izz="0.001" />
         </xacro:if>
       </inertial>
 
@@ -529,9 +645,9 @@
 
     <link name="${robot_name}_link_ee">
       <inertial>
-        <origin rpy="0 0 0" xyz="0 0 0.0"/>
-        <mass value="0.0"/>
-        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1e-6"/>
+        <inertia ixx="1"  ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
       </inertial>
     </link>
 

@@ -10,7 +10,7 @@
     <xacro:arg name="parent" default="world"/>
     <xacro:arg name="base_xyz" default="0 0 0"/>
     <xacro:arg name="base_rpy" default="0 0 0"/>
-    <xacro:arg name="dynamics_parameter" default="identified"/>  <!-- Choose which inertia: identified, cad, eth -->
+    <xacro:arg name="dynamics_parameter" default="identified"/>  <!-- Choose which inertia: identified, cad, eth, epfl -->
 
     <!-- Fix to world just for testing -->
     <link name="$(arg parent)"/>

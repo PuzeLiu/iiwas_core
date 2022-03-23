@@ -11,13 +11,14 @@
 
     <arg name="use_front_iiwa" default="true"/>
     <arg name="use_back_iiwa" default="true"/>
-    <arg name="simulation" default="true" />
+    <arg name="dynamics_parameter" default="epfl" />
 
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
         <arg name="use_front_iiwa" value="$(arg use_front_iiwa)" />
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+        <arg name="dynamics_parameter" value="$(arg dynamics_parameter)"/>
     </include>
 
     <node name="rviz" pkg="rviz" type="rviz"
@@ -38,7 +39,8 @@
         <arg name="use_back_iiwa" value="$(arg use_back_iiwa)" />
         <arg name="front_controllers" value="$(arg controller_type)"/>
         <arg name="back_controllers" value="$(arg controller_type)"/>
-        <arg name="control_config" value="$(find iiwas_gazebo)/config/control.yaml"/>
+<!--        <arg name="control_config" value="$(find iiwas_gazebo)/config/control.yaml"/>-->
+        <arg name="control_config" value="$(find iiwas_gazebo)/config/epfl_dynamics_control.yaml"/>
     </include>
 
     <group ns="iiwas_frame">

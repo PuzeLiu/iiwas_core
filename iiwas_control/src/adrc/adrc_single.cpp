@@ -75,7 +75,6 @@ double adrc_controllers::ADRCJoint::starting(double x) {
 	z2 = 0.;
 	z3 = 0.;
 	error = 0.;
-	uOld = 0.;
 	return 0;
 }
 
@@ -83,21 +82,15 @@ double adrc_controllers::ADRCJoint::starting() {
 	return starting(0.);
 }
 
-double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r) {
+double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r, double u) {
 	ADRCGains gains = *adrcBuffer_.readFromNonRT();
 
 	error = y - z1;
 
 	z1 += h * (z2 + gains.beta1_ * error);
-	z2 += h * (z3 + gains.b_ * uOld + gains.beta2_ * error);
+	z2 += h * (z3 + gains.b_ * u + gains.beta2_ * error);
 	z3 += h * (gains.beta3_ * error);
-
-	z1 = boost::algorithm::clamp(z1, qLow, qHigh);
-	z2 = boost::algorithm::clamp(z2, -vMax, vMax);
-    z3 = boost::algorithm::clamp(z3, -10 * vMax / h, 10 * vMax / h);
-	uOld = (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
-	uOld = boost::algorithm::clamp(uOld, -uMax, uMax);
-	return uOld;
+	return (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
 }
 
 bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double timeStep,
@@ -119,10 +112,6 @@ bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double t
 	}
 	if (!nh.getParam("omega_o", omega_o)){
 		ROS_ERROR("No omega_o specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
-		return false;
-	}
-	if (!nh.getParam("u_max", uMax)){
-		ROS_ERROR("No uMax specified for ADRC.  Namespace: %s", nh.getNamespace().c_str());
 		return false;
 	}
 
