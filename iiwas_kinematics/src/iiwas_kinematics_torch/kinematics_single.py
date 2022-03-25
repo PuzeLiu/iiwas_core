@@ -138,7 +138,7 @@ class KinematicsTorch:
                                      dtype=torch.double)
         self.dh_d = torch.tensor([self.d_bs, 0., self.d_se, 0., self.d_ew, 0., self.d_wf], dtype=torch.double)
 
-        self.joint_limits = torch.stack((IIWA_JOINT_MIN_LIMITS, IIWA_JOINT_MAX_LIMITS), dim=0).T
+        self.joint_limits = torch.stack((IIWA_JOINT_MIN_LIMITS, IIWA_JOINT_MAX_LIMITS), dim=0).double().T
 
         self.joint_vel_limits = torch.deg2rad(torch.tensor([[-85., 85.],
                                                             [-85., 85.],
@@ -218,7 +218,7 @@ class KinematicsTorch:
 
         R_0_1_z = torch.tensor([0., 0., 1.]).double()
         if torch.norm(torch.cross(p_2_6, R_0_1_z)) < 1e-3:
-            q_1_v = 0
+            q_1_v = torch.tensor(0., dtype=torch.double)
         else:
             q_1_v = torch.atan2(p_2_6[1], p_2_6[0])
 
@@ -533,7 +533,7 @@ class KinematicsTorch:
             if bound[index, 1] == 0:
                 iter_low = bound[index, 0]
                 index += 1
-                if bound[index, 1] == 1:
+                if index < bound.shape[0] and bound[index, 1] == 1:
                     iter_high = bound[index, 0]
                     # interval.extend([[iter_low, 0.], [iter_high, 1.]])
                     interval_.append([iter_low, iter_high])
