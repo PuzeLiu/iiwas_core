@@ -25,6 +25,7 @@
     <!-- Description -->
     <include file="$(find iiwas_description)/launch/iiwas_description.launch">
         <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+        <arg name="dynamics_parameter" value="identified"/>
     </include>
 
     <node name="rviz" pkg="rviz" type="rviz"
