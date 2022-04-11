@@ -689,20 +689,20 @@ namespace adrc_controllers {
 		}
 
 		// Check if the error is too big that potentially cause instability
-		if (isSafe) {
-			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
-				if (state_error_.position[i] > 0.05 || state_error_.position[i] < -0.05) {
-					ROS_ERROR_STREAM(
-						name_ << " Joint " << i + 1 << " has detected tracking errors: " << state_error_.position[i]
-							  << " bigger than 0.05, start the safe mode");
-					isSafe = false;
-					for (int j = 0; j < this->getNumberOfJoints(); ++j) {
-						qStop[j] = current_state_.position[j];
-					}
-					break;
-				}
-			}
-		}
+//		if (isSafe) {
+//			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
+//				if (state_error_.position[i] > 0.05 || state_error_.position[i] < -0.05) {
+//					ROS_ERROR_STREAM(
+//						name_ << " Joint " << i + 1 << " has detected tracking errors: " << state_error_.position[i]
+//							  << " bigger than 0.05, start the safe mode");
+//					isSafe = false;
+//					for (int j = 0; j < this->getNumberOfJoints(); ++j) {
+//						qStop[j] = current_state_.position[j];
+//					}
+//					break;
+//				}
+//			}
+//		}
 
 		if (isSafe) {
 			if (isCentralized) {
