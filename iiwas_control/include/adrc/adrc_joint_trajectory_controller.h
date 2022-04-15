@@ -112,12 +112,15 @@ namespace adrc_controllers {
 	protected:
 		void setCommand();
 		void applyFrictionCompensation();
+		void regularizeInertia(Eigen::MatrixXd &inertia, const Eigen::VectorXd diag_offset);
 
 	protected:
 		pinocchio::Model pinoModel;
 		pinocchio::Data pinoData;
 		Eigen::VectorXd pinoJointPosition;
 		Eigen::VectorXd uCmd, uADRC, uMax;
+		Eigen::MatrixXd inertiaADRC;
+		Eigen::ArrayXi pinoJointIdxMap;
 
 		typedef std::shared_ptr<ADRCJoint> ADRCJointPtr;
 		std::vector<ADRCJointPtr> adrcs_;
@@ -297,10 +300,20 @@ namespace adrc_controllers {
 		pinocchio::urdf::buildModelFromXML(description_xml, pinoModel);
 		pinoData = pinocchio::Data(pinoModel);
 		pinoJointPosition.resize(pinoModel.nq);
+		pinoJointPosition.setZero();
+
+		// Map controller joint with pinocchio joint index;
+		pinoJointIdxMap.resize(this->getNumberOfJoints());
+		for (int j = 0; j < this->getNumberOfJoints(); ++j)
+		{
+			pinoJointIdxMap[j] = pinoModel.getJointId(joint_names_[j]) - 1;
+		}
+
 		uADRC.resize(this->getNumberOfJoints());
 		uCmd.resize(this->getNumberOfJoints());
 		uMax.resize(this->getNumberOfJoints());
 		uMax.setZero();
+		inertiaADRC.resize(this->getNumberOfJoints(), this->getNumberOfJoints());
 
 		// Load ADRC controller
 		// The controlling frequency is fixed to 1000Hz(Fixed in the KUKA FRI).
@@ -670,13 +683,20 @@ namespace adrc_controllers {
 	void ADRCJointTrajectoryController<SegmentImpl>::setCommand()
 	{
 		for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i){
-			pinoJointPosition[i] = this->current_state_.position[i];
+			pinoJointPosition[pinoJointIdxMap[i]] = this->current_state_.position[i];
 		}
 		// Compute inertia matrix
 		pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
-		pinoData.M.triangularView<Eigen::StrictlyLower>() =
-			pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
-		Eigen::MatrixXd M_tmp = pinoData.M.block(0, 0, this->getNumberOfJoints(), this->getNumberOfJoints());
+		pinoData.M.triangularView<Eigen::StrictlyLower>() = pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
+
+		// Map pinocchio inertia to adrc
+		for (unsigned int j = 0; j < this->getNumberOfJoints(); ++j)
+		{
+			for (int k = 0; k < this->getNumberOfJoints(); ++k)
+			{
+				inertiaADRC(j, k) = pinoData.M(pinoJointIdxMap[j], pinoJointIdxMap[k]);
+			}
+		}
 
 		int test_id = 0;
 		for (unsigned int i = test_id; i < this->getNumberOfJoints(); ++i) {
@@ -688,56 +708,44 @@ namespace adrc_controllers {
 			disturbance_[i] = adrcs_[i]->z3;
 		}
 
-		// Check if the error is too big that potentially cause instability
-//		if (isSafe) {
-//			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
-//				if (state_error_.position[i] > 0.05 || state_error_.position[i] < -0.05) {
-//					ROS_ERROR_STREAM(
-//						name_ << " Joint " << i + 1 << " has detected tracking errors: " << state_error_.position[i]
-//							  << " bigger than 0.05, start the safe mode");
-//					isSafe = false;
-//					for (int j = 0; j < this->getNumberOfJoints(); ++j) {
-//						qStop[j] = current_state_.position[j];
-//					}
-//					break;
-//				}
-//			}
-//		}
-
-		if (isSafe) {
-			if (isCentralized) {
-				uCmd = M_tmp * uADRC;
-				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
-				uADRC = M_tmp.inverse() * uCmd;
-			}
-			else{
-				uCmd = M_tmp.diagonal().cwiseMax(diagOffset_).template cwiseProduct(uADRC);
-				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
-				uADRC = M_tmp.diagonal().cwiseMax(diagOffset_).cwiseInverse().template cwiseProduct(uCmd);
-			}
-
-			for (int i = test_id; i < this->getNumberOfJoints(); ++i) {
-				u_[i] = uCmd[i] + u_ff_[i];
-				joints_[i].setCommand(u_[i]);
-			}
-
-			// Debug for single joint
-			for (unsigned int i = 0; i < test_id; ++i) {
-				uCmd[i] = Kp_safe[i] * (desired_state_.position[i] - current_state_.position[i]) +
-					Kd_safe[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
-				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
-				u_[i] = uCmd[i];
-				joints_[i].setCommand(u_[i]);
-			}
-		} else {
-			for (unsigned int i = 0; i < this->getNumberOfJoints(); ++i) {
-				uCmd[i] = Kp_safe[i] * (qStop[i] - current_state_.position[i]) +
-					Kd_safe[i] * (- current_state_.velocity[i]);
-				uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
-				u_[i] = uCmd[i];
-				joints_[i].setCommand(u_[i]);
-			}
+		if (isCentralized) {
+			regularizeInertia(inertiaADRC, diagOffset_);
+			uCmd = inertiaADRC * uADRC;
+			uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+			uADRC = inertiaADRC.inverse() * uCmd;
 		}
+		else{
+			uCmd = inertiaADRC.diagonal().cwiseMax(diagOffset_).template cwiseProduct(uADRC);
+			uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+			uADRC = inertiaADRC.diagonal().cwiseMax(diagOffset_).cwiseInverse().template cwiseProduct(uCmd);
+		}
+
+		for (int i = test_id; i < this->getNumberOfJoints(); ++i) {
+			u_[i] = uCmd[i] + u_ff_[i];
+			joints_[i].setCommand(u_[i]);
+		}
+
+		// Debug for single joint
+		for (unsigned int i = 0; i < test_id; ++i) {
+			uCmd[i] = Kp_safe[i] * (desired_state_.position[i] - current_state_.position[i]) +
+				Kd_safe[i] * (desired_state_.velocity[i] - current_state_.velocity[i]);
+			uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
+			u_[i] = uCmd[i];
+			joints_[i].setCommand(u_[i]);
+		}
+
+	}
+
+	template<class SegmentImpl>
+	void ADRCJointTrajectoryController<SegmentImpl>::regularizeInertia(Eigen::MatrixXd& inertia, const Eigen::VectorXd diag_offset)
+	{
+		Eigen::LLT<Eigen::MatrixXd> llt(inertia);
+		Eigen::MatrixXd L = llt.matrixL();
+		for (int j = 0; j < this->getNumberOfJoints(); ++j)
+		{
+			L.row(j) *= std::max(sqrt(diag_offset[j]) / L.row(j).norm(), 1.);
+		}
+		inertia = L * L.transpose();
 	}
 }
 
