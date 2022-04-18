@@ -709,7 +709,7 @@ namespace adrc_controllers {
 		}
 
 		if (isCentralized) {
-			regularizeInertia(inertiaADRC, diagOffset_);
+//			regularizeInertia(inertiaADRC, diagOffset_);
 			uCmd = inertiaADRC * uADRC;
 			uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
 			uADRC = inertiaADRC.inverse() * uCmd;
