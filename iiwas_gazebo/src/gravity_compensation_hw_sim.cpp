@@ -38,11 +38,11 @@ namespace iiwas_gazebo {
 		urdf::Model iiwa_urdf_model;
 
 		std::string urdf_iiwa;
-		if(model_nh.getParam("iiwa_only_description", urdf_iiwa)){
-			iiwa_urdf_model.initParamWithNodeHandle("iiwa_only_description", model_nh);
-		} else {
+//		if(model_nh.getParam("iiwa_only_description", urdf_iiwa)){
+//			iiwa_urdf_model.initParamWithNodeHandle("iiwa_only_description", model_nh);
+//		} else {
 			iiwa_urdf_model = *urdf_model;
-		}
+//		}
 		auto model_ptr = boost::make_shared<urdf::ModelInterface>(iiwa_urdf_model);
 		pinocchio::urdf::buildModel(model_ptr, pinoModel, false);
 		pinoData = pinocchio::Data(pinoModel);
