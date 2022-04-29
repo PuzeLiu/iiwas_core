@@ -112,7 +112,6 @@ namespace adrc_controllers {
 	protected:
 		void setCommand();
 		void applyFrictionCompensation();
-		void regularizeInertia(Eigen::MatrixXd &inertia, const Eigen::VectorXd diag_offset);
 
 	protected:
 		pinocchio::Model pinoModel;
@@ -523,11 +522,7 @@ namespace adrc_controllers {
 			successful_joint_traj_.reset();
 		}
 
-//		applyInertiaFeedForward();
-//		applyFrictionCompensation();
-
 		setCommand();
-//		applySingleJointCmd(1); // Function to test adrd on real robot. 
 
 		setActionFeedback();
 
@@ -709,7 +704,6 @@ namespace adrc_controllers {
 		}
 
 		if (isCentralized) {
-//			regularizeInertia(inertiaADRC, diagOffset_);
 			uCmd = inertiaADRC * uADRC;
 			uCmd = uCmd.cwiseMax(-uMax).cwiseMin(uMax);
 			uADRC = inertiaADRC.inverse() * uCmd;
@@ -736,17 +730,6 @@ namespace adrc_controllers {
 
 	}
 
-	template<class SegmentImpl>
-	void ADRCJointTrajectoryController<SegmentImpl>::regularizeInertia(Eigen::MatrixXd& inertia, const Eigen::VectorXd diag_offset)
-	{
-		Eigen::LLT<Eigen::MatrixXd> llt(inertia);
-		Eigen::MatrixXd L = llt.matrixL();
-		for (int j = 0; j < this->getNumberOfJoints(); ++j)
-		{
-			L.row(j) *= std::max(sqrt(diag_offset[j]) / L.row(j).norm(), 1.);
-		}
-		inertia = L * L.transpose();
-	}
 }
 
 #endif //SRC_ADRC_JOINT_TRAJECTORY_CONTROLLER_H
