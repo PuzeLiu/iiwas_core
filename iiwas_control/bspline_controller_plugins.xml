@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<library path="lib/libbspline_joint_trajectory_controller">
+    <class name="joint_trajectory_controller/IBSplineJointTrajectoryController"
+           type="joint_trajectory_controller::IBSplineJointTrajectoryController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The BsplineJointTrajectoryController that allows to send Bsplines and base JointTrajectoryControls
+        </description>
+    </class>
+</library>
