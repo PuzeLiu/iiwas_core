@@ -1,13 +1,33 @@
-//
-// Created by piotr on 27.06.2022.
-//
+/*
+ * MIT License
+ * Copyright (c) 2022 Piotr Kicki
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 
 #ifndef SRC_BSPLINETRAJECTORY_H
 #define SRC_BSPLINETRAJECTORY_H
 
-#include <air_hockey_neural_planner/BsplineTrajectoryMsg.h>
+#include <iiwas_control/BsplineTrajectoryMsg.h>
 #include <trajectory_interface/pos_vel_acc_state.h>
-#include "tinysplinecxx.h"
+#include "bspline_segment.h"
 
 template<class ScalarType>
 class BsplineTrajectory {
@@ -15,103 +35,30 @@ public:
     typedef ScalarType Scalar;
     typedef Scalar Time;
     typedef trajectory_interface::PosVelAccState<Scalar> State;
+    typedef BsplineSegment<Scalar> Segment;
 
-    BsplineTrajectory(air_hockey_neural_planner::BsplineTrajectoryMsg msg){
+    BsplineTrajectory(iiwas_control::BsplineTrajectoryMsg msg){
         std::cout << "[RUNNING]     BsplineTrajectory constructor" << std::endl;
-        std::cout << "Q_CPS" << std::endl;
-        for (auto x: msg.q_control_points) {
-            std::cout << x << "  ";
+        time_offset_ = msg.header.stamp.toSec();
+        for (int i = 0; i < msg.segments.size(); i++) {
+            segments_.push_back(Segment(msg.segments[i]));
+            times_accumulated_.push_back(times_accumulated_.back() + segments_.back().getDuration());
         }
-        std::cout << std::endl;
-
-        q_spline_ = tinyspline::BSpline(15, 6, 7, tinyspline::BSpline::Type::Clamped);
-        t_spline_ = tinyspline::BSpline(20, 1, 7, tinyspline::BSpline::Type::Clamped);
-        std::cout << "[RUNNING]     tinyspline initialized" << std::endl;
-        std::vector<tinyspline::real> q_ctrlp = q_spline_.controlPoints();
-        for (auto i = 0; i < msg.q_control_points.size(); i++) {
-            q_ctrlp[i] = msg.q_control_points[i];
-        }
-        q_spline_.setControlPoints(q_ctrlp);
-        std::vector<tinyspline::real> t_ctrlp = t_spline_.controlPoints();
-        for (auto i = 0; i < msg.t_control_points.size(); i++) {
-            t_ctrlp[i] = msg.t_control_points[i];
-        }
-        t_spline_.setControlPoints(t_ctrlp);
-        //std::cout << "T CPS" << std::endl;
-        //for (auto x: t_spline_.controlPoints()) {
-        //    std::cout << x << "  ";
-        //}
-        //std::cout << std::endl;
-        std::cout << "[RUNNING]     tinyspline filled" << std::endl;
-        dq_spline_ = q_spline_.derive();
-        ddq_spline_ = dq_spline_.derive();
-        dt_spline_ = t_spline_.derive();
-        start_time_ = msg.header.stamp.toSec();
-        std::cout << "[RUNNING]     tinyspline derived" << std::endl;
-        ts_.push_back(0.);
-        args_.push_back(0.);
-        for (int i = 0; i < 1023; i++){
-            Scalar arg = (float)i / 1024.;
-            std::vector<tinyspline::real> dtau_dt = t_spline_.eval(arg).result();
-//            std::cout << i << "  DTAU: " << dtau_dt[0] << std::endl;
-            ts_.push_back(ts_.back() + 1. / dtau_dt[0] / 1024.);
-            args_.push_back(args_.back() + 1. / 1024.);
-        }
-        //std::cout << "T VECTOR" << std::endl;
-        //for (auto t: ts_) {
-        //    std::cout << t << "  ";
-        //}
-        //std::cout << std::endl;
     }
 
     bool sample(Time t, State& s){
-//        std::cout << "[RUNNING]     sampling started" << std::endl;
-        Scalar argument = interpolate(t - start_time_);
-        std::cout << "BSpline argument: " << argument << std::endl;
-        std::vector<tinyspline::real> q = q_spline_.eval(argument).result();
-        std::vector<tinyspline::real> dq_tau = dq_spline_.eval(argument).result();
-        std::vector<tinyspline::real> ddq_tau = ddq_spline_.eval(argument).result();
-        std::vector<tinyspline::real> dtau_dt = t_spline_.eval(argument).result();
-        std::vector<tinyspline::real> ddtau_dtt = t_spline_.eval(argument).result();
-//        std::cout << "[RUNNING]     sampling ended" << std::endl;
-//        std::cout << "[RUNNING]     multiplications" << std::endl;
-        s.position = q;
-        for (auto i = 0; i < q.size(); i++) {
-            s.velocity[i] = dq_tau[i] * dtau_dt[i];
-            s.acceleration[i] = ddq_tau[i] * dtau_dt[i] * dtau_dt[i] + ddtau_dtt[i] * dq_tau[i] * dtau_dt[i];
-        }
-//        std::cout << "[RUNNING]     end of multiplications" << std::endl;
-        return (t - start_time_) > ts_[ts_.size() - 1]; // return true if finished
-    }
-
-    double interpolate(Time t)
-    {
-//        std::cout << "[RUNNING] INTERPOLATION STARTED" << std::endl;
-        auto it = std::upper_bound(ts_.begin(), ts_.end(), t);
-        auto i = it - ts_.begin() - 1;
-        double xL = ts_[i], yL = args_[i], xR = ts_[i+1], yR = args_[i+1];      // points on either side (unless beyond ends)
-        std::cout << "INTERPOLATE VALUES" << std::endl;
-        std::cout << t << " " << xL << " " << xR << " " << std::endl;
-
-        if ( t < xL ) yR = yL;
-        if ( t > xR ) yL = yR;
-
-        double dydx = ( yR - yL ) / ( xR - xL );                                    // gradient
-
-//        std::cout << "[RUNNING] INTERPOLATION ENDED" << std::endl;
-        return yL + dydx * ( t - xL );                                              // linear interpolation
+        t = t - time_offset_; // start trajectory after the time offset
+        auto it = std::upper_bound(times_accumulated_.begin(), times_accumulated_.end(), t); // find current segment
+        auto i = std::max(it - times_accumulated_.begin() - 1., 0.); // get segment index
+        if (i >= segments_.size()) return true; // return true if finished
+        segments_[i].sample(t - times_accumulated_[i], s); // sample current segment
+        return t > times_accumulated_.back(); // return true if finished
     }
 
 private:
-    tinyspline::BSpline q_spline_;
-    tinyspline::BSpline dq_spline_;
-    tinyspline::BSpline ddq_spline_;
-    tinyspline::BSpline t_spline_;
-    tinyspline::BSpline dt_spline_;
-    Time start_time_;
-    Time end_time_;
-    std::vector<Scalar> ts_;
-    std::vector<Scalar> args_;
+    std::vector<Segment> segments_;
+    std::vector<Time> times_accumulated_{0.};
+    Time time_offset_;
 
 };
 

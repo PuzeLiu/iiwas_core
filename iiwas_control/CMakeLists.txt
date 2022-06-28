@@ -16,6 +16,17 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(pinocchio REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+add_message_files(
+        FILES
+        BsplineSegmentMsg.msg
+        BsplineTrajectoryMsg.msg
+)
+
+generate_messages(
+        DEPENDENCIES
+        std_msgs
+)
+
 generate_dynamic_reconfigure_options(
     cfg/Parameters.cfg
 )

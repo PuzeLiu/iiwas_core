@@ -1,4 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2022, Piotr Kciki
 // Copyright (C) 2013, PAL Robotics S.L.
 // Copyright (c) 2008, Willow Garage, Inc.
 //
@@ -37,9 +38,16 @@
 #include <string>
 #include <memory>
 
+// pinocchio
+#include <pinocchio/multibody/model.hpp>
+#include <pinocchio/parsers/urdf.hpp>
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
+
 // Boost
 #include <boost/shared_ptr.hpp>
 #include <boost/dynamic_bitset.hpp>
+#include <boost/algorithm/clamp.hpp>
 
 // ROS
 #include <ros/node_handle.h>
@@ -61,6 +69,7 @@
 #include <realtime_tools/realtime_buffer.h>
 #include <realtime_tools/realtime_publisher.h>
 
+
 // ros_controls
 #include <realtime_tools/realtime_server_goal_handle.h>
 #include <controller_interface/controller.h>
@@ -68,7 +77,7 @@
 #include <hardware_interface/internal/demangle_symbol.h>
 
 // Project
-#include <air_hockey_neural_planner/BsplineTrajectoryMsg.h>
+#include <iiwas_control/BsplineTrajectoryMsg.h>
 #include "bspline_trajectory.h"
 #include <trajectory_interface/trajectory_interface.h>
 
@@ -167,7 +176,7 @@ protected:
   typedef realtime_tools::RealtimeServerGoalHandle<control_msgs::FollowJointTrajectoryAction> RealtimeGoalHandle;
   typedef boost::shared_ptr<RealtimeGoalHandle>                                               RealtimeGoalHandlePtr;
   typedef trajectory_msgs::JointTrajectory::ConstPtr                                          JointTrajectoryConstPtr;
-  typedef air_hockey_neural_planner::BsplineTrajectoryMsg::ConstPtr                           BsplineTrajectoryMsgConstPtr;
+  typedef iiwas_control::BsplineTrajectoryMsg::ConstPtr                           BsplineTrajectoryMsgConstPtr;
   typedef realtime_tools::RealtimePublisher<control_msgs::JointTrajectoryControllerState>     StatePublisher;
   typedef std::unique_ptr<StatePublisher>                                                     StatePublisherPtr;
 
@@ -175,6 +184,7 @@ protected:
   typedef std::vector<Segment> TrajectoryPerJoint;
   typedef std::vector<TrajectoryPerJoint> Trajectory;
   typedef std::shared_ptr<Trajectory> TrajectoryPtr;
+  //typedef std::vector<BsplineTrajectory<double>> BsplineTrajectoryVector;
   typedef std::shared_ptr<BsplineTrajectory<double>> BsplineTrajectoryPtr;
   typedef std::shared_ptr<TrajectoryPerJoint> TrajectoryPerJointPtr;
   typedef realtime_tools::RealtimeBox<TrajectoryPtr> TrajectoryBox;
@@ -235,6 +245,12 @@ protected:
 
   ros::Timer         goal_handle_timer_;
   ros::Time          last_state_publish_time_;
+
+  pinocchio::Model pinoModel;
+  pinocchio::Data pinoData;
+  std::vector<double> ff_torque_;
+  std::vector<double> pid_torque_;
+  std::vector<double> actual_torque_;
 
   virtual bool updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string = nullptr);
   virtual bool updateTrajectoryBspline(const BsplineTrajectoryMsgConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string = nullptr);

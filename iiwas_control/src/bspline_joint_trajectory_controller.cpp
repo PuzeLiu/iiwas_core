@@ -1,5 +1,6 @@
 /*
  * MIT License
+ * Copyright (c) 2022 Piotr Kicki
  * Copyright (c) 2020 Puze Liu, Davide Tateo
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,21 +22,13 @@
  * SOFTWARE.
  */
 
-//#include "bspline_joint_trajectory_controller/bspline_joint_trajectory_controller.h"
-//#include "linear_segment.h"
-//#include "qubic_spline_segment.h"
-#include "quintic_bspline_segment.h"
-
 #include <pluginlib/class_list_macros.h>
 #include <trajectory_interface/quintic_spline_segment.h>
-//#include <joint_trajectory_controller/joint_trajectory_controller.h>
 #include <bspline_joint_trajectory_controller/bspline_joint_trajectory_controller.h>
 
 namespace joint_trajectory_controller {
 	typedef joint_trajectory_controller::BsplineJointTrajectoryController
-//			<trajectory_interface::LinearSegment<double>>
-    <trajectory_interface::QuinticBSplineSegment<double>, hardware_interface::EffortJointInterface>
-//    <trajectory_interface::QubicSplineSegment<double>>
+    <trajectory_interface::QuinticSplineSegment<double>, hardware_interface::EffortJointInterface>
 			IBSplineJointTrajectoryController;
 }
 

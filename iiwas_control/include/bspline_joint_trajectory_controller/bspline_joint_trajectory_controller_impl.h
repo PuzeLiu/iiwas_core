@@ -1,4 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2022 Piotr Kicki
 // Copyright (C) 2013, PAL Robotics S.L.
 // Copyright (c) 2008, Willow Garage, Inc.
 //
@@ -254,6 +255,20 @@ bool BsplineJointTrajectoryController<SegmentImpl, HardwareInterface>::init(Hard
     state_publisher_->unlock();
   }
 
+  std::string description_xml;
+  if (!root_nh.getParam("iiwa_only_description", description_xml)) {
+      if (!root_nh.getParam("robot_description", description_xml)) {
+          ROS_ERROR_STREAM("Did not find the " << root_nh.getNamespace() << "robot_description");
+          return false;
+      }
+  }
+
+  pinocchio::urdf::buildModelFromXML(description_xml, pinoModel);
+  pinoData = pinocchio::Data(pinoModel);
+  ff_torque_.resize(pinoModel.nq);
+  pid_torque_.resize(pinoModel.nq);
+  actual_torque_.resize(pinoModel.nq);
+
   return true;
 }
 
@@ -284,11 +299,41 @@ update(const ros::Time& time, const ros::Duration& period)
   // next control cycle, leaving the current cycle without a valid trajectory.
   if (is_bspline_trajectory_running_) {
       BsplineTrajectoryPtr curr_bspline_traj_ptr;
+      //std::cout << "XD1" << std::endl;
       curr_bspline_trajectory_box_.get(curr_bspline_traj_ptr);
+      //std::cout << "XD2" << std::endl;
       bool finished = curr_bspline_traj_ptr->sample(time_data.uptime.toSec(), desired_state_);
+      //std::cout << "XD3" << std::endl;
       updateBsplineStates();
+      //std::cout << "XD4" << std::endl;
       //std::cout << "DESIRED STATE" << std::endl;
-      std::cout << "POS: " << desired_state_.position[0] << std::endl;
+      //std::cout << "POS: " << desired_state_.position[0] << std::endl;
+      std::cout << "ACTUAL POS: ";
+      for (int i = 0; i < getNumberOfJoints(); i++) {
+          std::cout << "  " << current_state_.position[i];
+      }
+      std::cout << std::endl;
+      std::cout << "ACTUAL VEL: ";
+      for (int i = 0; i < getNumberOfJoints(); i++) {
+          std::cout << "  " << current_state_.velocity[i];
+      }
+      std::cout << std::endl;
+      std::cout << "DESIRED POS: ";
+      for (int i = 0; i < getNumberOfJoints(); i++) {
+          std::cout << "  " << desired_state_.position[i];
+      }
+      std::cout << std::endl;
+      std::cout << "DESIRED VEL: ";
+      for (int i = 0; i < getNumberOfJoints(); i++) {
+          std::cout << "  " << desired_state_.velocity[i];
+      }
+      std::cout << std::endl;
+      std::cout << "DESIRED ACC: ";
+      for (int i = 0; i < getNumberOfJoints(); i++) {
+          std::cout << "  " << desired_state_.acceleration[i];
+      }
+      std::cout << std::endl;
+      //exit(-1);
       //for (int i = 0; i < getNumberOfJoints(); i++){
       //    std::cout << "POS " << i << ":  " << desired_state_.position[i] << std::endl;
       //    std::cout << "VEL " << i << ":  " << desired_state_.velocity[i] << std::endl;
@@ -393,6 +438,31 @@ update(const ros::Time& time, const ros::Duration& period)
                                   desired_state_, state_error_);
 
   setActionFeedback();
+
+  /** Add Feedforward Term*/
+  Eigen::VectorXd pinoJointPosition(pinoModel.nq);
+  Eigen::VectorXd pinoJointVelocity(pinoModel.nq);
+  Eigen::VectorXd pinoJointAcceleration(pinoModel.nq);
+  for (int j = 0; j < desired_state_.position.size(); ++j) {
+      pinoJointPosition[j] = current_state_.position[j];
+      pinoJointVelocity[j] = current_state_.velocity[j];
+      pinoJointAcceleration[j] = desired_state_.acceleration[j];
+  }
+  pinocchio::crba(pinoModel, pinoData, pinoJointPosition);
+  pinoData.M.triangularView<Eigen::StrictlyLower>() =
+          pinoData.M.transpose().triangularView<Eigen::StrictlyLower>();
+  Eigen::VectorXd ffTerm = pinoData.M * pinoJointAcceleration;
+
+  pinocchio::rnea(pinoModel, pinoData, pinoJointPosition, pinoJointVelocity, pinoJointAcceleration);
+  Eigen::VectorXd idTorque = pinoData.tau + pinoModel.friction.cwiseProduct(pinoJointVelocity.cwiseSign())
+                             + pinoModel.damping.cwiseProduct(pinoJointVelocity);
+
+  for (unsigned int i = 0; i < joint_names_.size(); ++i) {
+      ff_torque_[i] = idTorque[i] + pid_torque_[i] + ffTerm[i];
+      pid_torque_[i] = joints_[i].getCommand();
+      actual_torque_[i] = boost::algorithm::clamp(pid_torque_[i] + ffTerm[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
+      joints_[i].setCommand(actual_torque_[i]);
+  }
 
   publishState(time_data.uptime);
 }
@@ -515,7 +585,7 @@ updateTrajectoryBspline(const BsplineTrajectoryMsgConstPtr &msg, RealtimeGoalHan
 
     std::cout << "[RUNNING]   hold if empty" << std::endl;
     // Hold current position if trajectory is empty
-    if (msg->q_control_points.empty() || msg->t_control_points.empty())
+    if (msg->segments.empty())
     {
         setHoldPosition(time_data->uptime, gh);
         ROS_DEBUG_NAMED(name_, "Empty trajectory command, stopping.");
@@ -525,10 +595,12 @@ updateTrajectoryBspline(const BsplineTrajectoryMsgConstPtr &msg, RealtimeGoalHan
 
 
     BsplineTrajectoryPtr bspline_traj_ptr(new BsplineTrajectory<double>(*msg));
+
+    //BsplineTrajectoryPtr bspline_traj_ptr(new BsplineTrajectory<double>(*msg));
     //bspline_traj_ptr->sample((time_data->time + ros::Duration(0.2)).toSec(), desired_state_);
-    std::cout << "[RUNNING]   set bspline trajectory in box" << std::endl;
+    std::cout << "[RUNNING]   to set bspline trajectory in box" << std::endl;
     curr_bspline_trajectory_box_.set(bspline_traj_ptr);
-    std::cout << "[RUNNING]   seted bspline trajectory in box" << std::endl;
+    std::cout << "[RUNNING]   already set bspline trajectory in box" << std::endl;
     is_bspline_trajectory_running_ = true;
     return true;
 }
