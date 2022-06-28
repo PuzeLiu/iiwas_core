@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2022, Piotr Kciki
+// Copyright (C) 2022, Piotr Kicki
 // Copyright (C) 2013, PAL Robotics S.L.
 // Copyright (c) 2008, Willow Garage, Inc.
 //
@@ -246,12 +246,6 @@ protected:
   ros::Timer         goal_handle_timer_;
   ros::Time          last_state_publish_time_;
 
-  pinocchio::Model pinoModel;
-  pinocchio::Data pinoData;
-  std::vector<double> ff_torque_;
-  std::vector<double> pid_torque_;
-  std::vector<double> actual_torque_;
-
   virtual bool updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string = nullptr);
   virtual bool updateTrajectoryBspline(const BsplineTrajectoryMsgConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string = nullptr);
   virtual void trajectoryCommandCB(const JointTrajectoryConstPtr& msg);
@@ -261,6 +255,8 @@ protected:
   virtual void preemptActiveGoal();
   virtual bool queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
                                  control_msgs::QueryTrajectoryState::Response& resp);
+  virtual bool customInit(HardwareInterface* hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) {return true;};
+  virtual void customController() {};
 
   /**
    * \brief Publish current controller state at a throttled frequency.

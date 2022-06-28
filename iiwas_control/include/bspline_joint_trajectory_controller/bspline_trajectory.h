@@ -38,7 +38,6 @@ public:
     typedef BsplineSegment<Scalar> Segment;
 
     BsplineTrajectory(iiwas_control::BsplineTrajectoryMsg msg){
-        std::cout << "[RUNNING]     BsplineTrajectory constructor" << std::endl;
         time_offset_ = msg.header.stamp.toSec();
         for (int i = 0; i < msg.segments.size(); i++) {
             segments_.push_back(Segment(msg.segments[i]));
