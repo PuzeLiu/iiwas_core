@@ -1,7 +1,12 @@
 ## Installation 
 Make sure you have installed ROS and create a new catkin workspace. 
 Additionally, to the full desktop version of ROS, the following ROS packages are needed:
-_joint-trajectory-controller, pinocchio_
+1. joint-trajectory-controller
+2. pinocchio
+
+and these third-party dependencies:
+
+1. tinyspline  https://github.com/msteinbeck/tinyspline/releases
 
 Clone the repository into the src folder of your catkin workspace. Do not forget to also clone the [IIWAS FRI Client](https://git.ias.informatik.tu-darmstadt.de/ros/iiwas/iiwa_fri_client) into the catkin workspace. 
 After that you can build the project with **catkin_make**. (Note that the first build will probably fail because of some complicated dependencies between the core and the FRI package. However simply running **catkin_make** once again will work.)
