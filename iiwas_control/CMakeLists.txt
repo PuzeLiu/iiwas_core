@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     controller_manager
     controller_interface
     dynamic_reconfigure
+    message_generation
     )
 
 find_package(pinocchio REQUIRED)
@@ -35,8 +36,8 @@ generate_dynamic_reconfigure_options(
 catkin_package(
     INCLUDE_DIRS include
     #   LIBRARIES iiwas_kinematics
-    CATKIN_DEPENDS roscpp rospy joint_trajectory_controller controller_interface controller_manager
-    DEPENDS EIGEN3
+    CATKIN_DEPENDS roscpp rospy joint_trajectory_controller controller_interface controller_manager message_runtime
+        DEPENDS EIGEN3
 )
 
 ###########
@@ -69,6 +70,9 @@ add_library(bspline_ff_joint_trajectory_controller
 
 # make sure configure headers are built before any node using them
 add_dependencies(adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
+add_dependencies(bspline_joint_trajectory_controller
+        ${${PROJECT_NAME}_EXPORTED_TARGETS}
+        ${catkin_EXPORTED_TARGETS})
 
 target_compile_definitions(iiwas_dynamics_example PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
