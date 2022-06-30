@@ -132,7 +132,7 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     # True Inertia Centralized Version
-    centralize: true
+    centralize: false
     parameters:
       F_joint_1: { b: 1.0, omega_c: 30.,  omega_o: 60, u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 3.0 } # Parameter of Inertia Compatible
       F_joint_2: { b: 1.0, omega_c: 35.,  omega_o: 80, u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 3.0 }
@@ -270,7 +270,7 @@ iiwa_back:
       - B_joint_6
       - B_joint_7
     # True Inertia Centralized Version
-    centralize: true
+    centralize: false
     parameters:
       B_joint_1: { b: 1.0, omega_c: 25.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 2.5 } # Parameter of Inertia Compatible
       B_joint_2: { b: 1.0, omega_c: 30.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
