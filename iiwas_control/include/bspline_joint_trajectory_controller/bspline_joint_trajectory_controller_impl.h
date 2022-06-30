@@ -52,14 +52,13 @@ starting(const ros::Time& time)
     desired_state_.velocity[i] = joints_[i].getVelocity();
   }
 
+  customStarting();
+
   // Hold current position
   setHoldPosition(time_data.uptime);
 
   // Initialize last state update time
   last_state_publish_time_ = time_data.uptime;
-
-  // Hardware interface adapter
-  hw_iface_adapter_.starting(time_data.uptime);
 }
 
 template <class SegmentImpl, class HardwareInterface>
@@ -197,9 +196,6 @@ bool BsplineJointTrajectoryController<SegmentImpl, HardwareInterface>::init(Hard
   // Default tolerances
   ros::NodeHandle tol_nh(controller_nh_, "constraints");
   default_tolerances_ = getSegmentTolerances<Scalar>(tol_nh, joint_names_);
-
-  // Hardware interface adapter
-  hw_iface_adapter_.init(joints_, controller_nh_);
 
   // ROS API: Subscribed topics
   trajectory_command_sub_ = controller_nh_.subscribe("command", 1, &BsplineJointTrajectoryController::trajectoryCommandCB, this);
@@ -383,14 +379,10 @@ update(const ros::Time& time, const ros::Duration& period)
       updateFuncExtensionPoint(curr_traj, time_data);
   }
 
-  // Hardware interface adapter: Generate and send commands
-  hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
-                                  desired_state_, state_error_);
-
-  setActionFeedback();
-
 
   customController();
+
+  setActionFeedback();
 
   publishState(time_data.uptime);
 }

@@ -9,7 +9,7 @@
   <license>MIT</license>
 
   <author email="puze@robot-learning.de">Puze Liu</author>
-  <author email="davide@robot-learning.de">Davide tateo</author>
+  <author email="davide@robot-learning.de">Davide Tateo</author>
   <author email="piotr.kicki@put.poznan.pl">Piotr Kicki</author>
 
   <buildtool_depend>catkin</buildtool_depend>
@@ -41,6 +41,7 @@
     <controller_interface plugin="${prefix}/adrc_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/bspline_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/bspline_ff_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/bspline_adrc_controller_plugins.xml"/>
   </export>
 
 </package>

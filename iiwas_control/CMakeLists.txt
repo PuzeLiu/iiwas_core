@@ -68,8 +68,13 @@ add_library(bspline_joint_trajectory_controller
 add_library(bspline_ff_joint_trajectory_controller
         src/bspline_ff_joint_trajectory_controller.cpp)
 
+add_library(bspline_adrc_joint_trajectory_controller
+        src/bspline_adrc_joint_trajectory_controller.cpp
+        src/adrc/adrc_single.cpp)
+
 # make sure configure headers are built before any node using them
 add_dependencies(adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
+add_dependencies(bspline_adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
 add_dependencies(bspline_joint_trajectory_controller
         ${${PROJECT_NAME}_EXPORTED_TARGETS}
         ${catkin_EXPORTED_TARGETS})
@@ -79,6 +84,7 @@ target_compile_definitions(ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CF
 target_compile_definitions(adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(bspline_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(bspline_ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(bspline_adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 
 target_link_libraries(iiwas_dynamics_example
     ${catkin_LIBRARIES}
@@ -105,6 +111,13 @@ target_link_libraries(bspline_ff_joint_trajectory_controller
     ${catkin_LIBRARIES}
     pinocchio::pinocchio
     )
+
+target_link_libraries(bspline_adrc_joint_trajectory_controller
+    ${catkin_LIBRARIES}
+    pinocchio::pinocchio
+    tinysplinecxx
+    )
+
 
 #############
 ## Install ##

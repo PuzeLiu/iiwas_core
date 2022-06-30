@@ -68,6 +68,8 @@ class BsplineJointTrajectoryController :
             <SegmentImpl, hardware_interface::EffortJointInterface> {
 
     bool customInit(hardware_interface::EffortJointInterface* hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) override {
+        // Hardware interface adapter
+        this->hw_iface_adapter_.init(this->joints_, this->controller_nh_);
         std::string description_xml;
         if (!root_nh.getParam("iiwa_only_description", description_xml)) {
             if (!root_nh.getParam("robot_description", description_xml)) {
@@ -85,6 +87,8 @@ class BsplineJointTrajectoryController :
     }
 
     void customController() override {
+        this->hw_iface_adapter_.updateCommand(ros::Time::now(), ros::Duration(0.1),
+                                              this->desired_state_, this->state_error_);
         /** Add Feedforward Term*/
         Eigen::VectorXd pinoJointPosition(pinoModel.nq);
         Eigen::VectorXd pinoJointVelocity(pinoModel.nq);
@@ -110,6 +114,10 @@ class BsplineJointTrajectoryController :
             this->joints_[i].setCommand(actual_torque_[i]);
         }
     }
+    void customStarting() override {
+        // hardware interface adapter
+        this->hw_iface_adapter_.starting(ros::Time(0.0));
+    };
 
     pinocchio::Model pinoModel;
     pinocchio::Data pinoData;

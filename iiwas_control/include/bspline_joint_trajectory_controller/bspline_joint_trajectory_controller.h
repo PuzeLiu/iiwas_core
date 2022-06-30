@@ -255,15 +255,25 @@ protected:
   virtual void preemptActiveGoal();
   virtual bool queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
                                  control_msgs::QueryTrajectoryState::Response& resp);
-  virtual bool customInit(HardwareInterface* hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) {return true;};
-  virtual void customController() {};
+  virtual bool customInit(HardwareInterface* hw, ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) {
+      // Hardware interface adapter
+      hw_iface_adapter_.init(joints_, controller_nh_);
+      return true;};
+  virtual void customController() {
+      hw_iface_adapter_.updateCommand(ros::Time::now(), ros::Duration(0.1),
+                                      desired_state_, state_error_);
+  };
+  virtual void customStarting() {
+      // hardware interface adapter
+      hw_iface_adapter_.starting(ros::Time(0.0));
+  };
 
   /**
    * \brief Publish current controller state at a throttled frequency.
    * \note This method is realtime-safe and is meant to be called from \ref update, as it shares data with it without
    * any locking.
    */
-  void publishState(const ros::Time& time);
+  virtual void publishState(const ros::Time& time);
 
   /**
    * \brief Hold the current position.
