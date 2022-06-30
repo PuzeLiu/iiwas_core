@@ -120,6 +120,28 @@ iiwa_front:
 #      F_joint_6: { b: 5.0, omega_c: 50., omega_o: 180, u_max: 20, u_stiction: 0.6, vs: 0.05}
 #      F_joint_7: { b: 6.0, omega_c: 50., omega_o: 200, u_max: 20, u_stiction: 0.4, vs: 0.05}
 
+  bspline_adrc_joint_trajectory_controller:
+    type: adrc_controllers/BSplineADRCJointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - F_joint_1
+      - F_joint_2
+      - F_joint_3
+      - F_joint_4
+      - F_joint_5
+      - F_joint_6
+      - F_joint_7
+    # True Inertia Centralized Version
+    centralize: true
+    parameters:
+      F_joint_1: { b: 1.0, omega_c: 30.,  omega_o: 60, u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 3.0 } # Parameter of Inertia Compatible
+      F_joint_2: { b: 1.0, omega_c: 35.,  omega_o: 80, u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 3.0 }
+      F_joint_3: { b: 1.0, omega_c: 60., omega_o: 100, u_max: 30, u_stiction: 0., vs: 0.0, diag_offset: 0.8 }
+      F_joint_4: { b: 1.0, omega_c: 60., omega_o: 140, u_max: 30, u_stiction: 0., vs: 0.0, diag_offset: 0.8 }
+      F_joint_5: { b: 1.0, omega_c: 60., omega_o: 120., u_max: 15, u_stiction: 0., vs: 0.0, diag_offset: 0.4 }
+      F_joint_6: { b: 1.0, omega_c: 60., omega_o: 120., u_max: 15, u_stiction: 0., vs: 0.0, diag_offset: 0.2 }
+      F_joint_7: { b: 1.0, omega_c: 60., omega_o: 140., u_max: 10, u_stiction: 0., vs: 0.0, diag_offset: 0.18 }
+
 
 iiwa_back:
   joint_state_controller:
@@ -227,6 +249,28 @@ iiwa_back:
       - B_joint_6
       - B_joint_7
     centralize: false
+    parameters:
+      B_joint_1: { b: 1.0, omega_c: 25.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 2.5 } # Parameter of Inertia Compatible
+      B_joint_2: { b: 1.0, omega_c: 30.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_3: { b: 1.0, omega_c: 30., omega_o: 100, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 1.0 }
+      B_joint_4: { b: 1.0, omega_c: 45., omega_o: 130, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
+      B_joint_5: { b: 1.0, omega_c: 50., omega_o: 130., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.5 }
+      B_joint_6: { b: 1.0, omega_c: 50., omega_o: 130., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.25 }
+      B_joint_7: { b: 1.0, omega_c: 60., omega_o: 100., u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.2 }
+
+  bspline_adrc_joint_trajectory_controller:
+    type: adrc_controllers/BSplineADRCJointTrajectoryController
+    state_publish_rate: 1000
+    joints:
+      - B_joint_1
+      - B_joint_2
+      - B_joint_3
+      - B_joint_4
+      - B_joint_5
+      - B_joint_6
+      - B_joint_7
+    # True Inertia Centralized Version
+    centralize: true
     parameters:
       B_joint_1: { b: 1.0, omega_c: 25.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 2.5 } # Parameter of Inertia Compatible
       B_joint_2: { b: 1.0, omega_c: 30.,  omega_o: 90, u_max: 100000, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
