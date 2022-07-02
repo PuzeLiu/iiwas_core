@@ -287,7 +287,7 @@ update(const ros::Time& time, const ros::Duration& period)
 //      bool finished = curr_bspline_traj_ptr->sample(time_data.uptime.toSec(), desired_state_);
       updateBsplineStates();
       if (finished) {
-          is_bspline_trajectory_running_ = false;
+          //is_bspline_trajectory_running_ = false;
           RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
           if (current_active_goal) {
               current_active_goal->preallocated_result_->error_code = control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
