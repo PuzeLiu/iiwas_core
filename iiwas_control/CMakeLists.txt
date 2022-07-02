@@ -110,6 +110,7 @@ target_link_libraries(bspline_joint_trajectory_controller
 target_link_libraries(bspline_ff_joint_trajectory_controller
     ${catkin_LIBRARIES}
     pinocchio::pinocchio
+    tinysplinecxx
     )
 
 target_link_libraries(bspline_adrc_joint_trajectory_controller
