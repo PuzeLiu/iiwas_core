@@ -131,7 +131,7 @@ iiwa_front:
       - F_joint_6
       - F_joint_7
     # True Inertia Centralized Version
-    centralize: true
+    centralize: false
     parameters:
       F_joint_1: { b: 1.0, omega_c: 60., omega_o: 60., u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
       F_joint_2: { b: 1.0, omega_c: 60.,  omega_o: 60., u_max: 80, u_stiction: 0., vs: 0.0, diag_offset: 0.0 }
