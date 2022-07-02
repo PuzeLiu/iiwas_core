@@ -188,6 +188,7 @@ class BsplineJointTrajectoryController :
             estimation_error_[i] = adrcs_[i]->z1 - this->current_state_.position[i];
             velocity_error_[i] = adrcs_[i]->z2 - this->desired_state_.velocity[i];
             disturbance_[i] = adrcs_[i]->z3;
+	    uADRC[i] += this->desired_state_.acceleration[i];
         }
 
 
