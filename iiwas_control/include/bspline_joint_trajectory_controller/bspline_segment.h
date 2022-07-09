@@ -70,8 +70,8 @@ public:
         std::vector<tinyspline::real> ddq_tau = ddq_spline_.eval(argument).result();
         std::vector<tinyspline::real> dtau_dt = t_spline_.eval(argument).result();
         std::vector<tinyspline::real> ddtau_dtt = dt_spline_.eval(argument).result();
-        s.position = q;
         for (auto i = 0; i < q.size(); i++) {
+            s.position[i] = q[i];
             s.velocity[i] = (t <= 0. or t > ts_.back()) ? 0. : dq_tau[i] * dtau_dt[0];
             s.acceleration[i] = (t <= 0. or t > ts_.back()) ? 0. : ddq_tau[i] * dtau_dt[0] * dtau_dt[0] + ddtau_dtt[0] * dq_tau[i] * dtau_dt[0];
         }
