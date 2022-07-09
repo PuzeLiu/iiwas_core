@@ -51,7 +51,7 @@ public:
         auto i = std::max(it - times_accumulated_.begin() - 1., 0.); // get segment index
         if (i >= segments_.size()) return true; // return true if finished
         segments_[i].sample(t - times_accumulated_[i], s); // sample current segment
-        return t > times_accumulated_.back(); // return true if finished
+        return t > times_accumulated_.back() + 0.1; // return true if finished
     }
 
 private:
