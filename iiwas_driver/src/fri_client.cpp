@@ -149,7 +149,7 @@ void FRIClient::command()
             break;
         case TORQUE:
             robotCommand().setTorque(joint_torques_des);
-            robotCommand().setJointPosition(joint_pos_des);
+            robotCommand().setJointPosition(latest_measured_joint_pos);
             break;
         default:
             break;
