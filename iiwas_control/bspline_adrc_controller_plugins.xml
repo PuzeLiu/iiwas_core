@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<library path="lib/libbspline_adrc_joint_trajectory_controller">
+    <class name="adrc_controllers/BSplineADRCJointTrajectoryController"
+           type="adrc_controllers::BSplineADRCJointTrajectoryController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The BsplineADRCJointTrajectoryController that allows to send Bsplines and base JointTrajectoryControls and
+            implements ADRC
+        </description>
+    </class>
+</library>

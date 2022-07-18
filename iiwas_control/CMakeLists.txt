@@ -11,10 +11,22 @@ find_package(catkin REQUIRED COMPONENTS
     controller_manager
     controller_interface
     dynamic_reconfigure
+    message_generation
     )
 
 find_package(pinocchio REQUIRED)
 find_package(Eigen3 REQUIRED)
+
+add_message_files(
+        FILES
+        BsplineSegmentMsg.msg
+        BsplineTrajectoryMsg.msg
+)
+
+generate_messages(
+        DEPENDENCIES
+        std_msgs
+)
 
 generate_dynamic_reconfigure_options(
     cfg/Parameters.cfg
@@ -24,8 +36,8 @@ generate_dynamic_reconfigure_options(
 catkin_package(
     INCLUDE_DIRS include
     #   LIBRARIES iiwas_kinematics
-    CATKIN_DEPENDS roscpp rospy joint_trajectory_controller controller_interface controller_manager
-    DEPENDS EIGEN3
+    CATKIN_DEPENDS roscpp rospy joint_trajectory_controller controller_interface controller_manager message_runtime
+        DEPENDS EIGEN3
 )
 
 ###########
@@ -42,18 +54,37 @@ include_directories(
 add_executable(iiwas_dynamics_example
     src/iiwas_dynamics_example.cpp
     )
+
 add_library(ff_joint_trajectory_controller
     src/ff_joint_trajectory_controller.cpp)
+
 add_library(adrc_joint_trajectory_controller
     src/adrc/adrc_joint_trajectory_controller.cpp
     src/adrc/adrc_single.cpp)
 
+add_library(bspline_joint_trajectory_controller
+    src/bspline_joint_trajectory_controller.cpp)
+
+add_library(bspline_ff_joint_trajectory_controller
+        src/bspline_ff_joint_trajectory_controller.cpp)
+
+add_library(bspline_adrc_joint_trajectory_controller
+        src/bspline_adrc_joint_trajectory_controller.cpp
+        src/adrc/adrc_single.cpp)
+
 # make sure configure headers are built before any node using them
 add_dependencies(adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
+add_dependencies(bspline_adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
+add_dependencies(bspline_joint_trajectory_controller
+        ${${PROJECT_NAME}_EXPORTED_TARGETS}
+        ${catkin_EXPORTED_TARGETS})
 
 target_compile_definitions(iiwas_dynamics_example PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(bspline_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(bspline_ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(bspline_adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 
 target_link_libraries(iiwas_dynamics_example
     ${catkin_LIBRARIES}
@@ -68,6 +99,24 @@ target_link_libraries(ff_joint_trajectory_controller
 target_link_libraries(adrc_joint_trajectory_controller
     ${catkin_LIBRARIES}
     pinocchio::pinocchio
+    )
+
+target_link_libraries(bspline_joint_trajectory_controller
+    ${catkin_LIBRARIES}
+    pinocchio::pinocchio
+    tinysplinecxx
+    )
+
+target_link_libraries(bspline_ff_joint_trajectory_controller
+    ${catkin_LIBRARIES}
+    pinocchio::pinocchio
+    tinysplinecxx
+    )
+
+target_link_libraries(bspline_adrc_joint_trajectory_controller
+    ${catkin_LIBRARIES}
+    pinocchio::pinocchio
+    tinysplinecxx
     )
 
 

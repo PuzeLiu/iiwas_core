@@ -28,8 +28,12 @@ def plot_inertia(M_list, q_list, title):
     fig.suptitle(title)
     ax = fig.subplots(1, n)
     for i in range(n):
-        m_norm = M_list[i] / np.diag(M_list[0])[:, np.newaxis]
+        #m_norm = M_list[i] / np.diag(M_list[0])[:, np.newaxis]
+        m_norm = M_list[i]
         im = ax[i].imshow(m_norm, vmin=-10, vmax=10, cmap='plasma')
+        for k in range(m_norm.shape[0]):
+            for l in range(m_norm.shape[1]):
+                ax[i].text(k, l, f"{m_norm[k, l]:.2f}", ha='center', va='center')
         ax[i].set_xticks(np.arange(7))
         ax[i].set_yticks(np.arange(7))
         ax[i].set_xticklabels(['1', '2', '3', '4', '5', '6', '7'])

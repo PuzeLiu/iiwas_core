@@ -9,7 +9,8 @@
   <license>MIT</license>
 
   <author email="puze@robot-learning.de">Puze Liu</author>
-  <author email="davide@robot-learning.de">Davide tateo</author>
+  <author email="davide@robot-learning.de">Davide Tateo</author>
+  <author email="piotr.kicki@put.poznan.pl">Piotr Kicki</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
@@ -19,17 +20,28 @@
   <build_depend>controller_manager</build_depend>
   <build_depend>controller_interface</build_depend>
   <build_depend>hardware_interface</build_depend>
+  <build_depend>std_msgs</build_depend>
+
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>message_generation</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>controller_interface</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
 
   <export>
     <controller_interface plugin="${prefix}/ff_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/adrc_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/bspline_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/bspline_ff_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/bspline_adrc_controller_plugins.xml"/>
   </export>
 
 </package>

@@ -90,7 +90,7 @@ double adrc_controllers::ADRCJoint::update(double y, double x_r, double v_r, dou
 	z1 += h * (z2 + gains.beta1_ * error);
 	z2 += h * (z3 + gains.b_ * u + gains.beta2_ * error);
 	z3 += h * (gains.beta3_ * error);
-	return (gains.Kp_ * (x_r - z1) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
+	return (gains.Kp_ * (x_r - y) + gains.Kd_ * (v_r - z2) - z3) / gains.b_;
 }
 
 bool adrc_controllers::ADRCJoint::init(const ros::NodeHandle& joint_nh, double timeStep,
