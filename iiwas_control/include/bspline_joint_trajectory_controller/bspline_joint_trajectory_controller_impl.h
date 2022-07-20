@@ -511,10 +511,19 @@ updateTrajectoryBspline(const BsplineTrajectoryMsgConstPtr &msg, RealtimeGoalHan
         return true;
     }
 
-
     BsplineTrajectoryPtr bspline_traj_ptr(new BsplineTrajectory<double>(*msg));
+    //float traj_time = msg->header.stamp.toSec();
+    ros::Time traj_time = msg->header.stamp - ros::Duration(0.001);
+//    std::cout << "TRAJ TIME" << traj_time.toSec() << std::endl;
+//    std::cout << "ROS TIME:" << ros::Time::now().toSec() << std::endl;
+    ros::Time::sleepUntil(traj_time);
+//    std::cout << "ROS TIME:" << ros::Time::now().toSec() << std::endl;
+    //while (traj_time - ros::Time::now().toSec() < 0.001) {
+        //ros::Time::sle
+    //}
     curr_bspline_trajectory_box_.set(bspline_traj_ptr);
     is_bspline_trajectory_running_ = true;
+    std::cout << "ROS TIME:" << ros::Time::now().toSec() << std::endl;
     return true;
 }
 
