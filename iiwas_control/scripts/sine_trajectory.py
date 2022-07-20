@@ -10,7 +10,8 @@ if __name__ == '__main__':
     # type_name = 'joint_torque'
     # type_name = 'joint_feedforward'
     # type_name = 'joint_position_impedance'
-    type_name = 'adrc'
+    #type_name = 'adrc'
+    type_name = 'bspline_adrc_joint'
     use_front = True
 
     topic_name = '/iiwa_front/' if use_front else '/iiwa_back/'

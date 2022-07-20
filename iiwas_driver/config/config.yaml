@@ -3,7 +3,7 @@ iiwa_front:
   fri_port: 30202
 
   conf_ip: 172.31.1.148
-  conf_port: 30402
+  conf_port: 30002
 
   core_id: 4
 
@@ -38,7 +38,7 @@ iiwa_back:
   fri_port: 30201
 
   conf_ip: 172.31.1.147
-  conf_port: 30401
+  conf_port: 30001
 
   core_id: 2
 

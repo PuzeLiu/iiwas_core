@@ -284,7 +284,6 @@ update(const ros::Time& time, const ros::Duration& period)
       BsplineTrajectoryPtr curr_bspline_traj_ptr;
       curr_bspline_trajectory_box_.get(curr_bspline_traj_ptr);
       bool finished = curr_bspline_traj_ptr->sample(time.toSec(), desired_state_);
-//      bool finished = curr_bspline_traj_ptr->sample(time_data.uptime.toSec(), desired_state_);
       updateBsplineStates();
       if (finished) {
           //is_bspline_trajectory_running_ = false;
