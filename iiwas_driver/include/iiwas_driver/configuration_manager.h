@@ -24,6 +24,8 @@
 #ifndef _CONFIGURATION_MANAGER_H
 #define _CONFIGURATION_MANAGER_H
 
+#define NUMBER_OF_JOINTS 7
+
 #include <ros/ros.h>
 #include <string>
 
@@ -38,7 +40,6 @@
 #include "iiwas_driver/configuration_client.h"
 #include "iiwas_driver/iiwa_ctrl_loop.h"
 
-int NUMBER_OF_JOINTS = 7;
 
 class ConfigurationManager{
 public:
