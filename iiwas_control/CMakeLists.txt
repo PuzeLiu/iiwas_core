@@ -78,6 +78,7 @@ add_library(bspline_adrc_joint_trajectory_controller
 # make sure configure headers are built before any node using them
 add_dependencies(adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
 add_dependencies(bspline_adrc_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
+add_dependencies(bspline_ff_kino_joint_trajectory_controller ${PROJECT_NAME}_gencfg)
 add_dependencies(bspline_joint_trajectory_controller
         ${${PROJECT_NAME}_EXPORTED_TARGETS}
         ${catkin_EXPORTED_TARGETS})
