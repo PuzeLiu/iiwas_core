@@ -45,9 +45,9 @@
 
 const int DEFAULT_CONTROL_FREQUENCY = 1000;  // Hz
 
-int NUMBER_OF_JOINTS = 7;
 
 namespace iiwa_hw {
+    int NUMBER_OF_JOINTS = 7;
     class HardwareInterface : public hardware_interface::RobotHW {
     public:
         HardwareInterface();
