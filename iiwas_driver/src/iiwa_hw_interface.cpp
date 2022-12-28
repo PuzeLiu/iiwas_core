@@ -23,18 +23,18 @@
 
 #include "iiwas_driver/iiwa_hw_interface.h"
 
-using namespace KUKA::FRI;
+int NUMBER_OF_JOINTS = 7;
 
 namespace iiwa_hw{
     HardwareInterface::HardwareInterface() : nh(){
-        jointState.resize(LBRState::NUMBER_OF_JOINTS);
-        jointStateLast.resize(LBRState::NUMBER_OF_JOINTS);
-        jointCommand.resize(LBRState::NUMBER_OF_JOINTS);
+        jointState.resize(NUMBER_OF_JOINTS);
+        jointStateLast.resize(NUMBER_OF_JOINTS);
+        jointCommand.resize(NUMBER_OF_JOINTS);
 
-        jointPositionLowerLimits.resize(LBRState::NUMBER_OF_JOINTS);
-        jointPositionUpperLimits.resize(LBRState::NUMBER_OF_JOINTS);
-        jointVelocityLimits.resize(LBRState::NUMBER_OF_JOINTS);
-        jointEffortLimits.resize(LBRState::NUMBER_OF_JOINTS);
+        jointPositionLowerLimits.resize(NUMBER_OF_JOINTS);
+        jointPositionUpperLimits.resize(NUMBER_OF_JOINTS);
+        jointVelocityLimits.resize(NUMBER_OF_JOINTS);
+        jointEffortLimits.resize(NUMBER_OF_JOINTS);
 
         loadParam();
 
@@ -68,10 +68,10 @@ namespace iiwa_hw{
         nh.param("use_urdf_joint_limits", useURDFJointLimits, true);
         nh.param("use_soft_limits", useSoftLimits, false);
 
-		std::vector<double> init_pos(LBRState::NUMBER_OF_JOINTS);
+		std::vector<double> init_pos(NUMBER_OF_JOINTS);
 		nh.param("init_position", init_pos);
 
-		for(int i=0; i < LBRState::NUMBER_OF_JOINTS; i++)
+		for(int i=0; i < NUMBER_OF_JOINTS; i++)
 			jointCommand[i].th = init_pos[i];
 
         if (!nh.getParam("fri_ip", friServerIP))
@@ -90,7 +90,7 @@ namespace iiwa_hw{
             return false;
         }
 
-        for (std::size_t joint_id = 0; joint_id < LBRState::NUMBER_OF_JOINTS; ++joint_id) {
+        for (std::size_t joint_id = 0; joint_id < NUMBER_OF_JOINTS; ++joint_id) {
 
             hardware_interface::JointStateHandle jointHandleState = hardware_interface::JointStateHandle(
                     jointNames[joint_id], &jointState[joint_id].th, &jointState[joint_id].thd,

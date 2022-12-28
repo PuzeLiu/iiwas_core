@@ -23,7 +23,7 @@
 
 #include "iiwas_driver/configuration_manager.h"
 
-using namespace KUKA::FRI;
+int NUMBER_OF_JOINTS = 7;
 
 ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop &controlLoop_) :
 		nh(), controlLoop(controlLoop_) {
@@ -91,7 +91,7 @@ ConfigurationClient* ConfigurationManager::constructConfClient() {
 
 bool ConfigurationManager::init(ConfigurationClient *confClient) {
 	std::vector<double> init_pos;
-	init_pos.resize(LBRState::NUMBER_OF_JOINTS, 0.0);
+	init_pos.resize(NUMBER_OF_JOINTS, 0.0);
 	if (!nh.getParam("init_position", init_pos)) {
 		ROS_WARN_STREAM(
 				nh.getNamespace() << " Unable to load joint initial position from Parameter Server, Use Default: " << std::endl << init_pos[0] << ", " << init_pos[1] << ", " << init_pos[2] << ", " << init_pos[3] << ", " << init_pos[4] << ", " << init_pos[5] << ", " << init_pos[6]);
@@ -109,7 +109,7 @@ bool ConfigurationManager::init(ConfigurationClient *confClient) {
 		return false;
 	}
 
-	controlMode = ControlMode::IMPEDANCE_CONTROL;
+	controlMode = 0;
 	controlMode = nh.param("control_mode", controlMode);
 
 	if (!confClient->connectToServer()) {
@@ -174,7 +174,7 @@ bool ConfigurationManager::init(ConfigurationClient *confClient) {
 
 bool ConfigurationManager::setControlMode() {
 	switch (controlMode) {
-	case ControlMode::IMPEDANCE_CONTROL:
+	case 0:
 		if (!confClient->setJointImpedanceCtrlMode()) {
 			ROS_ERROR_STREAM(
 					nh.getNamespace() << " Setting impedance control mode failed");
@@ -192,14 +192,14 @@ bool ConfigurationManager::setControlMode() {
 		}
 		break;
 
-	case ControlMode::POSITION_CONTROL:
+	case 1:
 		if (!confClient->setJointPositionCtrlMode()) {
 			ROS_ERROR_STREAM(
 					nh.getNamespace() << " Setting position control mode failed");
 			return false;
 		}
 		break;
-	case ControlMode::TORQUE_CONTROL:
+	case 2:
 		if (!confClient->setJointTorqueCtrlMode()) {
 			ROS_ERROR_STREAM(
 					nh.getNamespace() << " Setting torque control mode failed");
@@ -253,12 +253,12 @@ bool ConfigurationManager::ptp(iiwas_srv::PTP::Request &req,
 	res.success = false;
 
 	std::vector<double> goalVec;
-	if (!req.goal.size() == LBRState::NUMBER_OF_JOINTS) {
+	if (!req.goal.size() == NUMBER_OF_JOINTS) {
 		res.success = false;
 		return res.success;
 	} else {
-		goalVec.resize(LBRState::NUMBER_OF_JOINTS);
-		for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++)
+		goalVec.resize(NUMBER_OF_JOINTS);
+		for (int i = 0; i < NUMBER_OF_JOINTS; i++)
 			goalVec[i] = req.goal[i];
 	}
 
@@ -288,10 +288,10 @@ bool ConfigurationManager::setImpedanceParam(
 		iiwas_srv::SetImpedanceParam::Response &res) {
 	res.success = true;
 
-	if (req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS
-			|| req.stiffness.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+	if (req.stiffness.size() != NUMBER_OF_JOINTS
+			|| req.stiffness.size() != NUMBER_OF_JOINTS) {
 		ROS_WARN_STREAM(
-				KUKA::FRI::LBRState::NUMBER_OF_JOINTS << " joints of stiffness and damping is needed");
+				NUMBER_OF_JOINTS << " joints of stiffness and damping is needed");
 		return false;
 	}
 	jointStiffness = req.stiffness;
