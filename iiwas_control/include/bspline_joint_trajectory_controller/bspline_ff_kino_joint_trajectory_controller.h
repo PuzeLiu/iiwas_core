@@ -99,51 +99,6 @@ class BsplineJointTrajectoryController :
             pinoDesiredJointPosition[j] = this->desired_state_.position[j];
         }
 
-        auto q = pinoJointPosition;
-        //std::cout << "PINO DESIRED: " << this->desired_state_.position[6] << std::endl;
-        q[6] = 0.;
-
-        pinocchio::forwardKinematics(pinoModel, pinoData, q);
-        pinocchio::updateFramePlacements(pinoModel, pinoData);
-        auto pinoFrameId = pinoModel.getFrameId("F_striker_tip");
-        Eigen::Matrix3d mat = pinoData.oMf[pinoFrameId].rotation();
-        //Eigen::Vector3d zAxis(0., 0., -1.);
-        Eigen::Vector3d zAxis(0., 0., 1.);
-        auto yDes = zAxis.cross(mat.col(2)).normalized();
-        double target = acos(boost::algorithm::clamp(mat.col(1).dot(yDes), -1., 1.));
-        Eigen::Vector3d axis = mat.col(1).cross(yDes).normalized();
-        target = target * axis.dot(mat.col(2));
-
-
-        //std::cout << "TARGET: " <<  target << std::endl;
-        //std::cout << "POS: " <<  pinoJointPosition[6] << std::endl;
-
-        //if (target - pinoJointPosition[6] > M_PI_2) {
-        //    //std::cout << "TOO BIG: " <<  target - pinoJointPosition[6] << std::endl;
-        //    target -= M_PI;
-        //} else if (target - pinoJointPosition[6] < -M_PI_2) {
-        //    //std::cout << "TOO SMALL: " <<  target - pinoJointPosition[6] << std::endl;
-        //    target += M_PI;
-        //}
-
-        auto rate = 1 / 100.;
-        //auto dq6 = boost::algorithm::clamp((target - pinoJointPosition[6]) * rate,
-        //                                -pinoModel.velocityLimit[6],
-        //                                pinoModel.velocityLimit[6]);
-        //auto q6 = boost::algorithm::clamp(pinoJointPosition[6] + dq6 / rate,
-        //                               pinoModel.lowerPositionLimit[6],
-        //                               pinoModel.upperPositionLimit[6]);
-        auto dq6 = (target - pinoJointPosition[6]) * rate;
-        auto q6 = target;
-        this->desired_state_.position[6] = q6;
-        this->desired_state_.velocity[6] = dq6;
-        this->state_error_.position[6] = angles::shortest_angular_distance(this->current_state_.position[6], q6);
-        //std::cout << "Q6: " << q6 << std::endl;
-        //std::cout << "DQ6: " << dq6 << std::endl;
-        q[6] = q6;
-
-
-
         this->hw_iface_adapter_.updateCommand(ros::Time::now(), ros::Duration(0.1),
                                               this->desired_state_, this->state_error_);
         /** Add Feedforward Term*/
@@ -157,7 +112,8 @@ class BsplineJointTrajectoryController :
                 + pinoModel.damping.cwiseProduct(pinoJointVelocity);
 
         for (unsigned int i = 0; i < this->joint_names_.size(); ++i) {
-            ff_torque_[i] = idTorque[i] + pid_torque_[i] + ffTerm[i];
+            //ff_torque_[i] = idTorque[i] + pid_torque_[i] + ffTerm[i];
+            ff_torque_[i] = ffTerm[i];
             pid_torque_[i] = this->joints_[i].getCommand();
             actual_torque_[i] = boost::algorithm::clamp(pid_torque_[i] + ffTerm[i], -pinoModel.effortLimit[i], pinoModel.effortLimit[i]);
             this->joints_[i].setCommand(actual_torque_[i]);
@@ -167,6 +123,31 @@ class BsplineJointTrajectoryController :
         // hardware interface adapter
         this->hw_iface_adapter_.starting(ros::Time(0.0));
     };
+
+    void publishState(const ros::Time &time) override {
+        if (!this->state_publisher_period_.isZero() && this->last_state_publish_time_ + this->state_publisher_period_ < time) {
+            if (this->state_publisher_ && this->state_publisher_->trylock()) {
+                this->last_state_publish_time_ += this->state_publisher_period_;
+
+                this->state_publisher_->msg_.header.stamp = time;
+                this->state_publisher_->msg_.desired.positions = this->desired_state_.position;
+                this->state_publisher_->msg_.desired.velocities = this->desired_state_.velocity;
+                this->state_publisher_->msg_.desired.accelerations = this->desired_state_.acceleration;
+                this->state_publisher_->msg_.desired.effort = pid_torque_;
+                this->state_publisher_->msg_.actual.positions = this->current_state_.position;
+                this->state_publisher_->msg_.actual.velocities = this->current_state_.velocity;
+                //this->state_publisher_->msg_.actual.accelerations = disturbance_;
+                this->state_publisher_->msg_.actual.effort = actual_torque_;
+                this->state_publisher_->msg_.error.positions = this->state_error_.position;
+                this->state_publisher_->msg_.error.velocities = this->state_error_.velocity;
+                //this->state_publisher_->msg_.error.accelerations = estimation_error_;
+                this->state_publisher_->msg_.error.effort = ff_torque_;
+
+                this->state_publisher_->unlockAndPublish();
+            }
+        }
+    }
+
 
     pinocchio::Model pinoModel;
     pinocchio::Data pinoData;

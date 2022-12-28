@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<library path="lib/libbspline_ff_kino_joint_trajectory_controller">
+    <class name="feedforward_controllers/BSplineFFKinoJointTrajectoryController"
+           type="feedforward_controllers::BSplineFFKinoJointTrajectoryController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The BsplineFFKinoJointTrajectoryController that allows to send Bsplines and base JointTrajectoryControls and
+            implements feed-forward term for Kinodynamic scenario
+        </description>
+    </class>
+</library>

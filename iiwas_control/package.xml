@@ -41,6 +41,7 @@
     <controller_interface plugin="${prefix}/adrc_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/bspline_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/bspline_ff_controller_plugins.xml"/>
+    <controller_interface plugin="${prefix}/bspline_ff_kino_controller_plugins.xml"/>
     <controller_interface plugin="${prefix}/bspline_adrc_controller_plugins.xml"/>
   </export>
 

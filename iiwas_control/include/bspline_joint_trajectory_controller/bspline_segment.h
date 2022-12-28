@@ -37,8 +37,8 @@ public:
 
     BsplineSegment(iiwas_control::BsplineSegmentMsg msg){
         // initialize bsplines
-        q_spline_ = tinyspline::BSpline(15, 6, 7, tinyspline::BSpline::Type::Clamped);
-        t_spline_ = tinyspline::BSpline(20, 1, 7, tinyspline::BSpline::Type::Clamped);
+        q_spline_ = tinyspline::BSpline(msg.num_q_control_points, msg.dim_q_control_points, 7, tinyspline::BSpline::Type::Clamped);
+        t_spline_ = tinyspline::BSpline(msg.num_t_control_points, 1, 7, tinyspline::BSpline::Type::Clamped);
         // fill bsplines with control points
         std::vector<tinyspline::real> q_ctrlp = q_spline_.controlPoints();
         for (auto i = 0; i < msg.q_control_points.size(); i++) {
@@ -55,7 +55,7 @@ public:
         ddq_spline_ = dq_spline_.derive();
         dt_spline_ = t_spline_.derive();
         // compute arrays that will be helpful in interpolating from time to Bspline argument
-        for (int i = 0; i < 1023; i++){
+        for (int i = 0; i < 1024; i++){
             Scalar arg = (float)i / 1024.;
             std::vector<tinyspline::real> dtau_dt = t_spline_.eval(arg).result();
             ts_.push_back(ts_.back() + 1. / dtau_dt[0] / 1024.);

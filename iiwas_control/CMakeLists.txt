@@ -68,6 +68,9 @@ add_library(bspline_joint_trajectory_controller
 add_library(bspline_ff_joint_trajectory_controller
         src/bspline_ff_joint_trajectory_controller.cpp)
 
+add_library(bspline_ff_kino_joint_trajectory_controller
+        src/bspline_ff_kino_joint_trajectory_controller.cpp)
+
 add_library(bspline_adrc_joint_trajectory_controller
         src/bspline_adrc_joint_trajectory_controller.cpp
         src/adrc/adrc_single.cpp)
@@ -84,6 +87,7 @@ target_compile_definitions(ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CF
 target_compile_definitions(adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(bspline_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(bspline_ff_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
+target_compile_definitions(bspline_ff_kino_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 target_compile_definitions(bspline_adrc_joint_trajectory_controller PRIVATE ${PINOCCHIO_CFLAGS_OTHER})
 
 target_link_libraries(iiwas_dynamics_example
@@ -108,6 +112,12 @@ target_link_libraries(bspline_joint_trajectory_controller
     )
 
 target_link_libraries(bspline_ff_joint_trajectory_controller
+        ${catkin_LIBRARIES}
+        pinocchio::pinocchio
+        tinysplinecxx
+        )
+
+target_link_libraries(bspline_ff_kino_joint_trajectory_controller
     ${catkin_LIBRARIES}
     pinocchio::pinocchio
     tinysplinecxx
