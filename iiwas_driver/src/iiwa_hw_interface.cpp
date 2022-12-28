@@ -23,8 +23,6 @@
 
 #include "iiwas_driver/iiwa_hw_interface.h"
 
-int NUMBER_OF_JOINTS = 7;
-
 namespace iiwa_hw{
     HardwareInterface::HardwareInterface() : nh(){
         jointState.resize(NUMBER_OF_JOINTS);

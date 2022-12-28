@@ -23,7 +23,6 @@
 
 #include "iiwas_driver/configuration_manager.h"
 
-int NUMBER_OF_JOINTS = 7;
 
 ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop &controlLoop_) :
 		nh(), controlLoop(controlLoop_) {

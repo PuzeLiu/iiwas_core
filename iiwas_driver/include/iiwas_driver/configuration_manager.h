@@ -38,6 +38,8 @@
 #include "iiwas_driver/configuration_client.h"
 #include "iiwas_driver/iiwa_ctrl_loop.h"
 
+int NUMBER_OF_JOINTS = 7;
+
 class ConfigurationManager{
 public:
     ConfigurationManager(iiwa_hw::ControlLoop& controlLoop);
