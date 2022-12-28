@@ -11,12 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
              urdf
              iiwas_srv
              sensor_msgs
-             iiwa_fri_client
 )
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp iiwa_fri_client iiwas_srv
+  CATKIN_DEPENDS roscpp iiwas_srv
 )
 
 ###########
@@ -27,7 +26,6 @@ set(HEADERS include/iiwas_driver/configuration_manager.h
 						include/iiwas_driver/iiwa_ctrl_loop.h
 )
 set(SOURCES src/configuration_client.cpp
-            src/fri_client.cpp
             src/iiwas_driver_node.cpp
             src/iiwa_hw_interface.cpp
 	        	src/iiwa_ctrl_loop.cpp
