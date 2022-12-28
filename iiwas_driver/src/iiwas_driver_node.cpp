@@ -26,8 +26,6 @@
 #include "iiwas_driver/iiwa_ctrl_loop.h"
 #include "iiwas_driver/configuration_manager.h"
 
-#include <iiwa_fri_client/friClientIf.h>
-
 int main(int argc, char* argv[]){
     ros::init(argc, argv, "iiwas_drive", ros::init_options::AnonymousName);
     ros::NodeHandle nh;

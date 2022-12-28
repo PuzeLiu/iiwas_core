@@ -37,7 +37,6 @@
 
 #include "iiwas_driver/configuration_client.h"
 #include "iiwas_driver/iiwa_ctrl_loop.h"
-#include "iiwa_fri_client/friClientIf.h"
 
 class ConfigurationManager{
 public:

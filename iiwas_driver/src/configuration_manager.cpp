@@ -23,8 +23,6 @@
 
 #include "iiwas_driver/configuration_manager.h"
 
-#include <iiwa_fri_client/friLBRState.h>
-
 using namespace KUKA::FRI;
 
 ConfigurationManager::ConfigurationManager(iiwa_hw::ControlLoop &controlLoop_) :

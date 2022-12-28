@@ -59,53 +59,9 @@ namespace iiwa_hw{
     }
 
     void HardwareInterface::read(const ros::Time &time, const ros::Duration &period) {
-        if (friClient->isDataAvailable()) {
-            jointStateLast = jointState;
-            for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-                auto velocityMeasure = (friClient->latest_measured_joint_pos[i] - jointStateLast[i].th) / period.toSec();
-                jointState[i].th = friClient->latest_measured_joint_pos[i];
-                jointState[i].thd = velocityMeasure * 0.274 + jointStateLast[i].thd * 0.726;
-                jointState[i].load = -friClient->latest_measured_joint_torque[i];
-            }
-        }
     }
 
     void HardwareInterface::write(const ros::Time &time, const ros::Duration &period) {
-        if (friClient->isCommandingActive()) {
-            if (hasSoftLimits) {
-                positionJointSoftLimitsInterface.enforceLimits(period);
-                effortJointSoftLimitsInterface.enforceLimits(period);
-                velocityJointSoftLimitsInterface.enforceLimits(period);
-            } else{
-                positionJointSatLimitsInterface.enforceLimits(period);
-                effortJointSatLimitsInterface.enforceLimits(period);
-                velocityJointSatLimitsInterface.enforceLimits(period);
-            }
-
-            if (friClient->robotState().getClientCommandMode() == KUKA::FRI::TORQUE){
-                for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-                    friClient->joint_pos_des[i] = friClient->latest_measured_joint_pos[i];
-                    friClient->joint_torques_des[i] = jointCommand[i].uff;
-                }
-            } else{
-                for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-                   friClient->joint_pos_des[i] = jointCommand[i].th;
-                }
-            }
-        }
-        else if (friClient->isCommandingWait()){
-			if (hasSoftLimits) {
-				positionJointSoftLimitsInterface.reset();
-			} else{
-				positionJointSatLimitsInterface.reset();
-			}
-        	for (int i = 0; i < LBRState::NUMBER_OF_JOINTS; i++) {
-        						friClient->joint_pos_des[i] = jointCommand[i].th;
-        						friClient->joint_torques_des[i] = jointCommand[i].uff;
-        	}
-        }
-
-        friApp->step();
     }
 
     void HardwareInterface::loadParam(){
@@ -166,28 +122,10 @@ namespace iiwa_hw{
     }
 
     bool HardwareInterface::initFRI() {
-        friClient = new FRIClient();
-        friConnection = new KUKA::FRI::UdpConnection();
-        friApp = new KUKA::FRI::ClientApplication(*friConnection, *friClient);
-
-        ROS_INFO_STREAM(nh.getNamespace() + " Connecting to FRI Application Server");
-        if(!friApp->connect(friServerPort, friServerIP.c_str()))
-        {
-            isAppServerStarted = false;
-            ROS_ERROR_STREAM(nh.getNamespace() + " Failed to connect FRI Application Server");
-            return false;
-        } else{
-            isAppServerStarted = true;
-            ROS_INFO_STREAM(nh.getNamespace() + " Connection to FRI Application Server Succeed");
-        }
         return true;
     }
 
     void HardwareInterface::stopFRI() {
-        if(isAppServerStarted){
-        	isAppServerStarted = false;
-            friApp->disconnect();
-        }
     }
 
     int HardwareInterface::loadURDF(std::string param_name) {

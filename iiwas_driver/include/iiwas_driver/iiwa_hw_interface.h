@@ -39,11 +39,7 @@
 
 #include <urdf/model.h>
 
-#include <iiwa_fri_client/friUdpConnection.h>
-#include <iiwa_fri_client/friClientApplication.h>
-
 #include "iiwas_driver/iiwa_ros.h"
-#include "iiwas_driver/fri_client.hpp"
 #include "iiwas_driver/configuration_client.h"
 
 
@@ -71,7 +67,7 @@ namespace iiwa_hw {
 
         inline const bool getIsAppServerStarted(){ return isAppServerStarted;};
 
-        inline const bool getFRICommandingWait(){ return friClient->isCommandingWait();};
+        inline const bool getFRICommandingWait(){ return false;};
 
         void stop(){
             stopFRI();
@@ -144,10 +140,6 @@ namespace iiwa_hw {
         /** FRI Connection Parameter for FRI Application server */
         std::string friServerIP;
         int friServerPort;
-
-        FRIClient* friClient;
-        KUKA::FRI::UdpConnection* friConnection;
-        KUKA::FRI::ClientApplication* friApp;
 
         bool isAppServerStarted;
 
